@@ -9,8 +9,9 @@
     @livewireStyles
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body>
-    <div class="min-h-screen bg-gray-100">
+<body class="min-h-screen bg-[#FBF7F4]">
+    <div x-data="{ scrolled: false }" 
+         @scroll.window="scrolled = (window.pageYOffset > 20)">
         <!-- Navbar -->
         <livewire:layouts.navigation />
 
