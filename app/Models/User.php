@@ -20,7 +20,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'username',
         'password',
+        'role',
+        'is_active',
+        'profile_img'
     ];
 
     /**
@@ -39,7 +43,40 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
+        'is_active' => 'boolean',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function peminjaman() {
+        return $this->hasMany(Peminjaman::class, 'id_user');
+    }
+
+    public function handlePeminjaman() {
+        return $this->hasMany(Peminjaman::class, 'id_staff');
+    }
+
+    public function bookmarks() {
+        return $this->hasMany(Bookmark::class, 'id_user');
+    }
+
+    public function suka() {
+        return $this->hasMany(Suka::class, 'id_user');
+    }
+
+    public function ratings() {
+        return $this->hasMany(Rating::class, 'id_user');
+    }
+
+    public function notifikasi() {
+        return $this->hasMany(Notifikasi::class, 'id_user');
+    }
+
+    public function isAdmin() {
+        return $this->role === 'admin';
+    }
+
+    public function isStaff() {
+        return $this->role === 'staff';
+    }
 }

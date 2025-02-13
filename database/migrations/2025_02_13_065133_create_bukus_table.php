@@ -31,7 +31,7 @@ return new class extends Migration
             ]);
             $table->text('deskripsi')->nullable();
             $table->string('cover_img')->nullable();
-            $table->integer('stock')->default(0);
+            $table->integer('stok')->default(0);
             $table->integer('denda_harian')->default(0);
             $table->string('penerbit')->nullable();
             $table->string('tahun_terbit')->nullable();
