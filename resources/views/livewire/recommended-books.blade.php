@@ -1,4 +1,4 @@
-<div>
+<div class="bg-white p-6 rounded-lg">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-900">Recommended</h2>
         <a href="#" class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors">Lihat Semua</a>
