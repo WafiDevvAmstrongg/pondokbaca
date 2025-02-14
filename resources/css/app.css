@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* resources/css/app.css */
+@layer base {
+    body {
+      @apply antialiased;
+    }
+  }
+  
+  @layer components {
+    .btn {
+      @apply rounded-xl;
+    }
+    
+    .input {
+      @apply rounded-xl;
+    }
+  }

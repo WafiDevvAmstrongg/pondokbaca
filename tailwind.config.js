@@ -6,7 +6,23 @@ export default {
     "./resources/**/*.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#4F46E5',
+          focus: '#4338CA',
+        },
+      },
+    },
   },
   plugins: [require("daisyui")],
+  daisyui: {
+    themes: [{
+      light: {
+        ...require("daisyui/src/theming/themes")["light"],
+        primary: "#4F46E5",
+        "primary-focus": "#4338CA",
+      },
+    }],
+  },
 }

@@ -1,5 +1,5 @@
 <div>
-    <div class="relative min-h-[90vh] bg-gradient-to-br from-[#FBF7F4] to-[#E8F3F1] overflow-hidden">
+    {{-- <div class="relative min-h-[90vh] bg-gradient-to-br from-[#FBF7F4] to-[#E8F3F1] overflow-hidden">
         <!-- Decorative Pattern -->
         <div class="absolute inset-0 bg-repeat opacity-5" style="background-image: url('pattern.svg')"></div>
 
@@ -107,5 +107,6 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
+    @livewire('recommended-books')
 </div>
