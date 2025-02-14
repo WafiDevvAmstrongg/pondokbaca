@@ -34,7 +34,7 @@
                                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRglLn-gRzqwE4qOH2qXiLb1bb2KlwMO5cjRA&s"
                                             alt="Profile" class="w-full h-full object-cover" />
                                     </div>
-                                    <span class="font-medium">Wapek Ganteng</span>
+                                    <span class="font-medium">{{ Auth::user()->name }}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -45,7 +45,9 @@
                                     class="dropdown-content menu p-2 shadow-lg bg-white rounded-xl w-52 mt-2">
                                     <li><a class="rounded-lg">Profile</a></li>
                                     <li><a class="rounded-lg">Settings</a></li>
-                                    <li><a class="rounded-lg text-error">Logout</a></li>
+                                    <li>
+                                        <button wire:click="logout" class="rounded-lg text-error w-full text-left">Logout</button>
+                                    </li>                           
                                 </ul>
                             </div>
                         </div>

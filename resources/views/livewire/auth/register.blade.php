@@ -45,6 +45,12 @@
                 <button type="submit" class="btn btn-primary">Register</button>
                 <button type="button" class="btn" onclick="register_modal.close()">Cancel</button>
             </div>
+            <p class="text-center mt-4">
+                Sudah punya akun? 
+                <button type="button" class="text-blue-500 hover:underline" onclick="switchModal('register_modal', 'login_modal')">
+                    Login di sini
+                </button>
+            </p>
         </form>
     </div>
 </dialog>

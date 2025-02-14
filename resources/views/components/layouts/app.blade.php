@@ -21,6 +21,14 @@
     <livewire:auth.login />
     <livewire:auth.register />
 
+    <script>
+        function switchModal(current, target) {
+            document.getElementById(current).close();
+            document.getElementById(target).showModal();
+        }
+    </script>
+    
+
     @livewireScripts
 </body>
 </html>
