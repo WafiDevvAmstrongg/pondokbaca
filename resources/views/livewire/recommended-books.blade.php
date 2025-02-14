@@ -1,10 +1,10 @@
-<div class="bg-white p-6 rounded-lg">
+<div class="bg-white p-6 rounded-lg shadow-xl">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-900">Recommended</h2>
         <a href="#" class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors">Lihat Semua</a>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-6">
         @foreach($books as $book)
         <div class="group">
             <div class="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4">
@@ -27,8 +27,8 @@
             </div>
 
             <div class="space-y-2">
-                <h3 class="font-medium text-gray-900 leading-tight">{{ $book->judul }}</h3>
-                <p class="text-sm text-gray-600">{{ $book->penulis }}</p>
+                <h3 class="text-sm font-medium text-gray-900 leading-tight">{{ $book->judul }}</h3>
+                <p class="text-xs text-gray-600">{{ $book->penulis }}</p>
                 <div class="flex items-center gap-2">
                     <div class="rating rating-sm">
                         @for($i = 1; $i <= 5; $i++)

@@ -9,9 +9,10 @@ class RecommendedBooks extends Component
 {
     public function render()
     {
-        return view('livewire.recommended-books', [
-            'books' => Buku::take(5)
-                          ->get()
-        ]);
+        $books = Buku::select(['id', 'judul', 'penulis', 'cover_img'])
+                     ->take(5)
+                     ->get();
+
+        return view('livewire.recommended-books', compact('books'));
     }
 }
