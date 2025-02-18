@@ -1,6 +1,10 @@
 <?php
 
 use App\Livewire\Home;
+use App\Livewire\Admin\Dashboard;
+use App\Livewire\Admin\Users;
+use App\Livewire\Admin\Books;
+use App\Livewire\Admin\Loans;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', Home::class);
+Route::get('/', Home::class)->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
@@ -38,4 +42,15 @@ Route::middleware('auth')->group(function () {
         session()->regenerateToken();
         return redirect('/');
     })->name('logout');
+
+    Route::get('/profile', \App\Livewire\User\Profile::class)->name('profile');
+    Route::get('/my-books', \App\Livewire\User\MyBooks::class)->name('my-books');
+    Route::get('/my-loans', \App\Livewire\User\MyLoans::class)->name('my-loans');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', Dashboard::class)->name('admin.dashboard');
+    Route::get('/users', Users::class)->name('admin.users');
+    Route::get('/books', Books::class)->name('admin.books');
+    Route::get('/loans', Loans::class)->name('admin.loans');
 });
