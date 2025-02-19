@@ -2,7 +2,7 @@
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800">Loan Management</h2>
+                <h2 class="text-xl font-semibold text-gray-800">Data Peminjaman</h2>
             </div>
             <div class="mt-4 flex gap-4">
                 <input type="text" wire:model.live="search" placeholder="Search loans..." 
@@ -28,7 +28,7 @@
                             <th>User</th>
                             <th>Book</th>
                             <th>Status</th>
-                            <th>Loan Date</th>
+                            <th>Peminjaman Date</th>
                             <th>Return Date</th>
                             <th>Fine</th>
                             <th>Actions</th>

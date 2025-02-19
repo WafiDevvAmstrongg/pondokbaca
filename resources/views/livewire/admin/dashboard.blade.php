@@ -27,7 +27,7 @@
 
         <div class="bg-white rounded-xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400">Total Loans</h3>
+                <h3 class="text-sm font-medium text-gray-400">Total Peminjaman</h3>
                 <span class="p-2 bg-purple-50 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -39,7 +39,7 @@
 
         <div class="bg-white rounded-xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400">Active Loans</h3>
+                <h3 class="text-sm font-medium text-gray-400">Peminjaman Aktif</h3>
                 <span class="p-2 bg-yellow-50 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -53,7 +53,7 @@
     <!-- Recent Loans -->
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
-            <h2 class="text-xl font-semibold text-gray-800">Recent Loans</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Peminjaman Terbaru</h2>
         </div>
         <div class="p-6">
             <div class="overflow-x-auto">
