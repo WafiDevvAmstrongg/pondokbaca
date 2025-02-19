@@ -120,6 +120,6 @@ class Index extends Component
                     ->orWhere('isbn', 'like', '%'.$this->search.'%')
                     ->paginate(10);
 
-        return view('livewire.admin.books', compact('books'));
+        return view('livewire.admin.books.index', compact('books'))->layout('layouts.admin');
     }
 } 

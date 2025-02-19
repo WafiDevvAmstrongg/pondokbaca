@@ -103,6 +103,6 @@ class Index extends Component
                     ->orWhere('username', 'like', '%'.$this->search.'%')
                     ->paginate(10);
 
-        return view('livewire.admin.users', compact('users'));
+        return view('livewire.admin.users.index', compact('users'))->layout('layouts.admin');;
     }
 } 

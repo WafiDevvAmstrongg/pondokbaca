@@ -34,6 +34,6 @@ class Index extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.admin.loans', compact('loans'));
+        return view('livewire.admin.peminjamans.index', compact('loans'))->layout('layouts.admin');
     }
 } 
