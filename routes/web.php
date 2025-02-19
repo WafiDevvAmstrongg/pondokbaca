@@ -1,30 +1,12 @@
 <?php
-use App\Livewire\Admin\Dashboard;
-use App\Livewire\Admin\Users;
-use App\Livewire\Admin\Books;
-use App\Livewire\Admin\Books\Index as BooksIndex;
-use App\Livewire\Admin\Loans;
-use App\Livewire\Admin\Peminjamans\Index as PeminjamansIndex;
-use App\Livewire\Admin\Users\Index;
-use App\Livewire\Home\Home;
-use App\Livewire\User\Peminjamans\Index as UserPeminjamansIndex;
-use App\Livewire\User\Profile\Index as ProfileIndex;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// Front/Public Routes
+Route::get('/', \App\Livewire\Home\Home::class)->name('home');
 
-Route::get('/', Home::class)->name('home');
-
+// Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
         return view('livewire.auth.login');
@@ -35,11 +17,9 @@ Route::middleware('guest')->group(function () {
     })->name('register');
 });
 
+// User Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-    
+    // Auth
     Route::post('/logout', function () {
         Auth::logout();
         session()->invalidate();
@@ -47,13 +27,38 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    Route::get('/profile', ProfileIndex::class)->name('profile');
-    Route::get('/my-loans', UserPeminjamansIndex::class)->name('my-loans');
+    // User Dashboard
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // User Profile
+    Route::get('/profile', \App\Livewire\User\Profile\Index::class)
+        ->name('profile');
+
+    // User Loans
+    Route::get('/my-loans', \App\Livewire\User\Peminjamans\Index::class)
+        ->name('my-loans');
 });
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', Dashboard::class)->name('admin.dashboard');
-    Route::get('/users', Index::class)->name('admin.users');
-    Route::get('/books', BooksIndex::class)->name('admin.books');
-    Route::get('/loans', PeminjamansIndex::class)->name('admin.loans');
-});
+// Admin Routes
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        // Admin Dashboard
+        Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)
+            ->name('dashboard');
+
+        // Admin Users Management
+        Route::get('/users', \App\Livewire\Admin\Users\Index::class)
+            ->name('users');
+
+        // Admin Books Management
+        Route::get('/books', \App\Livewire\Admin\Books\Index::class)
+            ->name('books');
+
+        // Admin Loans Management
+        Route::get('/loans', \App\Livewire\Admin\Peminjamans\Index::class)
+            ->name('loans');
+    });
