@@ -27,7 +27,7 @@ class Dashboard extends Component
             'totalLoans' => $totalLoans,
             'activeLoans' => $activeLoans,
             'recentLoans' => $recentLoans
-        ])->layout('components.layouts.root', [
+        ])->layout('layouts.admin', [
             'title' => 'Admin Dashboard'
         ]);
     }

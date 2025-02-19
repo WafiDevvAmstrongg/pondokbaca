@@ -52,8 +52,7 @@
                             </div>
                         </div>
                     @else
-                        <button onclick="login_modal.showModal()"
-                            class="btn bg-[#1F4B3F] hover:bg-[#2A6554] text-white">Masuk</button>
+                    <button wire:click="$dispatch('open-login-modal')" class="btn bg-[#1F4B3F] hover:bg-[#2A6554] text-white">Masuk</button>
                     @endauth
                 </div>
             </header>

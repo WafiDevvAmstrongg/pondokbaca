@@ -25,7 +25,7 @@
                     <li><a class="rounded-lg">Settings</a></li>
                     <li>
                         <button wire:click="logout" class="rounded-lg text-error w-full text-left">Logout</button>
-                    </li>                           
+                    </li>                            
                 </ul>
             </div>
         </div>

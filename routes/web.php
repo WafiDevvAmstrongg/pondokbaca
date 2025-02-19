@@ -8,13 +8,6 @@ Route::get('/', \App\Livewire\Home\Home::class)->name('home');
 
 // Guest Routes
 Route::middleware('guest')->group(function () {
-    Route::get('/login', function () {
-        return view('livewire.auth.login');
-    })->name('login');
-
-    Route::get('/register', function () {
-        return view('livewire.auth.register');
-    })->name('register');
 });
 
 // User Routes
