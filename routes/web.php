@@ -1,10 +1,14 @@
 <?php
-
-use App\Livewire\Home;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\Users;
 use App\Livewire\Admin\Books;
+use App\Livewire\Admin\Books\Index as BooksIndex;
 use App\Livewire\Admin\Loans;
+use App\Livewire\Admin\Peminjamans\Index as PeminjamansIndex;
+use App\Livewire\Admin\Users\Index;
+use App\Livewire\Home\Home;
+use App\Livewire\User\Peminjamans\Index as UserPeminjamansIndex;
+use App\Livewire\User\Profile\Index as ProfileIndex;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -43,14 +47,13 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    Route::get('/profile', \App\Livewire\User\Profile::class)->name('profile');
-    Route::get('/my-books', \App\Livewire\User\MyBooks::class)->name('my-books');
-    Route::get('/my-loans', \App\Livewire\User\MyLoans::class)->name('my-loans');
+    Route::get('/profile', ProfileIndex::class)->name('profile');
+    Route::get('/my-loans', UserPeminjamansIndex::class)->name('my-loans');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('admin.dashboard');
-    Route::get('/users', Users::class)->name('admin.users');
-    Route::get('/books', Books::class)->name('admin.books');
-    Route::get('/loans', Loans::class)->name('admin.loans');
+    Route::get('/users', Index::class)->name('admin.users');
+    Route::get('/books', BooksIndex::class)->name('admin.books');
+    Route::get('/loans', PeminjamansIndex::class)->name('admin.loans');
 });
