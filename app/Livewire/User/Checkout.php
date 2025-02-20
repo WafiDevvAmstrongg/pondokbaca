@@ -77,7 +77,7 @@ class Checkout extends Component
                 'message' => 'Peminjaman berhasil diajukan'
             ]);
 
-            return redirect()->route('my-loans');
+            return redirect()->route('home');
 
         } catch (\Exception $e) {
             DB::rollBack();
