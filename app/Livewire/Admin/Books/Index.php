@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin;
+namespace App\Livewire\Admin\Books;
 
 use App\Models\Buku;
 use Livewire\Component;
@@ -8,7 +8,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
-class Books extends Component
+class Index extends Component
 {
     use WithPagination, WithFileUploads;
 

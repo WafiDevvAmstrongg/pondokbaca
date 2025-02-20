@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Livewire\Admin;
+namespace App\Livewire\Admin\Peminjamans;
 
 use App\Models\Peminjaman;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class Loans extends Component
+class Index extends Component
 {
     use WithPagination;
 

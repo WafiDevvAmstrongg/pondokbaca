@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Livewire\Admin;
+namespace App\Livewire\Admin\Users;
 
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Hash;
 
-class Users extends Component
+class Index extends Component
 {
     use WithPagination;
 
