@@ -17,22 +17,39 @@
 
     <script>
         // Global helper function untuk SweetAlert
-        window.showAlert = function(type, message) {
+        window.showAlert = function(type, message, title = '') {
             Swal.fire({
-                icon: type,
+                title: title,
                 text: message,
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                toast: true,
-                position: 'top-end'
+                icon: type,
+                showConfirmButton: true,
+                confirmButtonColor: '#1F4B3F',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn btn-primary'
+                }
             });
         }
 
         // Global event listener untuk Livewire events
         document.addEventListener('livewire:initialized', () => {
             Livewire.on('showAlert', (data) => {
-                showAlert(data.type, data.message);
+                let title = '';
+                switch(data.type) {
+                    case 'success':
+                        title = 'Berhasil!';
+                        break;
+                    case 'error':
+                        title = 'Gagal!';
+                        break;
+                    case 'warning':
+                        title = 'Peringatan!';
+                        break;
+                    case 'info':
+                        title = 'Informasi';
+                        break;
+                }
+                showAlert(data.type, data.message, title);
             });
         });
     </script>

@@ -24,7 +24,7 @@ class Checkout extends Component
         if (!$checkout || $checkout !== $token || now()->gt($expires)) {
             $this->dispatch('showAlert', [
                 'type' => 'error',
-                'message' => 'Link checkout tidak valid atau sudah kadaluarsa'
+                'message' => 'Link checkout sudah tidak valid atau kadaluarsa. Silakan ulangi proses peminjaman.'
             ]);
             return redirect()->route('home');
         }
@@ -74,17 +74,17 @@ class Checkout extends Component
 
             $this->dispatch('showAlert', [
                 'type' => 'success',
-                'message' => 'Peminjaman berhasil diajukan'
+                'message' => 'Peminjaman buku berhasil diajukan! Kami akan segera memproses permintaan Anda.'
             ]);
 
-            return redirect()->route('home');
+            return redirect()->route('my-loans');
 
         } catch (\Exception $e) {
             DB::rollBack();
             
             $this->dispatch('showAlert', [
                 'type' => 'error',
-                'message' => 'Terjadi kesalahan saat memproses peminjaman'
+                'message' => 'Maaf, terjadi kesalahan saat memproses peminjaman. Silakan coba lagi.'
             ]);
 
             return redirect()->route('home');

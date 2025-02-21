@@ -116,22 +116,20 @@ class AuthModals extends Component
 
             $this->dispatch('showAlert', [
                 'type' => 'success',
-                'message' => 'Login berhasil!'
+                'message' => 'Selamat datang kembali, ' . Auth::user()->name . '!'
             ]);
 
-            // Dispatch event untuk membuka kembali modal detail jika sebelumnya ada
             if (session()->has('checkout_book_id')) {
                 $this->dispatch('showDetailModal', ['bookId' => session('checkout_book_id')]);
             }
 
-            // Check user role and redirect accordingly
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
         } else {
             $this->dispatch('showAlert', [
                 'type' => 'error',
-                'message' => 'Email atau password salah'
+                'message' => 'Email atau password yang Anda masukkan salah.'
             ]);
         }
     }
@@ -156,14 +154,14 @@ class AuthModals extends Component
 
             $this->dispatch('showAlert', [
                 'type' => 'success',
-                'message' => 'Registrasi berhasil!'
+                'message' => 'Selamat datang di PondokBaca, ' . $user->name . '!'
             ]);
 
             return redirect()->route('home');
         } catch (\Exception $e) {
             $this->dispatch('showAlert', [
                 'type' => 'error',
-                'message' => 'Terjadi kesalahan saat registrasi'
+                'message' => 'Maaf, terjadi kesalahan saat mendaftarkan akun Anda.'
             ]);
         }
     }

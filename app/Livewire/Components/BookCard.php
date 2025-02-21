@@ -32,7 +32,7 @@ class BookCard extends Component
             $this->closeModal();
             $this->dispatch('showAlert', [
                 'type' => 'info',
-                'message' => 'Silakan login terlebih dahulu'
+                'message' => 'Anda harus login terlebih dahulu untuk meminjam buku.'
             ]);
             $this->dispatch('open-login-modal');
             return;
@@ -41,7 +41,7 @@ class BookCard extends Component
         if ($this->selectedBook->stok < 1) {
             $this->dispatch('showAlert', [
                 'type' => 'error',
-                'message' => 'Maaf, stok buku tidak tersedia'
+                'message' => 'Maaf, stok buku ini sedang tidak tersedia.'
             ]);
             return;
         }
