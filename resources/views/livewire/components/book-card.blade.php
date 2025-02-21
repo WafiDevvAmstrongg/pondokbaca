@@ -6,50 +6,70 @@
             Semua</a>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         @foreach ($books as $book)
-            <div class="group">
-                <div class="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4">
-                    <img src="{{ Storage::url($book->cover_img) }}" alt="{{ $book->judul }}"
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-
-                    <!-- Overlay with actions -->
-                    <div
-                        class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                        <button
-                            class="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 flex items-center justify-center backdrop-blur-sm transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                        </button>
-                        <button
-                            class="w-10 h-10 rounded-xl bg-white/20 hover:bg-white/30 flex items-center justify-center backdrop-blur-sm transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                        </button>
-                    </div>
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                 wire:click="showDetail({{ $book->id }})">
+                <div class="aspect-[3/4] overflow-hidden">
+                    <img src="{{ Storage::url($book->cover_img) }}" 
+                         alt="{{ $book->judul }}"
+                         class="w-full h-full object-cover">
                 </div>
-
-                <div class="space-y-2">
-                    <h3 class="text-sm font-medium text-gray-900 leading-tight">{{ $book->judul }}</h3>
-                    <p class="text-xs text-gray-600">{{ $book->penulis }}</p>
-                    <div class="flex items-center gap-2">
-                        <div class="rating rating-sm">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <input type="radio" name="rating-{{ $book->id }}"
-                                    class="mask mask-star-2 bg-yellow-400" {{ $i <= $book->rating ? 'checked' : '' }}
-                                    disabled />
-                            @endfor
-                        </div>
-                        <span class="text-sm text-gray-500">{{ number_format($book->rating, 1) }}</span>
-                    </div>
+                <div class="p-4">
+                    <h3 class="font-medium text-gray-900 mb-1">{{ $book->judul }}</h3>
+                    <p class="text-sm text-gray-600">{{ $book->penulis }}</p>
                 </div>
             </div>
         @endforeach
     </div>
+
+    <!-- Detail Modal -->
+    @if($showDetailModal && $selectedBook)
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+        <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex gap-6">
+                    <div class="w-1/3">
+                        <img src="{{ Storage::url($selectedBook->cover_img) }}" 
+                             alt="{{ $selectedBook->judul }}"
+                             class="w-full rounded-lg">
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-semibold mb-2">{{ $selectedBook->judul }}</h2>
+                        <p class="text-gray-600 mb-4">{{ $selectedBook->penulis }}</p>
+                        
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="flex items-center">
+                                <span class="text-yellow-400">★</span>
+                                <span class="ml-1">{{ number_format($selectedBook->ratings_avg_rating, 1) }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-red-400">♥</span>
+                                <span class="ml-1">{{ $selectedBook->suka_count }}</span>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-700 mb-6">{{ $selectedBook->deskripsi }}</p>
+
+                        <div class="space-y-2">
+                            <p class="text-sm text-gray-600">
+                                Stok: <span class="font-medium">{{ $selectedBook->stok }}</span>
+                            </p>
+                            <button wire:click="initiateCheckout" 
+                                    class="btn btn-primary w-full"
+                                    {{ $selectedBook->stok < 1 ? 'disabled' : '' }}>
+                                {{ $selectedBook->stok < 1 ? 'Stok Habis' : 'Pinjam Buku' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 p-4 flex justify-end">
+                <button wire:click="$set('showDetailModal', false)" class="btn btn-ghost">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

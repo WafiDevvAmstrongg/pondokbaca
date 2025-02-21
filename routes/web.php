@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
     // User Loans
     Route::get('/my-loans', \App\Livewire\User\Peminjamans\Index::class)
         ->name('my-loans');
+
+    Route::get('/checkout/{token}', \App\Livewire\User\Checkout::class)
+        ->name('user.checkout');
 });
 
 // Admin Routes

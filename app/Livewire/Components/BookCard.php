@@ -4,12 +4,45 @@ namespace App\Livewire\Components;
 
 use App\Models\Buku;
 use Livewire\Component;
+use Illuminate\Support\Str;
 
 class BookCard extends Component
 {
+    public $showDetailModal = false;
+    public $selectedBook = null;
+    public $checkoutToken = null;
+
+    public function showDetail($bookId)
+    {
+        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+        $this->showDetailModal = true;
+    }
+
+    public function initiateCheckout()
+    {
+        if (!auth()->check()) {
+            $this->dispatch('open-login-modal');
+            return;
+        }
+
+        // Generate token unik untuk checkout
+        $token = Str::random(64);
+        
+        // Simpan token dan data checkout ke session
+        session([
+            'checkout_token' => $token,
+            'checkout_book_id' => $this->selectedBook->id,
+            'checkout_expires_at' => now()->addHour()
+        ]);
+
+        return redirect()->route('user.checkout', ['token' => $token]);
+    }
+
     public function render()
     {
-        $books = Buku::select(['id', 'judul', 'penulis', 'cover_img'])
+        $books = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
+                     ->withAvg('ratings', 'rating')
+                     ->withCount('suka')
                      ->take(5)
                      ->get();
 
