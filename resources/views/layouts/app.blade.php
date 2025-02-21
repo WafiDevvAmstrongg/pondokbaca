@@ -28,6 +28,13 @@
                 position: 'top-end'
             });
         }
+
+        // Global event listener untuk Livewire events
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('showAlert', (data) => {
+                showAlert(data.type, data.message);
+            });
+        });
     </script>
 </body>
 

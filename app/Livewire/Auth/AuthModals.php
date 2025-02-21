@@ -114,6 +114,11 @@ class AuthModals extends Component
             session()->regenerate();
             $this->closeAllModals();
 
+            $this->dispatch('showAlert', [
+                'type' => 'success',
+                'message' => 'Login berhasil!'
+            ]);
+
             // Dispatch event untuk membuka kembali modal detail jika sebelumnya ada
             if (session()->has('checkout_book_id')) {
                 $this->dispatch('showDetailModal', ['bookId' => session('checkout_book_id')]);
@@ -123,9 +128,12 @@ class AuthModals extends Component
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
+        } else {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Email atau password salah'
+            ]);
         }
-
-        $this->addError('email', 'Kredensial yang diberikan tidak cocok dengan data kami.');
     }
 
     // Register method
@@ -133,18 +141,31 @@ class AuthModals extends Component
     {
         $this->validate($this->registerRules());
 
-        $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'username' => $this->username,
-            'password' => Hash::make($this->password),
-            'role' => 'user',
-            'is_active' => true
-        ]);
+        try {
+            $user = User::create([
+                'name' => $this->name,
+                'email' => $this->email,
+                'username' => $this->username,
+                'password' => Hash::make($this->password),
+                'role' => 'user',
+                'is_active' => true
+            ]);
 
-        Auth::login($user);
-        $this->closeAllModals();
-        return redirect()->route('home');
+            Auth::login($user);
+            $this->closeAllModals();
+
+            $this->dispatch('showAlert', [
+                'type' => 'success',
+                'message' => 'Registrasi berhasil!'
+            ]);
+
+            return redirect()->route('home');
+        } catch (\Exception $e) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Terjadi kesalahan saat registrasi'
+            ]);
+        }
     }
 
     public function render()
