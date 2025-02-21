@@ -30,18 +30,20 @@ class BookCard extends Component
     {
         if (!auth()->check()) {
             $this->closeModal();
-            $this->dispatch('showAlert', [
-                'type' => 'info',
-                'message' => 'Anda harus login terlebih dahulu untuk meminjam buku.'
+            $this->dispatch('swal', [
+                'title' => 'Perhatian!',
+                'text' => 'Silakan login terlebih dahulu untuk meminjam buku.',
+                'icon' => 'info'
             ]);
             $this->dispatch('open-login-modal');
             return;
         }
 
         if ($this->selectedBook->stok < 1) {
-            $this->dispatch('showAlert', [
-                'type' => 'error',
-                'message' => 'Maaf, stok buku ini sedang tidak tersedia.'
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Maaf, stok buku sedang tidak tersedia.',
+                'icon' => 'error'
             ]);
             return;
         }

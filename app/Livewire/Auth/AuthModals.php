@@ -114,9 +114,10 @@ class AuthModals extends Component
             session()->regenerate();
             $this->closeAllModals();
 
-            $this->dispatch('showAlert', [
-                'type' => 'success',
-                'message' => 'Selamat datang kembali, ' . Auth::user()->name . '!'
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Selamat datang kembali, ' . Auth::user()->name,
+                'icon' => 'success'
             ]);
 
             if (session()->has('checkout_book_id')) {
@@ -127,9 +128,10 @@ class AuthModals extends Component
                 return redirect()->route('admin.dashboard');
             }
         } else {
-            $this->dispatch('showAlert', [
-                'type' => 'error',
-                'message' => 'Email atau password yang Anda masukkan salah.'
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Email atau password yang Anda masukkan salah.',
+                'icon' => 'error'
             ]);
         }
     }
@@ -152,16 +154,18 @@ class AuthModals extends Component
             Auth::login($user);
             $this->closeAllModals();
 
-            $this->dispatch('showAlert', [
-                'type' => 'success',
-                'message' => 'Selamat datang di PondokBaca, ' . $user->name . '!'
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Selamat datang di PondokBaca, ' . $user->name,
+                'icon' => 'success'
             ]);
 
             return redirect()->route('home');
         } catch (\Exception $e) {
-            $this->dispatch('showAlert', [
-                'type' => 'error',
-                'message' => 'Maaf, terjadi kesalahan saat mendaftarkan akun Anda.'
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Terjadi kesalahan saat mendaftarkan akun.',
+                'icon' => 'error'
             ]);
         }
     }

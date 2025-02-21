@@ -16,40 +16,15 @@
     @livewireScripts
 
     <script>
-        // Global helper function untuk SweetAlert
-        window.showAlert = function(type, message, title = '') {
-            Swal.fire({
-                title: title,
-                text: message,
-                icon: type,
-                showConfirmButton: true,
-                confirmButtonColor: '#1F4B3F',
-                confirmButtonText: 'OK',
-                customClass: {
-                    confirmButton: 'btn btn-primary'
-                }
-            });
-        }
-
-        // Global event listener untuk Livewire events
         document.addEventListener('livewire:initialized', () => {
-            Livewire.on('showAlert', (data) => {
-                let title = '';
-                switch(data.type) {
-                    case 'success':
-                        title = 'Berhasil!';
-                        break;
-                    case 'error':
-                        title = 'Gagal!';
-                        break;
-                    case 'warning':
-                        title = 'Peringatan!';
-                        break;
-                    case 'info':
-                        title = 'Informasi';
-                        break;
-                }
-                showAlert(data.type, data.message, title);
+            Livewire.on('swal', (params) => {
+                Swal.fire({
+                    title: params.title,
+                    text: params.text,
+                    icon: params.icon,
+                    confirmButtonColor: '#1F4B3F',
+                    confirmButtonText: 'OK'
+                });
             });
         });
     </script>

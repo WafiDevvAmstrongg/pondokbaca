@@ -22,9 +22,10 @@ class Checkout extends Component
         $expires = session('checkout_expires_at');
         
         if (!$checkout || $checkout !== $token || now()->gt($expires)) {
-            $this->dispatch('showAlert', [
-                'type' => 'error',
-                'message' => 'Link checkout sudah tidak valid atau kadaluarsa. Silakan ulangi proses peminjaman.'
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Link checkout tidak valid atau sudah kadaluarsa.',
+                'icon' => 'error'
             ]);
             return redirect()->route('home');
         }
@@ -33,9 +34,10 @@ class Checkout extends Component
         $this->book = Buku::find(session('checkout_book_id'));
         
         if (!$this->book) {
-            $this->dispatch('showAlert', [
-                'type' => 'error',
-                'message' => 'Buku tidak ditemukan'
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Buku tidak ditemukan.',
+                'icon' => 'error'
             ]);
             return redirect()->route('home');
         }
@@ -72,9 +74,10 @@ class Checkout extends Component
 
             DB::commit();
 
-            $this->dispatch('showAlert', [
-                'type' => 'success',
-                'message' => 'Peminjaman buku berhasil diajukan! Kami akan segera memproses permintaan Anda.'
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Peminjaman buku berhasil diajukan.',
+                'icon' => 'success'
             ]);
 
             return redirect()->route('my-loans');
@@ -82,9 +85,10 @@ class Checkout extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             
-            $this->dispatch('showAlert', [
-                'type' => 'error',
-                'message' => 'Maaf, terjadi kesalahan saat memproses peminjaman. Silakan coba lagi.'
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Terjadi kesalahan saat memproses peminjaman.',
+                'icon' => 'error'
             ]);
 
             return redirect()->route('home');
