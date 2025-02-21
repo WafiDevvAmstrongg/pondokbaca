@@ -12,15 +12,24 @@ class BookCard extends Component
     public $selectedBook = null;
     public $checkoutToken = null;
 
+    protected $listeners = ['closeDetailModal' => 'closeModal'];
+
     public function showDetail($bookId)
     {
         $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
         $this->showDetailModal = true;
     }
 
+    public function closeModal()
+    {
+        $this->showDetailModal = false;
+        $this->selectedBook = null;
+    }
+
     public function initiateCheckout()
     {
         if (!auth()->check()) {
+            $this->closeModal(); // Tutup modal detail terlebih dahulu
             $this->dispatch('open-login-modal');
             return;
         }

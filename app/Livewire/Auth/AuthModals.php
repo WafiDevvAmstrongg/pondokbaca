@@ -55,13 +55,15 @@ class AuthModals extends Component
     protected function getListeners()
     {
         return [
-            'open-login-modal' => 'showLogin',
+            'open-login-modal' => 'openLoginModal',
             'open-register-modal' => 'showRegister',
             'close-modals' => 'closeAllModals'
         ];
     }
 
-    public function showLogin()
+    protected $listeners = ['open-login-modal' => 'openLoginModal'];
+
+    public function openLoginModal()
     {
         $this->resetValidation();
         $this->reset(['email', 'password', 'remember']);
@@ -101,23 +103,25 @@ class AuthModals extends Component
     }
 
     // Login method
-    // Login method
     public function login()
     {
-        $this->validate($this->loginRules());
+        $this->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-        if (Auth::attempt([
-            'email' => $this->email,
-            'password' => $this->password,
-        ], $this->remember)) {
+        if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
             $this->closeAllModals();
+
+            // Dispatch event untuk membuka kembali modal detail jika sebelumnya ada
+            if (session()->has('checkout_book_id')) {
+                $this->dispatch('showDetailModal', ['bookId' => session('checkout_book_id')]);
+            }
 
             // Check user role and redirect accordingly
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
-            } else {
-                return redirect()->route('home');
             }
         }
 

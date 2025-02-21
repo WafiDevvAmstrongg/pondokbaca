@@ -25,7 +25,7 @@
 
     <!-- Detail Modal -->
     @if($showDetailModal && $selectedBook)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
         <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex gap-6">
@@ -65,11 +65,19 @@
                 </div>
             </div>
             <div class="border-t border-gray-100 p-4 flex justify-end">
-                <button wire:click="$set('showDetailModal', false)" class="btn btn-ghost">
+                <button wire:click="closeModal" class="btn btn-ghost">
                     Tutup
                 </button>
             </div>
         </div>
     </div>
     @endif
+
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('showDetailModal', (data) => {
+                @this.showDetail(data.bookId);
+            });
+        });
+    </script>
 </div>
