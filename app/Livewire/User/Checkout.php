@@ -22,12 +22,24 @@ class Checkout extends Component
         $expires = session('checkout_expires_at');
         
         if (!$checkout || $checkout !== $token || now()->gt($expires)) {
-            return redirect()->route('home')->with('error', 'Link checkout tidak valid atau sudah kadaluarsa');
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Link checkout tidak valid atau sudah kadaluarsa'
+            ]);
+            return redirect()->route('home');
         }
 
         $this->token = $token;
         $this->book = Buku::find(session('checkout_book_id'));
         
+        if (!$this->book) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Buku tidak ditemukan'
+            ]);
+            return redirect()->route('home');
+        }
+
         // Pre-fill alamat dari data user
         $this->alamat_pengiriman = auth()->user()->alamat;
     }
@@ -60,10 +72,22 @@ class Checkout extends Component
 
             DB::commit();
 
-            return redirect()->route('user.peminjamans')->with('success', 'Peminjaman berhasil diajukan');
+            $this->dispatch('showAlert', [
+                'type' => 'success',
+                'message' => 'Peminjaman berhasil diajukan'
+            ]);
+
+            return redirect()->route('my-loans');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('home')->with('error', 'Terjadi kesalahan saat memproses peminjaman');
+            
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Terjadi kesalahan saat memproses peminjaman'
+            ]);
+
+            return redirect()->route('home');
         }
     }
 

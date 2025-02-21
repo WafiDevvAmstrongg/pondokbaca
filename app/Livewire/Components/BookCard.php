@@ -29,8 +29,20 @@ class BookCard extends Component
     public function initiateCheckout()
     {
         if (!auth()->check()) {
-            $this->closeModal(); // Tutup modal detail terlebih dahulu
+            $this->closeModal();
+            $this->dispatch('showAlert', [
+                'type' => 'info',
+                'message' => 'Silakan login terlebih dahulu'
+            ]);
             $this->dispatch('open-login-modal');
+            return;
+        }
+
+        if ($this->selectedBook->stok < 1) {
+            $this->dispatch('showAlert', [
+                'type' => 'error',
+                'message' => 'Maaf, stok buku tidak tersedia'
+            ]);
             return;
         }
 
