@@ -80,7 +80,7 @@ class Checkout extends Component
                 'icon' => 'success'
             ]);
 
-            return redirect()->route('my-loans');
+            return redirect()->route('home');
 
         } catch (\Exception $e) {
             DB::rollBack();
