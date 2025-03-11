@@ -5,10 +5,10 @@
                 <h2 class="text-xl font-semibold text-gray-800">Data Peminjaman</h2>
             </div>
             <div class="mt-4 flex gap-4">
-                <input type="text" wire:model.live="search" placeholder="Search loans..." 
+                <input type="text" wire:model.defer="search" placeholder="Search loans..." 
                        class="input input-bordered w-full max-w-xs" />
                 
-                <select wire:model.live="status" class="select select-bordered">
+                <select wire:model.defer="status" class="select select-bordered">
                     <option value="">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="diproses">Diproses</option>
@@ -64,18 +64,18 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="badge {{ 
-                                    match($loan->status) {
+                                @php
+                                    $statusClasses = [
                                         'pending' => 'badge-warning',
                                         'diproses' => 'badge-info',
                                         'dikirim' => 'badge-primary',
                                         'dipinjam' => 'badge-success',
                                         'terlambat' => 'badge-error',
                                         'dikembalikan' => 'badge-neutral',
-                                        'ditolak' => 'badge-error',
-                                        default => 'badge-ghost'
-                                    }
-                                }}">
+                                        'ditolak' => 'badge-error'
+                                    ];
+                                @endphp
+                                <span class="badge {{ $statusClasses[$loan->status] ?? 'badge-ghost' }}">
                                     {{ $loan->status }}
                                 </span>
                             </td>

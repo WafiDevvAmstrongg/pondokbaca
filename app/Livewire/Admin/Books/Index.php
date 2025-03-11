@@ -96,8 +96,10 @@ class Index extends Component
                 Storage::disk('public')->delete($buku->cover_img);
             }
             $buku->update($data);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'Book updated successfully!']);
         } else {
             Buku::create($data);
+            $this->dispatch('notification', ['type' => 'success', 'message' => 'New book added successfully!']);
         }
 
         $this->showModal = false;
@@ -111,6 +113,7 @@ class Index extends Component
             Storage::disk('public')->delete($buku->cover_img);
         }
         $buku->delete();
+        $this->dispatch('notification', ['type' => 'success', 'message' => 'Book deleted successfully!']);
     }
 
     public function render()
@@ -122,4 +125,4 @@ class Index extends Component
 
         return view('livewire.admin.books.index', compact('books'))->layout('layouts.admin');
     }
-} 
+}

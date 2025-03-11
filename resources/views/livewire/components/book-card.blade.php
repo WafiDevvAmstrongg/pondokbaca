@@ -78,19 +78,6 @@
             Livewire.on('showDetailModal', (data) => {
                 @this.showDetail(data.bookId);
             });
-
-            // Handle SweetAlert events
-            Livewire.on('showAlert', (data) => {
-                Swal.fire({
-                    icon: data.type,
-                    text: data.message,
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    toast: true,
-                    position: 'top-end'
-                });
-            });
         });
     </script>
 </div>

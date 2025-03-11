@@ -59,19 +59,4 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.on('showAlert', (data) => {
-                Swal.fire({
-                    icon: data.type,
-                    text: data.message,
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    toast: true,
-                    position: 'top-end'
-                });
-            });
-        });
-    </script>
 </div> 

@@ -20,10 +20,10 @@ Route::middleware('auth')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    // User Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/admin/dashboard', \App\Livewire\Admin\Dashboard::class)
+    ->middleware('auth')
+    ->name('admin.dashboard');
+
 
     // User Profile
     Route::get('/profile', \App\Livewire\User\Profile\Index::class)
@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout/{token}', \App\Livewire\User\Checkout::class)
         ->name('user.checkout');
 });
-
+   
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')

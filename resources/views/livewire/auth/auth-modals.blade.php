@@ -129,14 +129,6 @@
                                 @enderror
                             </div>
                             
-                            <div class="form-control">
-                                <input type="text" wire:model="username" placeholder="Username" 
-                                    class="input w-full bg-base-200/50 border-0 focus:bg-base-200 focus:ring-1 focus:ring-secondary/30 transition-all" 
-                                    required />
-                                @error('username')
-                                    <span class="text-error text-xs mt-1 italic">{{ $message }}</span>
-                                @enderror
-                            </div>
                             
                             <div class="form-control">
                                 <input type="password" wire:model="password" placeholder="Password" 
@@ -191,19 +183,4 @@
     }
     </style>
 
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.on('showAlert', (data) => {
-                Swal.fire({
-                    icon: data.type,
-                    text: data.message,
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    toast: true,
-                    position: 'top-end'
-                });
-            });
-        });
-    </script>
 </div>

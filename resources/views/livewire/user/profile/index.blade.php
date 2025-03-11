@@ -29,13 +29,6 @@
                         @error('name') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                     </div>
 
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Username</span>
-                        </label>
-                        <input type="text" wire:model="username" class="input input-bordered" required />
-                        @error('username') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
-                    </div>
                 </div>
 
                 <div class="form-control">

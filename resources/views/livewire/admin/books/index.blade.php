@@ -103,8 +103,8 @@
                     <select wire:model="kategori" class="select select-bordered" required>
                         <option value="">Select category</option>
                         <option value="al-quran">Al-Quran</option>
-                        <option value="hadis">Hadis</option>
-                        <option value="fikih">Fikih</option>
+                        <option value="hadist">Hadist</option>
+                        <option value="fiqih">Fiqih</option>
                         <option value="akidah">Akidah</option>
                         <option value="sirah">Sirah</option>
                         <option value="tafsir">Tafsir</option>

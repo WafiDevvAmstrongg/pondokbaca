@@ -15,7 +15,6 @@ class AuthModals extends Component
     // Form properties
     public $name = '';
     public $email = '';
-    public $username = '';
     public $password = '';
     public $password_confirmation = '';
     public $remember = false;
@@ -26,7 +25,6 @@ class AuthModals extends Component
         return [
             'name' => 'required|min:3|max:100',
             'email' => 'required|email|max:100',
-            'username' => 'required|min:3|max:50',
             'password' => 'required|min:8',
         ];
     }
@@ -37,7 +35,6 @@ class AuthModals extends Component
         return [
             'name' => 'required|min:3|max:100',
             'email' => 'required|email|unique:users,email|max:100',
-            'username' => 'required|unique:users,username|min:3|max:50',
             'password' => 'required|min:8|confirmed',
         ];
     }
@@ -74,7 +71,7 @@ class AuthModals extends Component
     public function showRegister()
     {
         $this->resetValidation();
-        $this->reset(['name', 'email', 'username', 'password', 'password_confirmation']);
+        $this->reset(['name', 'email', 'password', 'password_confirmation']);
         $this->showRegisterModal = true;
         $this->showLoginModal = false;
     }
@@ -89,7 +86,7 @@ class AuthModals extends Component
     public function switchToRegister()
     {
         $this->resetValidation();
-        $this->reset(['name', 'email', 'username', 'password', 'password_confirmation']);
+        $this->reset(['name', 'email',  'password', 'password_confirmation']);
         $this->showLoginModal = false;
         $this->showRegisterModal = true;
     }
@@ -145,7 +142,6 @@ class AuthModals extends Component
             $user = User::create([
                 'name' => $this->name,
                 'email' => $this->email,
-                'username' => $this->username,
                 'password' => Hash::make($this->password),
                 'role' => 'user',
                 'is_active' => true

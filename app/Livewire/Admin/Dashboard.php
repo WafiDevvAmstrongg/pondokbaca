@@ -20,15 +20,20 @@ class Dashboard extends Component
                                 ->latest()
                                 ->take(5)
                                 ->get();
-
+    
+        // Optimasi query untuk $loans
+        $loans = Peminjaman::with(['user', 'buku'])->latest()->take(10)->get(); // Ambil 10 data terbaru
+    
         return view('livewire.admin.dashboard', [
             'totalUsers' => $totalUsers,
             'totalBooks' => $totalBooks,
             'totalLoans' => $totalLoans,
             'activeLoans' => $activeLoans,
-            'recentLoans' => $recentLoans
+            'recentLoans' => $recentLoans,
+            'loans' => $loans // Kirim ke view
         ])->layout('layouts.admin', [
             'title' => 'Admin Dashboard'
         ]);
     }
+    
 } 

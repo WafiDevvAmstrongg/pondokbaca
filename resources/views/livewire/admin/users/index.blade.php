@@ -17,7 +17,6 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Username</th>
                             <th>Role</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -37,7 +36,6 @@
                                 </div>
                             </td>
                             <td>{{ $user->email }}</td>
-                            <td>{{ $user->username }}</td>
                             <td>
                                 <span class="badge {{ 
                                     match($user->role) {
@@ -97,13 +95,6 @@
                     @error('email') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="form-control mt-4">
-                    <label class="label">
-                        <span class="label-text">Username</span>
-                    </label>
-                    <input type="text" wire:model="username" class="input input-bordered" required />
-                    @error('username') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
-                </div>
 
                 <div class="form-control mt-4">
                     <label class="label">
