@@ -27,18 +27,33 @@ class Index extends Component
     public $penerbit = '';
     public $tahun_terbit = '';
 
-    protected $rules = [
+protected function rules()
+{
+    $rules = [
         'judul' => 'required|string',
         'penulis' => 'required|string',
-        'isbn' => 'nullable|string|unique:bukus,isbn',
+        'isbn' => 'nullable|string',
         'kategori' => 'required|in:al-quran,hadis,fikih,akidah,sirah,tafsir,tarbiyah,sejarah,buku-anak,novel,lainnya',
         'deskripsi' => 'nullable|string',
         'cover_img' => 'nullable|image|max:1024',
         'stok' => 'required|integer|min:0',
         'denda_harian' => 'required|integer|min:0',
         'penerbit' => 'nullable|string',
-        'tahun_terbit' => 'nullable|string'
+        'tahun_terbit' => 'nullable|integer'
     ];
+
+    // Only add the unique validation for ISBN when creating a new book or changing the ISBN
+    if (!$this->bukuId) {
+        $rules['isbn'] = 'nullable|string|unique:bukus,isbn';
+    } else {
+        $buku = Buku::find($this->bukuId);
+        if ($buku && $this->isbn !== $buku->isbn) {
+            $rules['isbn'] = 'nullable|string|unique:bukus,isbn';
+        }
+    }
+
+    return $rules;
+}
 
     public function updatingSearch()
     {
