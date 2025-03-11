@@ -18,6 +18,9 @@ class AuthModals extends Component
     public $password = '';
     public $password_confirmation = '';
     public $remember = false;
+    
+    // Custom error message
+    public $loginError = '';
 
     // Validation rules
     protected function rules()
@@ -48,6 +51,17 @@ class AuthModals extends Component
         ];
     }
 
+    // Custom validation messages
+    protected function messages()
+    {
+        return [
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+            'password.required' => 'Password harus diisi',
+            'password.min' => 'Password minimal 8 karakter',
+        ];
+    }
+
     // Livewire v3 listeners
     protected function getListeners()
     {
@@ -63,7 +77,7 @@ class AuthModals extends Component
     public function openLoginModal()
     {
         $this->resetValidation();
-        $this->reset(['email', 'password', 'remember']);
+        $this->reset(['email', 'password', 'remember', 'loginError']);
         $this->showLoginModal = true;
         $this->showRegisterModal = false;
     }
@@ -71,7 +85,7 @@ class AuthModals extends Component
     public function showRegister()
     {
         $this->resetValidation();
-        $this->reset(['name', 'email', 'password', 'password_confirmation']);
+        $this->reset(['name', 'email', 'password', 'password_confirmation', 'loginError']);
         $this->showRegisterModal = true;
         $this->showLoginModal = false;
     }
@@ -81,12 +95,13 @@ class AuthModals extends Component
         $this->showLoginModal = false;
         $this->showRegisterModal = false;
         $this->resetValidation();
+        $this->reset(['loginError']);
     }
 
     public function switchToRegister()
     {
         $this->resetValidation();
-        $this->reset(['name', 'email',  'password', 'password_confirmation']);
+        $this->reset(['name', 'email', 'password', 'password_confirmation', 'loginError']);
         $this->showLoginModal = false;
         $this->showRegisterModal = true;
     }
@@ -94,7 +109,7 @@ class AuthModals extends Component
     public function switchToLogin()
     {
         $this->resetValidation();
-        $this->reset(['email', 'password', 'remember']);
+        $this->reset(['email', 'password', 'remember', 'loginError']);
         $this->showRegisterModal = false;
         $this->showLoginModal = true;
     }
@@ -102,11 +117,21 @@ class AuthModals extends Component
     // Login method
     public function login()
     {
-        $this->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        // Reset any previous login error
+        $this->loginError = '';
+        
+        // Validate using the loginRules method
+        $this->validate($this->loginRules(), $this->messages());
 
+        // Check if the user exists first
+        $user = User::where('email', $this->email)->first();
+        
+        if (!$user) {
+            $this->loginError = 'Email tidak terdaftar';
+            return;
+        }
+
+        // Check if the credentials are valid
         if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
             $this->closeAllModals();
@@ -125,18 +150,21 @@ class AuthModals extends Component
                 return redirect()->route('admin.dashboard');
             }
         } else {
-            $this->dispatch('swal', [
-                'title' => 'Gagal!',
-                'text' => 'Email atau password yang Anda masukkan salah.',
-                'icon' => 'error'
-            ]);
+            // Password is incorrect
+            $this->loginError = 'Password yang Anda masukkan salah';
+            
+            // Clear the password field for security
+            $this->password = '';
+            
+            // Log failed attempt if needed
+            // activity()->log('Failed login attempt for email: ' . $this->email);
         }
     }
 
     // Register method
     public function register()
     {
-        $this->validate($this->registerRules());
+        $this->validate($this->registerRules(), $this->messages());
 
         try {
             $user = User::create([

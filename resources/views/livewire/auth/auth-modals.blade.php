@@ -22,6 +22,18 @@
                         <div class="w-12 h-0.5 bg-primary mx-auto opacity-70"></div>
                     </div>
                     
+                    <!-- Custom Login Error Message -->
+                    @if($loginError)
+                        <div class="alert alert-error mb-4 py-2 text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>{{ $loginError }}</span>
+                        </div>
+                    @endif
+                    
                     <form wire:submit="login" class="space-y-6">
                         <div class="space-y-4">
                             <div class="form-control">
@@ -182,5 +194,4 @@
         to { opacity: 1; transform: translateY(0); }
     }
     </style>
-
 </div>
