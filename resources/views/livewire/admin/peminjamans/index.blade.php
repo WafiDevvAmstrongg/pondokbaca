@@ -25,13 +25,13 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Book</th>
+                            <th>Peminjam</th>
+                            <th>Buku</th>
                             <th>Status</th>
-                            <th>Peminjaman Date</th>
-                            <th>Return Date</th>
-                            <th>Fine</th>
-                            <th>Actions</th>
+                            <th>Tanggal Peminjaman</th>
+                            <th>Tangal Pengembalian</th>
+                            <th>Denda</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,9 +40,9 @@
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-lg overflow-hidden">
-                                        <img src="{{ $loan->user->profile_img ?? 'https://ui-avatars.com/api/?name='.$loan->user->name }}" 
-                                             alt="{{ $loan->user->name }}" 
-                                             class="w-full h-full object-cover">
+                                        <img src="{{ $loan->user->profile_img ? Storage::url('profiles/' . $loan->user->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=random' }}"
+                                        alt="{{ $loan->user->name }}" 
+                                        class="w-full h-full object-cover">
                                     </div>
                                     <div>
                                         <p class="font-medium text-sm">{{ $loan->user->name }}</p>
