@@ -19,7 +19,7 @@
 
                 <!-- Navigation -->
                 <nav class="space-y-1">
-                    <a href="#"
+                    <a href="/"
                         class="flex items-center gap-3 px-4 py-3 bg-[#1F4B3F] hover:bg-[#2A6554] text-white      rounded-xl">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">

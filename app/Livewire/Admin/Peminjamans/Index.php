@@ -41,12 +41,12 @@ class Index extends Component
                             ->latest()
                             ->paginate(10); // Pastikan paginate() digunakan
     
-        return view('livewire.admin.dashboard', [
+        return view('livewire.admin.peminjamans.index', [
             'totalUsers' => $totalUsers,
             'totalBooks' => $totalBooks,
             'totalLoans' => $totalLoans,
             'activeLoans' => $activeLoans,
-            'loans' => $loans // Kirim ke view
+            'loans' => $loans
         ])->layout('layouts.admin', [
             'title' => 'Admin Dashboard',
         ]);
