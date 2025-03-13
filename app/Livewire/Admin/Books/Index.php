@@ -20,40 +20,43 @@ class Index extends Component
     public $isbn = '';
     public $kategori = '';
     public $deskripsi = '';
-    public $cover_img;
-    public $temp_cover_img;
+    public $cover_img = null;
+    public $temp_cover_img = null;
     public $stok = 0;
     public $denda_harian = 0;
     public $penerbit = '';
     public $tahun_terbit = '';
 
-protected function rules()
-{
-    $rules = [
-        'judul' => 'required|string',
-        'penulis' => 'required|string',
-        'isbn' => 'nullable|string',
-        'kategori' => 'required|in:al-quran,hadis,fikih,akidah,sirah,tafsir,tarbiyah,sejarah,buku-anak,novel,lainnya',
-        'deskripsi' => 'nullable|string',
-        'cover_img' => 'nullable|image|max:1024',
-        'stok' => 'required|integer|min:0',
-        'denda_harian' => 'required|integer|min:0',
-        'penerbit' => 'nullable|string',
-        'tahun_terbit' => 'nullable|integer'
-    ];
+    // Protect properties from unintended Livewire resets
+    protected $listeners = ['refreshBooks' => '$refresh'];
 
-    // Only add the unique validation for ISBN when creating a new book or changing the ISBN
-    if (!$this->bukuId) {
-        $rules['isbn'] = 'nullable|string|unique:bukus,isbn';
-    } else {
-        $buku = Buku::find($this->bukuId);
-        if ($buku && $this->isbn !== $buku->isbn) {
+    protected function rules()
+    {
+        $rules = [
+            'judul' => 'required|string',
+            'penulis' => 'required|string',
+            'isbn' => 'nullable|string',
+            'kategori' => 'required|in:al-quran,hadis,fikih,akidah,sirah,tafsir,tarbiyah,sejarah,buku-anak,novel,lainnya',
+            'deskripsi' => 'nullable|string',
+            'cover_img' => 'nullable|image|max:1024',
+            'stok' => 'required|integer|min:0',
+            'denda_harian' => 'required|integer|min:0',
+            'penerbit' => 'nullable|string',
+            'tahun_terbit' => 'nullable|integer'
+        ];
+
+        // Only add the unique validation for ISBN when creating a new book or changing the ISBN
+        if (!$this->bukuId) {
             $rules['isbn'] = 'nullable|string|unique:bukus,isbn';
+        } else {
+            $buku = Buku::find($this->bukuId);
+            if ($buku && $this->isbn !== $buku->isbn) {
+                $rules['isbn'] = 'nullable|string|unique:bukus,isbn';
+            }
         }
-    }
 
-    return $rules;
-}
+        return $rules;
+    }
 
     public function updatingSearch()
     {
@@ -62,6 +65,7 @@ protected function rules()
 
     public function create()
     {
+        // Reset semua field saat membuat buku baru
         $this->reset(['bukuId', 'judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
                      'cover_img', 'temp_cover_img', 'stok', 'denda_harian', 'penerbit', 'tahun_terbit']);
         $this->showModal = true;
@@ -69,8 +73,13 @@ protected function rules()
 
     public function edit($bukuId)
     {
+        $this->resetValidation();
+        $this->reset(['cover_img']); // Reset cover_img agar tidak terjadi validasi error
+        
+        $buku = Buku::findOrFail($bukuId);
+        
+        // Set property values directly
         $this->bukuId = $bukuId;
-        $buku = Buku::find($bukuId);
         $this->judul = $buku->judul;
         $this->penulis = $buku->penulis;
         $this->isbn = $buku->isbn;
@@ -81,6 +90,10 @@ protected function rules()
         $this->denda_harian = $buku->denda_harian;
         $this->penerbit = $buku->penerbit;
         $this->tahun_terbit = $buku->tahun_terbit;
+        
+        // Force Livewire to recognize the data update
+        $this->dispatch('propertyUpdated');
+        
         $this->showModal = true;
     }
 
@@ -111,12 +124,15 @@ protected function rules()
                 Storage::disk('public')->delete($buku->cover_img);
             }
             $buku->update($data);
+            session()->flash('message', 'Buku berhasil diperbarui.');
         } else {
             Buku::create($data);
+            session()->flash('message', 'Buku berhasil ditambahkan.');
         }
 
         $this->showModal = false;
-        $this->reset();
+        $this->reset(['judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
+                     'cover_img', 'temp_cover_img', 'stok', 'denda_harian', 'penerbit', 'tahun_terbit', 'bukuId']);
     }
 
     public function delete($bukuId)
@@ -126,6 +142,7 @@ protected function rules()
             Storage::disk('public')->delete($buku->cover_img);
         }
         $buku->delete();
+        session()->flash('message', 'Buku berhasil dihapus.');
     }
 
     public function render()
