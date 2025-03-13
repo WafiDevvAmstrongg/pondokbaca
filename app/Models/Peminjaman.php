@@ -54,10 +54,6 @@ class Peminjaman extends Model
         return $this->belongsTo(Buku::class, 'id_buku');
     }
 
-    public function notifikasi()
-    {
-        return $this->hasMany(Notifikasi::class, 'id_peminjaman');
-    }
 
     public function isDue()
     {

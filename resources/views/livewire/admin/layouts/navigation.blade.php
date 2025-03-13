@@ -22,7 +22,6 @@
                 </label>
                 <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-xl w-52 mt-2">
                     <li><a class="rounded-lg">Profile</a></li>
-                    <li><a class="rounded-lg">Settings</a></li>
                     <li>
                         <button wire:click="logout" class="rounded-lg text-error w-full text-left">Logout</button>
                     </li>                            

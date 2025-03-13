@@ -111,10 +111,8 @@ protected function rules()
                 Storage::disk('public')->delete($buku->cover_img);
             }
             $buku->update($data);
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'Book updated successfully!']);
         } else {
             Buku::create($data);
-            $this->dispatch('notification', ['type' => 'success', 'message' => 'New book added successfully!']);
         }
 
         $this->showModal = false;
@@ -128,7 +126,6 @@ protected function rules()
             Storage::disk('public')->delete($buku->cover_img);
         }
         $buku->delete();
-        $this->dispatch('notification', ['type' => 'success', 'message' => 'Book deleted successfully!']);
     }
 
     public function render()

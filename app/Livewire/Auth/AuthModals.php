@@ -149,15 +149,13 @@ class AuthModals extends Component
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
+            return redirect()->route('home');
         } else {
             // Password is incorrect
             $this->loginError = 'Password yang Anda masukkan salah';
             
             // Clear the password field for security
             $this->password = '';
-            
-            // Log failed attempt if needed
-            // activity()->log('Failed login attempt for email: ' . $this->email);
         }
     }
 
