@@ -10,6 +10,13 @@
                        class="input input-bordered w-full max-w-xs" />
             </div>
         </div>
+        
+        @if (session()->has('message'))
+            <div class="alert alert-success m-4">
+                {{ session('message') }}
+            </div>
+        @endif
+        
         <div class="p-6">
             <div class="overflow-x-auto">
                 <table class="table">
@@ -23,7 +30,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($users as $user)
+                        @forelse($users as $user)
                         <tr>
                             <td>
                                 <div class="flex items-center gap-3">
@@ -64,7 +71,11 @@
                                 </button>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4">Tidak ada user yang ditemukan</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -74,60 +85,78 @@
         </div>
     </div>
 
-    <!-- Modal Form -->
+    <!-- Modal Form with Good UI and Good Functionality -->
+    @if($showModal)
     <dialog class="modal" {{ $showModal ? 'open' : '' }}>
         <div class="modal-box">
-            <h3 class="font-bold text-lg mb-4">{{ $userId ? 'Edit User' : 'Tambah User' }}</h3>
+            <h3 class="font-bold text-lg mb-4">{{ $userId ? 'Edit User: ' . $name : 'Tambah User Baru' }}</h3>
             <form wire:submit.prevent="save">
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Nama</span>
                     </label>
-                    <input type="text" wire:model="name" class="input input-bordered" required />
-                    @error('name') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                    <input type="text" wire:model.defer="name" class="input input-bordered" required />
+                    @error('name')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-control mt-4">
                     <label class="label">
                         <span class="label-text">Email</span>
                     </label>
-                    <input type="email" wire:model="email" class="input input-bordered" required />
-                    @error('email') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                    <input type="email" wire:model.defer="email" class="input input-bordered" required />
+                    @error('email')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
-
 
                 <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Password {{ $userId ? '(Leave blank to keep current)' : '' }}</span>
+                        <span class="label-text">Password {{ $userId ? '(Biarkan kosong jika tidak diubah)' : '' }}</span>
                     </label>
-                    <input type="password" wire:model="password" class="input input-bordered" {{ $userId ? '' : 'required' }} />
-                    @error('password') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                    <input type="password" wire:model.defer="password" class="input input-bordered" {{ $userId ? '' : 'required' }} />
+                    @error('password')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-control mt-4">
                     <label class="label">
                         <span class="label-text">Role</span>
                     </label>
-                    <select wire:model="role" class="select select-bordered" required>
+                    <select wire:model.defer="role" class="select select-bordered" required>
                         <option value="user">User</option>
                         <option value="staff">Staff</option>
                         <option value="admin">Admin</option>
                     </select>
-                    @error('role') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                    @error('role')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-control mt-4">
                     <label class="label cursor-pointer">
                         <span class="label-text">Active</span>
-                        <input type="checkbox" wire:model="is_active" class="toggle" />
+                        <input type="checkbox" wire:model.defer="is_active" class="toggle" />
                     </label>
                 </div>
 
                 <div class="modal-action">
                     <button type="submit" class="btn btn-primary">Simpan</button>
-                    <button type="button" class="btn" wire:click="$toggle('showModal')">Cancel</button>
+                    <button type="button" class="btn" wire:click="$set('showModal', false)">Batal</button>
                 </div>
             </form>
         </div>
     </dialog>
-</div> 
+    @endif
+
+    <script>
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('propertyUpdated', () => {
+            // Tambahan untuk debugging
+            console.log('User properties telah diperbarui');
+        });
+    });
+    </script>
+</div>

@@ -19,13 +19,35 @@ class Index extends Component
     public $password = '';
     public $role = 'user';
     public $is_active = true;
+    
+    // Add this listener to refresh the component when needed
+    protected $listeners = ['refreshUsers' => '$refresh'];
 
-    protected $rules = [
-        'name' => 'required|min:3|max:100',
-        'email' => 'required|email|max:100',
-        'role' => 'required|in:user,staff,admin',
-        'is_active' => 'boolean'
-    ];
+    protected function rules()
+    {
+        $rules = [
+            'name' => 'required|min:3|max:100',
+            'email' => 'required|email|max:100',
+            'role' => 'required|in:user,staff,admin',
+            'is_active' => 'boolean'
+        ];
+        
+        // Only add unique validation for email when creating or changing email
+        if (!$this->userId) {
+            $rules['email'] = 'required|email|max:100|unique:users,email';
+            $rules['password'] = 'required|min:8';
+        } else {
+            $user = User::find($this->userId);
+            if ($user && $this->email !== $user->email) {
+                $rules['email'] = 'required|email|max:100|unique:users,email';
+            }
+            if ($this->password) {
+                $rules['password'] = 'min:8';
+            }
+        }
+        
+        return $rules;
+    }
 
     public function updatingSearch()
     {
@@ -34,18 +56,28 @@ class Index extends Component
 
     public function create()
     {
+        // Reset all fields when creating a new user
         $this->reset(['userId', 'name', 'email', 'password', 'role', 'is_active']);
         $this->showModal = true;
     }
 
     public function edit($userId)
     {
+        $this->resetValidation();
+        
+        $user = User::findOrFail($userId);
+        
+        // Set property values directly
         $this->userId = $userId;
-        $user = User::find($userId);
         $this->name = $user->name;
         $this->email = $user->email;
         $this->role = $user->role;
         $this->is_active = $user->is_active;
+        $this->password = ''; // Reset password field
+        
+        // Force Livewire to recognize the data update
+        $this->dispatch('propertyUpdated');
+        
         $this->showModal = true;
     }
 
@@ -53,36 +85,28 @@ class Index extends Component
     {
         $this->validate();
 
+        $data = [
+            'name' => $this->name,
+            'email' => $this->email,
+            'role' => $this->role,
+            'is_active' => $this->is_active,
+        ];
+
+        if ($this->password) {
+            $data['password'] = Hash::make($this->password);
+        }
+
         if ($this->userId) {
             $user = User::find($this->userId);
-            $user->update([
-                'name' => $this->name,
-                'email' => $this->email,
-                'role' => $this->role,
-                'is_active' => $this->is_active,
-            ]);
-
-            if ($this->password) {
-                $user->update(['password' => Hash::make($this->password)]);
-            }
+            $user->update($data);
+            session()->flash('message', 'User berhasil diperbarui.');
         } else {
-            $this->validate([
-                'password' => 'required|min:8',
-                'email' => 'unique:users,email',
-                
-            ]);
-
-            User::create([
-                'name' => $this->name,
-                'email' => $this->email,
-                'password' => Hash::make($this->password),
-                'role' => $this->role,
-                'is_active' => $this->is_active,
-            ]);
+            User::create($data);
+            session()->flash('message', 'User berhasil ditambahkan.');
         }
 
         $this->showModal = false;
-        $this->reset(['userId', 'name', 'email',  'password', 'role', 'is_active']);
+        $this->reset(['userId', 'name', 'email', 'password', 'role', 'is_active']);
     }
 
     public function toggleActive($userId)
@@ -97,6 +121,6 @@ class Index extends Component
                     ->orWhere('email', 'like', '%'.$this->search.'%')
                     ->paginate(10);
 
-        return view('livewire.admin.users.index', compact('users'))->layout('layouts.admin');;
+        return view('livewire.admin.users.index', compact('users'))->layout('layouts.admin');
     }
-} 
+}
