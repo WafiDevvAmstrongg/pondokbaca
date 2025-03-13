@@ -5,7 +5,7 @@
                 <h2 class="text-xl font-semibold text-gray-800">Data Peminjaman</h2>
             </div>
             <div class="mt-4 flex gap-4">
-                <input type="text" wire:model.defer="search" placeholder="Search loans..." 
+                <input type="text" wire:model.defer="search" placeholder="Cari peminjaman..." 
                        class="input input-bordered w-full max-w-xs" />
                 
                 <select wire:model.defer="status" class="select select-bordered">

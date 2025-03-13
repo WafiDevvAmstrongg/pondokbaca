@@ -2,11 +2,11 @@
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800">Books Management</h2>
-                <button wire:click="create" class="btn btn-primary">Add Book</button>
+                <h2 class="text-xl font-semibold text-gray-800">Data Buku</h2>
+                <button wire:click="create" class="btn btn-primary">Tambah Buku</button>
             </div>
             <div class="mt-4">
-                <input type="text" wire:model.live="search" placeholder="Search books..." 
+                <input type="text" wire:model.live="search" placeholder="Cari buku..." 
                        class="input input-bordered w-full max-w-xs" />
             </div>
         </div>
@@ -16,11 +16,11 @@
                     <thead>
                         <tr>
                             <th>Cover</th>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Category</th>
-                            <th>Stock</th>
-                            <th>Actions</th>
+                            <th>Judul</th>
+                            <th>Penulis</th>
+                            <th>Kategori</th>
+                            <th>Stok</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,7 +74,7 @@
             <form wire:submit.prevent="save">
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text">Title</span>
+                        <span class="label-text">Judul</span>
                     </label>
                     <input type="text" wire:model="judul" class="input input-bordered" required />
                     @error('judul') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -82,7 +82,7 @@
 
                 <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Author</span>
+                        <span class="label-text">Penulis</span>
                     </label>
                     <input type="text" wire:model="penulis" class="input input-bordered" required />
                     @error('penulis') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -98,10 +98,10 @@
 
                 <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Category</span>
+                        <span class="label-text">Kategori</span>
                     </label>
                     <select wire:model="kategori" class="select select-bordered" required>
-                        <option value="">Select category</option>
+                        <option value="">Pilih kategori</option>
                         <option value="al-quran">Al-Quran</option>
                         <option value="hadist">Hadist</option>
                         <option value="fiqih">Fiqih</option>
@@ -119,7 +119,7 @@
 
                 <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Description</span>
+                        <span class="label-text">Deskripsi</span>
                     </label>
                     <textarea wire:model="deskripsi" class="textarea textarea-bordered" rows="3"></textarea>
                     @error('deskripsi') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -127,7 +127,7 @@
 
                 <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Cover Image</span>
+                        <span class="label-text">Cover Buku</span>
                     </label>
                     <input type="file" wire:model="cover_img" class="file-input file-input-bordered" accept="image/*" />
                     @error('cover_img') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -142,7 +142,7 @@
                 <div class="grid grid-cols-2 gap-4 mt-4">
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text">Stock</span>
+                            <span class="label-text">Stok</span>
                         </label>
                         <input type="number" wire:model="stok" class="input input-bordered" required min="0" />
                         @error('stok') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -150,7 +150,7 @@
 
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text">Daily Fine</span>
+                            <span class="label-text">Denda Harian</span>
                         </label>
                         <input type="number" wire:model="denda_harian" class="input input-bordered" required min="0" />
                         @error('denda_harian') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -160,7 +160,7 @@
                 <div class="grid grid-cols-2 gap-4 mt-4">
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text">Publisher</span>
+                            <span class="label-text">Penerbit</span>
                         </label>
                         <input type="text" wire:model="penerbit" class="input input-bordered" />
                         @error('penerbit') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -168,7 +168,7 @@
 
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text">Publication Year</span>
+                            <span class="label-text">Tahun Terbit</span>
                         </label>
                         <input type="text" wire:model="tahun_terbit" class="input input-bordered" />
                         @error('tahun_terbit') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -176,7 +176,7 @@
                 </div>
 
                 <div class="modal-action">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                     <button type="button" class="btn" wire:click="$toggle('showModal')">Cancel</button>
                 </div>
             </form>

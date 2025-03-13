@@ -2,11 +2,11 @@
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800">Users Management</h2>
-                <button wire:click="create" class="btn btn-primary">Add User</button>
+                <h2 class="text-xl font-semibold text-gray-800">Data User</h2>
+                <button wire:click="create" class="btn btn-primary">Tambah User</button>
             </div>
             <div class="mt-4">
-                <input type="text" wire:model.live="search" placeholder="Search users..." 
+                <input type="text" wire:model.live="search" placeholder="Cari users..." 
                        class="input input-bordered w-full max-w-xs" />
             </div>
         </div>
@@ -15,11 +15,11 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Nama</th>
                             <th>Email</th>
                             <th>Role</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -28,7 +28,7 @@
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl overflow-hidden">
-                                        <img src="{{ $user->profile_img ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
+                                        <img src="{{ $user->profile_img ? Storage::url('profiles/' . $user->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=random' }}"
                                              alt="{{ $user->name }}" 
                                              class="w-full h-full object-cover">
                                     </div>
@@ -77,11 +77,11 @@
     <!-- Modal Form -->
     <dialog class="modal" {{ $showModal ? 'open' : '' }}>
         <div class="modal-box">
-            <h3 class="font-bold text-lg mb-4">{{ $userId ? 'Edit User' : 'Add New User' }}</h3>
+            <h3 class="font-bold text-lg mb-4">{{ $userId ? 'Edit User' : 'Tambah User' }}</h3>
             <form wire:submit.prevent="save">
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text">Name</span>
+                        <span class="label-text">Nama</span>
                     </label>
                     <input type="text" wire:model="name" class="input input-bordered" required />
                     @error('name') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -124,7 +124,7 @@
                 </div>
 
                 <div class="modal-action">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                     <button type="button" class="btn" wire:click="$toggle('showModal')">Cancel</button>
                 </div>
             </form>
