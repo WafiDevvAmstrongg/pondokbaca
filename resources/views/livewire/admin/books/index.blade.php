@@ -11,10 +11,22 @@
             </div>
         </div>
         
-        @if (session()->has('message'))
-            <div class="alert alert-success m-4">
-                {{ session('message') }}
+        <!-- Success Notification -->
+        @if ($showSuccessNotification)
+        <div id="successNotification" class="bg-green-50 border-l-4 border-green-500 p-4 m-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700">
+                        {{ $notificationMessage }}
+                    </p>
+                </div>
             </div>
+        </div>
         @endif
         
         <div class="p-6">
@@ -79,158 +91,165 @@
         </div>
     </div>
 
-    <!-- Modal Form Yang Fungsionalitas Sudah bagus -->
+    <!-- Modal Form -->
     @if($showModal)
-<!-- Modal Form with Good UI and Good Functionality -->
-<dialog class="modal" {{ $showModal ? 'open' : '' }}>
-    <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">{{ $bukuId ? 'Edit Buku: ' . $judul : 'Tambah Buku Baru' }}</h3>
-        <form wire:submit.prevent="save">
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">Judul</span>
-                </label>
-                <input type="text" wire:model.defer="judul" class="input input-bordered" required />
-                @error('judul')
-                    <span class="text-error text-sm mt-1">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-control mt-4">
-                <label class="label">
-                    <span class="label-text">Penulis</span>
-                </label>
-                <input type="text" wire:model.defer="penulis" class="input input-bordered" required />
-                @error('penulis')
-                    <span class="text-error text-sm mt-1">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-control mt-4">
-                <label class="label">
-                    <span class="label-text">ISBN</span>
-                </label>
-                <input type="text" wire:model.defer="isbn" class="input input-bordered" />
-                @error('isbn')
-                    <span class="text-error text-sm mt-1">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-control mt-4">
-                <label class="label">
-                    <span class="label-text">Kategori</span>
-                </label>
-                <select wire:model.defer="kategori" class="select select-bordered" required>
-                    <option value="">Pilih kategori</option>
-                    <option value="al-quran">Al-Quran</option>
-                    <option value="hadis">Hadis</option>
-                    <option value="fikih">Fikih</option>
-                    <option value="akidah">Akidah</option>
-                    <option value="sirah">Sirah</option>
-                    <option value="tafsir">Tafsir</option>
-                    <option value="tarbiyah">Tarbiyah</option>
-                    <option value="sejarah">Sejarah</option>
-                    <option value="buku-anak">Buku Anak</option>
-                    <option value="novel">Novel</option>
-                    <option value="lainnya">Lainnya</option>
-                </select>
-                @error('kategori')
-                    <span class="text-error text-sm mt-1">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-control mt-4">
-                <label class="label">
-                    <span class="label-text">Deskripsi</span>
-                </label>
-                <textarea wire:model.defer="deskripsi" class="textarea textarea-bordered" rows="3"></textarea>
-                @error('deskripsi')
-                    <span class="text-error text-sm mt-1">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-control mt-4">
-                <label class="label">
-                    <span class="label-text">Cover Buku</span>
-                </label>
-                <input type="file" wire:model="cover_img" class="file-input file-input-bordered"
-                    accept="image/*" />
-                @error('cover_img')
-                    <span class="text-error text-sm mt-1">{{ $message }}</span>
-                @enderror
-
-                <div class="mt-2">
-                    @if ($cover_img)
-                        <img src="{{ $cover_img->temporaryUrl() }}"
-                            class="w-32 h-40 object-cover rounded-lg">
-                    @elseif ($temp_cover_img)
-                        <img src="{{ Storage::url($temp_cover_img) }}"
-                            class="w-32 h-40 object-cover rounded-lg">
-                        <p class="text-sm text-gray-500 mt-1">Cover saat ini. Upload baru untuk mengubah.</p>
-                    @endif
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mt-4">
+    <dialog class="modal" {{ $showModal ? 'open' : '' }}>
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">{{ $bukuId ? 'Edit Buku: ' . $judul : 'Tambah Buku Baru' }}</h3>
+            <form wire:submit.prevent="save">
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text">Stok</span>
+                        <span class="label-text">Judul</span>
                     </label>
-                    <input type="number" wire:model.defer="stok" class="input input-bordered" required
-                        min="0" />
-                    @error('stok')
+                    <input type="text" wire:model.defer="judul" class="input input-bordered" required />
+                    @error('judul')
                         <span class="text-error text-sm mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div class="form-control">
+                <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Denda Harian</span>
+                        <span class="label-text">Penulis</span>
                     </label>
-                    <input type="number" wire:model.defer="denda_harian" class="input input-bordered" required
-                        min="0" />
-                    @error('denda_harian')
-                        <span class="text-error text-sm mt-1">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mt-4">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Penerbit</span>
-                    </label>
-                    <input type="text" wire:model.defer="penerbit" class="input input-bordered" />
-                    @error('penerbit')
+                    <input type="text" wire:model.defer="penulis" class="input input-bordered" required />
+                    @error('penulis')
                         <span class="text-error text-sm mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div class="form-control">
+                <div class="form-control mt-4">
                     <label class="label">
-                        <span class="label-text">Tahun Terbit</span>
+                        <span class="label-text">ISBN</span>
                     </label>
-                    <input type="number" wire:model.defer="tahun_terbit" class="input input-bordered" />
-                    @error('tahun_terbit')
+                    <input type="text" wire:model.defer="isbn" class="input input-bordered" />
+                    @error('isbn')
                         <span class="text-error text-sm mt-1">{{ $message }}</span>
                     @enderror
                 </div>
-            </div>
 
-            <div class="modal-action">
-                <button type="submit" class="btn btn-primary">Simpan</button>
-                <button type="button" class="btn" wire:click="$set('showModal', false)">Batal</button>
-            </div>
-        </form>
-    </div>
-</dialog>
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Kategori</span>
+                    </label>
+                    <select wire:model.defer="kategori" class="select select-bordered" required>
+                        <option value="">Pilih kategori</option>
+                        <option value="al-quran">Al-Quran</option>
+                        <option value="hadis">Hadis</option>
+                        <option value="fikih">Fikih</option>
+                        <option value="akidah">Akidah</option>
+                        <option value="sirah">Sirah</option>
+                        <option value="tafsir">Tafsir</option>
+                        <option value="tarbiyah">Tarbiyah</option>
+                        <option value="sejarah">Sejarah</option>
+                        <option value="buku-anak">Buku Anak</option>
+                        <option value="novel">Novel</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                    @error('kategori')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Deskripsi</span>
+                    </label>
+                    <textarea wire:model.defer="deskripsi" class="textarea textarea-bordered" rows="3"></textarea>
+                    @error('deskripsi')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-control mt-4">
+                    <label class="label">
+                        <span class="label-text">Cover Buku</span>
+                    </label>
+                    <input type="file" wire:model="cover_img" class="file-input file-input-bordered"
+                        accept="image/*" />
+                    @error('cover_img')
+                        <span class="text-error text-sm mt-1">{{ $message }}</span>
+                    @enderror
+
+                    <div class="mt-2">
+                        @if ($cover_img)
+                            <img src="{{ $cover_img->temporaryUrl() }}"
+                                class="w-32 h-40 object-cover rounded-lg">
+                        @elseif ($temp_cover_img)
+                            <img src="{{ Storage::url($temp_cover_img) }}"
+                                class="w-32 h-40 object-cover rounded-lg">
+                            <p class="text-sm text-gray-500 mt-1">Cover saat ini. Upload baru untuk mengubah.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Stok</span>
+                        </label>
+                        <input type="number" wire:model.defer="stok" class="input input-bordered" required
+                            min="0" />
+                        @error('stok')
+                            <span class="text-error text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Denda Harian</span>
+                        </label>
+                        <input type="number" wire:model.defer="denda_harian" class="input input-bordered" required
+                            min="0" />
+                        @error('denda_harian')
+                            <span class="text-error text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Penerbit</span>
+                        </label>
+                        <input type="text" wire:model.defer="penerbit" class="input input-bordered" />
+                        @error('penerbit')
+                            <span class="text-error text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Tahun Terbit</span>
+                        </label>
+                        <input type="number" wire:model.defer="tahun_terbit" class="input input-bordered" />
+                        @error('tahun_terbit')
+                            <span class="text-error text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="button" class="btn" wire:click="$set('showModal', false)">Batal</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
     @endif
 
+    <!-- Scripts for handling notifications -->
     <script>
     document.addEventListener('livewire:initialized', () => {
+        // Property updated event listener (existing code)
         Livewire.on('propertyUpdated', () => {
-            // Tambahan untuk debugging
             console.log('Properti telah diperbarui');
+        });
+        
+        // Auto-hide success notification after 3 seconds
+        Livewire.on('hideSuccessNotification', () => {
+            setTimeout(() => {
+                @this.showSuccessNotification = false;
+            }, 3000);
         });
     });
     </script>

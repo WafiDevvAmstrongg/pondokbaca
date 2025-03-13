@@ -26,6 +26,9 @@ class Index extends Component
     public $denda_harian = 0;
     public $penerbit = '';
     public $tahun_terbit = '';
+    
+    public $showSuccessNotification = false;
+    public $notificationMessage = '';
 
     // Protect properties from unintended Livewire resets
     protected $listeners = ['refreshBooks' => '$refresh'];
@@ -124,11 +127,17 @@ class Index extends Component
                 Storage::disk('public')->delete($buku->cover_img);
             }
             $buku->update($data);
-            session()->flash('message', 'Buku berhasil diperbarui.');
+            $this->notificationMessage = 'Buku berhasil diperbarui!';
         } else {
             Buku::create($data);
-            session()->flash('message', 'Buku berhasil ditambahkan.');
+            $this->notificationMessage = 'Buku berhasil ditambahkan!';
         }
+
+        // Show the notification
+        $this->showSuccessNotification = true;
+        
+        // Dispatch event to auto-hide notification after 3 seconds
+        $this->dispatch('hideSuccessNotification');
 
         $this->showModal = false;
         $this->reset(['judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
@@ -142,7 +151,13 @@ class Index extends Component
             Storage::disk('public')->delete($buku->cover_img);
         }
         $buku->delete();
-        session()->flash('message', 'Buku berhasil dihapus.');
+        
+        // Show deletion notification
+        $this->notificationMessage = 'Buku berhasil dihapus!';
+        $this->showSuccessNotification = true;
+        
+        // Dispatch event to auto-hide notification after 3 seconds
+        $this->dispatch('hideSuccessNotification');
     }
 
     public function render()

@@ -6,6 +6,7 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class Index extends Component
 {
@@ -19,8 +20,10 @@ class Index extends Component
     public $password = '';
     public $role = 'user';
     public $is_active = true;
-    
-    // Add this listener to refresh the component when needed
+
+    public $showSuccessNotification = false;
+    public $notificationMessage = '';
+
     protected $listeners = ['refreshUsers' => '$refresh'];
 
     protected function rules()
@@ -99,14 +102,35 @@ class Index extends Component
         if ($this->userId) {
             $user = User::find($this->userId);
             $user->update($data);
-            session()->flash('message', 'User berhasil diperbarui.');
+             $this->notificationMessage = 'User berhasil diperbarui.';
         } else {
             User::create($data);
-            session()->flash('message', 'User berhasil ditambahkan.');
+            $this->notificationMessage = 'User berhasil ditambahkan.';
         }
+
+        $this->showSuccessNotification = true;
+        
+        // Dispatch event to auto-hide notification after 3 seconds
+        $this->dispatch('hideSuccessNotification');
 
         $this->showModal = false;
         $this->reset(['userId', 'name', 'email', 'password', 'role', 'is_active']);
+    }
+
+    public function delete($userId)
+    {
+        $user = User::find($userId);
+        if ($user->cover_img) {
+            Storage::disk('public')->delete($user->profile_img);
+        }
+        $user->delete();
+        
+        // Show deletion notification
+        $this->notificationMessage = 'User berhasil dihapus!';
+        $this->showSuccessNotification = true;
+        
+        // Dispatch event to auto-hide notification after 3 seconds
+        $this->dispatch('hideSuccessNotification');
     }
 
     public function toggleActive($userId)
