@@ -2,10 +2,11 @@
             <header class="bg-white border-b border-gray-100 sticky top-0 z-10">
                 <div class="flex items-center justify-between px-8 py-4">
                     <!-- Search -->
-                    <div class="w-[480px]">
+                    <div class="w-[480px] relative">
                         <div class="relative">
                             <input type="text" 
-                                   wire:model.live="search" 
+                                   wire:model.live.debounce.500ms="search" 
+                                   wire:keydown.escape="closeDropdown"
                                    placeholder="Cari buku favorit Anda"
                                    class="w-full h-11 pl-11 pr-4 text-sm text-gray-700 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-colors" />
                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -15,6 +16,26 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
+
+                        <!-- Search Results Dropdown -->
+                        @if($showDropdown && count($searchResults) > 0)
+                            <div class="absolute w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                                @foreach($searchResults as $book)
+                                    <button wire:click="showBookDetail({{ $book->id }})"
+                                            class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left">
+                                        <div class="w-12 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                            <img src="{{ Storage::url($book->cover_img) }}" 
+                                                 alt="{{ $book->judul }}"
+                                                 class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-medium text-gray-900 truncate">{{ $book->judul }}</h4>
+                                            <p class="text-sm text-gray-600 truncate">{{ $book->penulis }}</p>
+                                        </div>
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
 
                     <!-- User Menu -->
