@@ -58,3 +58,5 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/loans', \App\Livewire\Admin\Peminjamans\Index::class)
             ->name('loans');
     });
+
+Route::get('/books', \App\Livewire\Home\Books\Index::class)->name('books');

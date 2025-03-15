@@ -30,8 +30,9 @@
                         <span class="font-medium">Beranda</span>
                     </a>
 
-                    <a href="#"
-                        class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-emerald-50/50 rounded-xl transition-colors">
+                    <a href="{{ route('books') }}"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-emerald-50/50 rounded-xl transition-colors 
+                        {{ request()->routeIs('books') ? 'bg-[#1F4B3F] hover:bg-[#2A6554] text-white' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path
