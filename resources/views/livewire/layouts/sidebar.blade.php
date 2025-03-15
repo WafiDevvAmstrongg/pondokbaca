@@ -1,4 +1,3 @@
-
         <aside class="w-72 bg-white/80 backdrop-blur-sm border-r border-emerald-100 fixed h-full">
             <div class="p-6">
                 <!-- Logo -->
@@ -19,8 +18,12 @@
 
                 <!-- Navigation -->
                 <nav class="space-y-1">
-                    <a href="/"
-                        class="flex items-center gap-3 px-4 py-3 bg-[#1F4B3F] hover:bg-[#2A6554] text-white      rounded-xl">
+                    <a href="{{ route('home') }}"
+                        @class([
+                            'flex items-center gap-3 px-4 py-3 rounded-xl transition-colors',
+                            'bg-[#1F4B3F] hover:bg-[#2A6554] text-white' => request()->routeIs('home'),
+                            'text-gray-600 hover:bg-emerald-50/50' => !request()->routeIs('home')
+                        ])>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path
@@ -31,8 +34,11 @@
                     </a>
 
                     <a href="{{ route('books') }}"
-                        class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-emerald-50/50 rounded-xl transition-colors 
-                        {{ request()->routeIs('books') ? 'bg-[#1F4B3F] hover:bg-[#2A6554] text-white' : '' }}">
+                        @class([
+                            'flex items-center gap-3 px-4 py-3 rounded-xl transition-colors',
+                            'bg-[#1F4B3F] hover:bg-[#2A6554] text-white' => request()->routeIs('books'),
+                            'text-gray-600 hover:bg-emerald-50/50' => !request()->routeIs('books')
+                        ])>
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path
