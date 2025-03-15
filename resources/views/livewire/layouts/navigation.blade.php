@@ -75,7 +75,7 @@
                             class="btn bg-[#1F4B3F] hover:bg-[#2A6554] text-white">Masuk</button>
                     @endauth
                 </div>
+                {{-- <!-- Book Detail Modal -->
+                @livewire('components.book-card') --}}
             </header>
 
-            <!-- Book Detail Modal -->
-            @livewire('components.book-card')
