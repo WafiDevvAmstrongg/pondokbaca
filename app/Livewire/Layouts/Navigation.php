@@ -12,6 +12,8 @@ class Navigation extends Component
     public $searchResults = [];
     public $showDropdown = false;
 
+    protected $listeners = ['closeDetailModal' => 'resetSearch'];
+
     public function updatedSearch()
     {
         if (strlen($this->search) < 2) {
@@ -48,7 +50,12 @@ class Navigation extends Component
 
     public function showBookDetail($bookId)
     {
-        $this->dispatch('showDetailModal', ['bookId' => $bookId]);
+        $this->dispatch('showDetailModal', bookId: $bookId);
+        $this->resetSearch();
+    }
+
+    public function resetSearch()
+    {
         $this->search = '';
         $this->searchResults = [];
         $this->showDropdown = false;

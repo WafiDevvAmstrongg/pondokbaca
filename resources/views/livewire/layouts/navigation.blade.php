@@ -2,7 +2,7 @@
             <header class="bg-white border-b border-gray-100 sticky top-0 z-10">
                 <div class="flex items-center justify-between px-8 py-4">
                     <!-- Search -->
-                    <div class="w-[480px] relative">
+                    <div class="w-[480px] relative search-container">
                         <div class="relative">
                             <input type="text" 
                                    wire:model.live.debounce.500ms="search" 
@@ -76,3 +76,6 @@
                     @endauth
                 </div>
             </header>
+
+            <!-- Book Detail Modal -->
+            @livewire('components.book-card')
