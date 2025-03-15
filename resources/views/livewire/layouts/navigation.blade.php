@@ -4,8 +4,10 @@
                     <!-- Search -->
                     <div class="w-[480px]">
                         <div class="relative">
-                            <input type="text" placeholder="Search your favourite books"
-                                class="w-full h-11 pl-11 pr-4 text-sm text-gray-700 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-colors" />
+                            <input type="text" 
+                                   wire:model.live="search" 
+                                   placeholder="Cari buku favorit Anda"
+                                   class="w-full h-11 pl-11 pr-4 text-sm text-gray-700 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-colors" />
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">

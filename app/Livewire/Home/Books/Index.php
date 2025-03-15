@@ -13,14 +13,17 @@ class Index extends Component
     public $selectedCategory = '';
     public $search = '';
     
-    // Reset pagination ketika filter berubah
-    public function updatedSelectedCategory()
+    protected $listeners = ['search-updated' => 'updateSearch'];
+
+    public function updateSearch($search)
     {
+        $this->search = $search;
         $this->resetPage();
     }
-
-    public function updatedSearch()
+    
+    public function selectCategory($category)
     {
+        $this->selectedCategory = $this->selectedCategory === $category ? '' : $category;
         $this->resetPage();
     }
 
@@ -31,12 +34,10 @@ class Index extends Component
             ->withAvg('ratings', 'rating')
             ->withCount('suka');
 
-        // Filter berdasarkan kategori
         if ($this->selectedCategory) {
             $query->where('kategori', $this->selectedCategory);
         }
 
-        // Filter berdasarkan pencarian
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('judul', 'like', '%' . $this->search . '%')

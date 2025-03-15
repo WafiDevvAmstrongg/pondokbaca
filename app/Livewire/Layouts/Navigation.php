@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\Auth;
 
 class Navigation extends Component
 {
+    public $search = '';
+
+    public function updatedSearch()
+    {
+        if (request()->routeIs('books')) {
+            $this->dispatch('search-updated', search: $this->search);
+        }
+    }
+
     public function logout()
     {
         Auth::logout();

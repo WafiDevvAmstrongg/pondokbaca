@@ -4,28 +4,38 @@
         <h1 class="text-2xl font-bold text-gray-900">Daftar Buku</h1>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-xl p-4 shadow-sm">
-        <div class="flex gap-4">
-            <!-- Search -->
-            <div class="flex-1">
-                <input type="text" 
-                       wire:model.live="search" 
-                       placeholder="Cari judul atau penulis..."
-                       class="w-full h-11 px-4 text-sm text-gray-700 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-colors" />
-            </div>
-
-            <!-- Category Filter -->
-            <div class="w-64">
-                <select wire:model.live="selectedCategory"
-                        class="w-full h-11 px-4 text-sm text-gray-700 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-colors">
-                    <option value="">Semua Kategori</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category }}">{{ ucwords(str_replace('-', ' ', $category)) }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
+    <!-- Categories -->
+    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+        @foreach($categories as $category)
+            <button wire:click="selectCategory('{{ $category }}')"
+                    class="relative group overflow-hidden">
+                <div class="aspect-square rounded-xl {{ $selectedCategory === $category ? 'bg-emerald-600' : 'bg-white' }} shadow-sm hover:shadow-md transition-all p-4 flex flex-col items-center justify-center gap-3">
+                    <!-- Icon sesuai kategori -->
+                    <div class="{{ $selectedCategory === $category ? 'text-white' : 'text-emerald-600' }}">
+                        @switch($category)
+                            @case('al-quran')
+                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            @break
+                            @case('hadis')
+                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            @break
+                            <!-- Tambahkan icon untuk kategori lainnya -->
+                            @default
+                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                        @endswitch
+                    </div>
+                    <span class="text-xs font-medium {{ $selectedCategory === $category ? 'text-white' : 'text-gray-700' }} capitalize">
+                        {{ str_replace('-', ' ', $category) }}
+                    </span>
+                </div>
+            </button>
+        @endforeach
     </div>
 
     <!-- Books Grid -->
