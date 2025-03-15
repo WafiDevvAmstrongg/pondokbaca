@@ -11,6 +11,7 @@ class Navigation extends Component
     public $search = '';
     public $searchResults = [];
     public $showDropdown = false;
+    public $isSearching = false;
 
     protected $listeners = ['closeDetailModal' => 'resetSearch'];
 
@@ -26,7 +27,7 @@ class Navigation extends Component
             $this->dispatch('search-updated', search: $this->search);
         }
 
-        // Tunggu 500ms sebelum melakukan pencarian
+        $this->isSearching = true;
         $this->dispatch('search-debounced');
     }
 
@@ -35,6 +36,7 @@ class Navigation extends Component
         if (strlen($this->search) < 2) {
             $this->searchResults = [];
             $this->showDropdown = false;
+            $this->isSearching = false;
             return;
         }
 
@@ -46,6 +48,7 @@ class Navigation extends Component
             ->get();
 
         $this->showDropdown = true;
+        $this->isSearching = false;
     }
 
     public function showBookDetail($bookId)
