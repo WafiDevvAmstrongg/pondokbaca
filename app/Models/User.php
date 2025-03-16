@@ -55,10 +55,6 @@ class User extends Authenticatable
         return $this->hasMany(Peminjaman::class, 'id_staff');
     }
 
-    public function bookmarks() {
-        return $this->hasMany(Bookmark::class, 'id_user');
-    }
-
     public function suka() {
         return $this->hasMany(Suka::class, 'id_user');
     }

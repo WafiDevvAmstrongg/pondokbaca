@@ -36,11 +36,6 @@ class Buku extends Model
         return $this->hasMany(Peminjaman::class, 'id_buku');
     }
 
-    public function bookmarks()
-    {
-        return $this->hasMany(Bookmark::class, 'id_buku');
-    }
-
     public function suka()
     {
         return $this->hasMany(Suka::class, 'id_buku');
