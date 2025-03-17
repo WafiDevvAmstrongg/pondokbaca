@@ -3,49 +3,16 @@
 namespace App\Livewire\Home;
 
 use App\Models\Buku;
-use App\Models\Suka;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Home extends Component
 {
-    public function toggleSuka($bookId)
-    {
-        if (!auth()->check()) {
-            $this->dispatch('open-login-modal');
-            return;
-        }
-
-        $user = auth()->user();
-        $book = Buku::find($bookId);
-
-        if (!$book) {
-            return;
-        }
-
-        $existingSuka = Suka::where('id_user', $user->id)
-                           ->where('id_buku', $bookId)
-                           ->first();
-
-        if ($existingSuka) {
-            $existingSuka->delete();
-        } else {
-            Suka::create([
-                'id_user' => $user->id,
-                'id_buku' => $bookId
-            ]);
-        }
-
-        // Refresh the component to update the suka count
-        $this->dispatch('$refresh');
-    }
-
     public function render()
     {
         // Fetch popular books (most likes)
         $favoriteBooks = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
                              ->withCount('suka')
-                             ->withAvg('ratings', 'rating')
                              ->orderByDesc('suka_count')
                              ->take(5)
                              ->get();
@@ -57,12 +24,24 @@ class Home extends Component
             'bukus.penulis',
             'bukus.cover_img',
             'bukus.deskripsi',
-            'bukus.stok'
+            'bukus.stok',
+            'bukus.kategori',
+            DB::raw('COUNT(ratings.id) as total_ratings'),
+            DB::raw('AVG(ratings.rating) as avg_rating'),
+            DB::raw('(AVG(ratings.rating) * COUNT(ratings.rating) / (COUNT(ratings.rating) + 500)) as adjusted_score')
         ])
-        ->withCount('suka')
-        ->withAvg('ratings', 'rating')
-        ->having('ratings_avg_rating', '>', 0)
-        ->orderByDesc('ratings_avg_rating')
+        ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
+        ->groupBy([
+            'bukus.id',
+            'bukus.judul',
+            'bukus.penulis',
+            'bukus.cover_img',
+            'bukus.deskripsi',
+            'bukus.stok',
+            'bukus.kategori'
+        ])
+        ->having('total_ratings', '>', 0)
+        ->orderByDesc('adjusted_score')
         ->take(5)
         ->get();
         
