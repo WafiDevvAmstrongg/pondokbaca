@@ -144,12 +144,9 @@ class Index extends Component
         $loan = Peminjaman::findOrFail($loanId);
         
         if ($loan->status === 'dikirim') {
-            // Set tanggal kembali rencana (misal: 14 hari dari sekarang)
-            $tglKembaliRencana = Carbon::now()->addDays(14);
-            
             $loan->update([
                 'status' => 'dipinjam',
-                'tgl_kembali_rencana' => $tglKembaliRencana
+                'tgl_peminjaman' => now() // Catat tanggal mulai peminjaman
             ]);
 
             session()->flash('message', 'Status peminjaman berhasil diupdate ke Dipinjam.');
@@ -178,6 +175,27 @@ class Index extends Component
                             ->latest()
                             ->paginate(10); // Pastikan paginate() digunakan
     
+        // Hitung denda untuk setiap peminjaman yang ditampilkan
+        foreach ($loans as $loan) {
+            if (in_array($loan->status, ['dipinjam', 'terlambat']) && $loan->tgl_kembali_rencana) {
+                $today = Carbon::now();
+                $dueDate = Carbon::parse($loan->tgl_kembali_rencana);
+                
+                if ($today->greaterThan($dueDate)) {
+                    $daysLate = $today->diffInDays($dueDate);
+                    $totalDenda = $daysLate * $loan->buku->denda_harian;
+                    
+                    // Update hanya jika total denda berubah
+                    if ($loan->total_denda !== $totalDenda) {
+                        $loan->update([
+                            'status' => 'terlambat',
+                            'total_denda' => $totalDenda
+                        ]);
+                    }
+                }
+            }
+        }
+
         return view('livewire.admin.peminjamans.index', [
             'totalUsers' => $totalUsers,
             'totalBooks' => $totalBooks,
