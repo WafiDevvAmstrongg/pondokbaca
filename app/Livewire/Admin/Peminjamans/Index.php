@@ -9,6 +9,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class Index extends Component
 {
@@ -136,6 +137,24 @@ class Index extends Component
 
         $this->closeRejectModal();
         $this->dispatch('$refresh');
+    }
+
+    public function markAsReceived($loanId)
+    {
+        $loan = Peminjaman::findOrFail($loanId);
+        
+        if ($loan->status === 'dikirim') {
+            // Set tanggal kembali rencana (misal: 14 hari dari sekarang)
+            $tglKembaliRencana = Carbon::now()->addDays(14);
+            
+            $loan->update([
+                'status' => 'dipinjam',
+                'tgl_kembali_rencana' => $tglKembaliRencana
+            ]);
+
+            session()->flash('message', 'Status peminjaman berhasil diupdate ke Dipinjam.');
+            $this->dispatch('$refresh');
+        }
     }
 
     public function render()

@@ -110,6 +110,14 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7M13 3v18m0-18l4 4m-4-4l-4 4" />
                                         </svg>
                                     </button>
+                                @elseif($loan->status === 'dikirim')
+                                    <button wire:click="markAsReceived({{ $loan->id }})" 
+                                            class="btn btn-sm btn-ghost text-success">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Telah Dikirim
+                                    </button>
                                 @else
                                     <button wire:click="showDetail({{ $loan->id }})" class="btn btn-sm btn-ghost">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
