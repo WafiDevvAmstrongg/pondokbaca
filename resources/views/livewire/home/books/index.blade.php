@@ -122,7 +122,4 @@
     <div class="mt-6">
         {{ $books->links() }}
     </div>
-
-    <!-- Book Detail Modal -->
-    @livewire('components.book-card')
 </div>

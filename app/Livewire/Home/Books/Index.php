@@ -25,6 +25,7 @@ class Index extends Component
     {
         $this->selectedCategory = $this->selectedCategory === $category ? '' : $category;
         $this->resetPage();
+        $this->dispatch('refresh-books');
     }
 
     public function render()
