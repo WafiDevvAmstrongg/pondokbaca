@@ -20,15 +20,36 @@
 
             <!-- Form Checkout -->
             <form wire:submit.prevent="checkout" class="space-y-6">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Tanggal Peminjaman</span>
-                    </label>
-                    <input type="date" wire:model="tgl_peminjaman_diinginkan" 
-                           class="input input-bordered" required />
-                    @error('tgl_peminjaman_diinginkan') 
-                        <span class="text-error text-sm mt-1">{{ $message }}</span> 
-                    @enderror
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Tanggal Peminjaman</span>
+                        </label>
+                        <input type="date" 
+                               wire:model="tgl_peminjaman_diinginkan" 
+                               min="{{ date('Y-m-d') }}"
+                               class="input input-bordered" 
+                               required />
+                        @error('tgl_peminjaman_diinginkan') 
+                            <span class="text-error text-sm mt-1">{{ $message }}</span> 
+                        @enderror
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Tanggal Pengembalian</span>
+                        </label>
+                        <input type="date" 
+                               wire:model="tgl_kembali_rencana"
+                               min="{{ $tgl_peminjaman_diinginkan ?? date('Y-m-d') }}"
+                               max="{{ $maxReturnDate }}"
+                               class="input input-bordered" 
+                               required />
+                        @error('tgl_kembali_rencana') 
+                            <span class="text-error text-sm mt-1">{{ $message }}</span> 
+                        @enderror
+                        <span class="text-sm text-gray-500 mt-1">Maksimal 7 hari peminjaman</span>
+                    </div>
                 </div>
 
                 <div class="form-control">
