@@ -23,7 +23,7 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function showRejectModal($loanId)
+    public function openRejectModal($loanId)
     {
         $this->selectedLoanId = $loanId;
         $this->showRejectModal = true;
