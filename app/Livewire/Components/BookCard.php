@@ -12,25 +12,15 @@ class BookCard extends Component
     public $showDetailModal = false;
     public $selectedBook = null;
     public $checkoutToken = null;
-    public $books = null;
+    public $books;
     public $isSukaByUser = false;
-    public $modalOnly = false;
 
-    public function mount($books = null, $modalOnly = false)
+    protected $listeners = ['closeDetailModal' => 'closeModal'];
+
+    public function showDetail($bookId)
     {
-        $this->books = $books;
-        $this->modalOnly = $modalOnly;
-    }
-
-    protected $listeners = [
-        'closeDetailModal' => 'closeModal',
-        'showDetailModal' => 'showDetail'
-    ];
-
-    public function showDetail($data)
-    {
-        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($data['bookId']);
-        $this->isSukaByUser = auth()->check() ? $this->selectedBook->isSukaBy(auth()->id()) : false;
+        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
         $this->showDetailModal = true;
     }
 

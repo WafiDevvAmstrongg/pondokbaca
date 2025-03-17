@@ -202,7 +202,6 @@
             </a>
         </div>
 
-        <!-- Book Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             @foreach ($favoriteBooks as $book)
                 <div class="group relative">
@@ -254,7 +253,6 @@
             </a>
         </div>
 
-        <!-- Book Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             @foreach ($topRatedBooks as $book)
                 <div class="group relative">
@@ -297,8 +295,10 @@
         </div>
     </section>
 
-    <!-- Single Book Detail Modal Component -->
-    @livewire('components.book-card', ['modalOnly' => true])
+    <!-- Include Book Card Component for Detail Modal -->
+    <div>
+        @livewire('components.book-card')
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
