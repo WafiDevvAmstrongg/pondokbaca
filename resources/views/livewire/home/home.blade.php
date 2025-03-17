@@ -230,7 +230,7 @@
                                     <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating, 1) }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
-                                    <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                    <button wire:click.stop="$dispatch('toggle-suka', { bookId: {{ $book->id }} })" 
                                             class="text-base hover:scale-110 transition-transform {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
                                         ♥
                                     </button>
@@ -281,7 +281,7 @@
                                     <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating, 1) }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
-                                    <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                    <button wire:click.stop="$dispatch('toggle-suka', { bookId: {{ $book->id }} })" 
                                             class="text-base hover:scale-110 transition-transform {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
                                         ♥
                                     </button>

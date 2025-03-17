@@ -14,7 +14,10 @@ class BookCard extends Component
     public $checkoutToken = null;
     public $isSukaByUser = false;
 
-    protected $listeners = ['closeDetailModal' => 'closeModal'];
+    protected $listeners = [
+        'closeDetailModal' => 'closeModal',
+        'toggle-suka' => 'toggleSuka'
+    ];
 
     public function showDetail($bookId)
     {
