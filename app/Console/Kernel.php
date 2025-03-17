@@ -12,8 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Jalankan pengecekan setiap hari jam 00:01
-        $schedule->command('loans:check-status')->dailyAt('00:01');
+        // Jalankan tepat jam 00:00 setiap hari
+        $schedule->command('loans:check-status')->dailyAt('00:00');
     }
 
     /**
