@@ -60,4 +60,8 @@ class Buku extends Model
     {
         return $this->stok > 0;
     }
+
+    public function isSukaBy($userId) {
+        return $this->suka()->where('id_user', $userId)->exists();
+    }
 }

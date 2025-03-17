@@ -19,10 +19,11 @@
                                 <span class="text-yellow-400">★</span>
                                 <span class="ml-1">{{ number_format($selectedBook->ratings_avg_rating, 1) }}</span>
                             </div>
-                            <div class="flex items-center">
-                                <span class="text-red-400">♥</span>
-                                <span class="ml-1">{{ $selectedBook->suka_count }}</span>
-                            </div>
+                            <button wire:click="toggleSuka({{ $selectedBook->id }})" 
+                                    class="flex items-center gap-1 transition-colors {{ $isSukaByUser ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
+                                <span class="text-2xl">♥</span>
+                                <span>{{ $selectedBook->suka_count }}</span>
+                            </button>
                         </div>
 
                         <p class="text-gray-700 mb-6">{{ $selectedBook->deskripsi }}</p>

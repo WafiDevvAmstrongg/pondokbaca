@@ -3,6 +3,7 @@
 namespace App\Livewire\Components;
 
 use App\Models\Buku;
+use App\Models\Suka;
 use Livewire\Component;
 use Illuminate\Support\Str;
 
@@ -11,12 +12,14 @@ class BookCard extends Component
     public $showDetailModal = false;
     public $selectedBook = null;
     public $checkoutToken = null;
+    public $isSukaByUser = false;
 
     protected $listeners = ['closeDetailModal' => 'closeModal'];
 
     public function showDetail($bookId)
     {
         $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
         $this->showDetailModal = true;
     }
 
@@ -24,6 +27,53 @@ class BookCard extends Component
     {
         $this->showDetailModal = false;
         $this->selectedBook = null;
+    }
+
+    public function toggleSuka($bookId)
+    {
+        if (!auth()->check()) {
+            $this->dispatch('swal', [
+                'title' => 'Perhatian!',
+                'text' => 'Silakan login terlebih dahulu untuk menyukai buku.',
+                'icon' => 'info'
+            ]);
+            $this->dispatch('open-login-modal');
+            return;
+        }
+
+        $user = auth()->user();
+        $existingSuka = Suka::where('id_user', $user->id)
+                           ->where('id_buku', $bookId)
+                           ->first();
+
+        if ($existingSuka) {
+            $existingSuka->delete();
+            $this->isSukaByUser = false;
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Buku telah dihapus dari daftar suka.',
+                'icon' => 'success'
+            ]);
+        } else {
+            Suka::create([
+                'id_user' => $user->id,
+                'id_buku' => $bookId
+            ]);
+            $this->isSukaByUser = true;
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Buku telah ditambahkan ke daftar suka.',
+                'icon' => 'success'
+            ]);
+        }
+
+        // Refresh book data
+        if ($this->selectedBook && $this->selectedBook->id === $bookId) {
+            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+        }
+
+        // Emit event untuk update tampilan di komponen lain
+        $this->dispatch('book-suka-updated');
     }
 
     public function initiateCheckout()

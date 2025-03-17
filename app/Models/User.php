@@ -59,6 +59,10 @@ class User extends Authenticatable
         return $this->hasMany(Suka::class, 'id_user');
     }
 
+    public function hasSukaBook($bookId) {
+        return $this->suka()->where('id_buku', $bookId)->exists();
+    }
+
     public function ratings() {
         return $this->hasMany(Rating::class, 'id_user');
     }
