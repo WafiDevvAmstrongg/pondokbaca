@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
         ->name('user.checkout');
 
     Route::get('/peminjaman', App\Livewire\User\Peminjamans\Index::class)->name('user.peminjaman');
+
+    Route::get('/pembayaran', App\Livewire\User\Pembayaran\Index::class)->name('user.pembayaran');
 });
    
 // Admin Routes

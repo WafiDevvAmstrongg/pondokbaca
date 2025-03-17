@@ -31,11 +31,41 @@
                             <p class="text-sm text-gray-600">
                                 Stok: <span class="font-medium">{{ $selectedBook->stok }}</span>
                             </p>
-                            <button wire:click="initiateCheckout" 
-                                    class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded w-full transition-colors"
-                                    {{ $selectedBook->stok < 1 ? 'disabled' : '' }}>
-                                {{ $selectedBook->stok < 1 ? 'Stok Habis' : 'Pinjam Buku' }}
-                            </button>
+                            @auth
+                                @php
+                                    $totalDenda = \App\Models\Peminjaman::where('id_user', auth()->id())
+                                        ->where(function($query) {
+                                            $query->where('status', 'terlambat')
+                                                ->orWhere('total_denda', '>', 0);
+                                        })
+                                        ->sum('total_denda');
+                                @endphp
+
+                                @if($totalDenda > 0)
+                                    <div class="alert alert-error">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div>
+                                            <h4 class="font-bold">Anda memiliki denda yang belum dibayar!</h4>
+                                            <p>Total Denda: Rp {{ number_format($totalDenda, 0, ',', '.') }}</p>
+                                            <p class="text-sm">Silahkan lunasi denda terlebih dahulu.</p>
+                                            <a href="{{ route('user.pembayaran') }}" class="btn btn-sm btn-neutral mt-2">Bayar Denda</a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <button wire:click="initiateCheckout" 
+                                            class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded w-full transition-colors"
+                                            {{ $selectedBook->stok < 1 ? 'disabled' : '' }}>
+                                        {{ $selectedBook->stok < 1 ? 'Stok Habis' : 'Pinjam Buku' }}
+                                    </button>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" 
+                                   class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded w-full transition-colors text-center block">
+                                    Login untuk Meminjam
+                                </a>
+                            @endauth
                         </div>
                     </div>
                 </div>

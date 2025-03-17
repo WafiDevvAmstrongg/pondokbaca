@@ -64,7 +64,22 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </label>
-                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-xl w-52 mt-2">
+                                    @php
+                                    $totalDenda = \App\Models\Peminjaman::where('id_user', auth()->id())
+                                        ->where(function($query) {
+                                            $query->where('status', 'terlambat')
+                                                ->orWhere('total_denda', '>', 0);
+                                        })
+                                        ->sum('total_denda');
+                                @endphp
+                                
+                                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                                    @if($totalDenda > 0)
+                                        <div class="p-2 mb-2 text-sm bg-error/10 rounded-lg">
+                                            <p class="text-error font-medium">Denda: Rp {{ number_format($totalDenda, 0, ',', '.') }}</p>
+                                            <a href="{{ route('user.pembayaran') }}" class="btn btn-error btn-sm w-full mt-2">Bayar Denda</a>
+                                        </div>
+                                    @endif
                                         <li><a href="{{ route('profile') }}" class="rounded-lg">Profile</a></li>
                                         <li><a href="{{ route('user.peminjaman') }}">Peminjaman Saya</a></li>
                                         <form action="{{ route('logout') }}" method="POST">

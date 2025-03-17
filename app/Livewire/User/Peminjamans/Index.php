@@ -40,6 +40,6 @@ class Index extends Component
 
         return view('livewire.user.peminjamans.index', [
             'loans' => $loans
-        ])->layout('layouts.app');
+        ])->layout('layouts.user');
     }
 } 
