@@ -1,5 +1,5 @@
 <div>
-    <div class="bg-white rounded-xl shadow-sm">
+    <div wire:poll.5s class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 class="text-xl font-semibold text-gray-800">Data Peminjaman</h2>

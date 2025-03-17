@@ -84,6 +84,9 @@ class Index extends Component
             ]);
 
             session()->flash('message', 'Peminjaman berhasil dikonfirmasi pengirimannya.');
+            
+            // Tambahkan dispatch untuk memaksa re-render
+            $this->dispatch('loan-updated');
         }
 
         $this->closeShipmentModal();
@@ -104,6 +107,9 @@ class Index extends Component
             ]);
 
             session()->flash('message', 'Peminjaman berhasil disetujui.');
+            
+            // Tambahkan dispatch untuk memaksa re-render
+            $this->dispatch('loan-updated');
         }
     }
 
