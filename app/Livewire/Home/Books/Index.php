@@ -13,10 +13,7 @@ class Index extends Component
     public $selectedCategory = '';
     public $search = '';
     
-    protected $listeners = [
-        'search-updated' => 'updateSearch',
-        'refresh-books' => '$refresh'
-    ];
+    protected $listeners = ['search-updated' => 'updateSearch'];
 
     public function updateSearch($search)
     {
