@@ -5,131 +5,136 @@ namespace App\Livewire\User;
 use App\Models\Buku;
 use App\Models\Peminjaman;
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class Checkout extends Component
 {
     public $token;
     public $book;
-    public $tglKembaliRencana;
-    public $showDetailModal = false;
-    public $selectedBook = null;
-    public $checkoutToken = null;
-    public $isSukaByUser = false;
-    public $books = null;
+    public $alamat_pengiriman;
+    public $catatan_pengiriman;
     public $tgl_peminjaman_diinginkan;
-    public $alasan_peminjaman;
-    public $alamat_peminjam;
+    public $tgl_kembali_rencana;
     public $maxReturnDate;
     public $minReturnDate;
 
-    protected $rules = [
-        'tgl_peminjaman_diinginkan' => 'required|date|after:today',
-        'tglKembaliRencana' => 'required|date|after:tgl_peminjaman_diinginkan|before_or_equal:tgl_peminjaman_max',
-        'alasan_peminjaman' => 'required|min:10',
-        'alamat_peminjam' => 'required|min:10',
-    ];
+    protected function rules()
+    {
+        return [
+            'tgl_peminjaman_diinginkan' => 'required|date|after_or_equal:today',
+            'tgl_kembali_rencana' => [
+                'required',
+                'date',
+                'after:tgl_peminjaman_diinginkan',
+                'before_or_equal:maxReturnDate'
+            ],
+            'alamat_pengiriman' => 'required|string|min:10',
+            'catatan_pengiriman' => 'nullable|string'
+        ];
+    }
 
     protected $messages = [
-        'tgl_peminjaman_diinginkan.required' => 'Tanggal peminjaman harus diisi',
-        'tgl_peminjaman_diinginkan.date' => 'Format tanggal tidak valid',
-        'tgl_peminjaman_diinginkan.after' => 'Tanggal peminjaman harus setelah hari ini',
-        'tglKembaliRencana.required' => 'Tanggal pengembalian harus diisi',
-        'tglKembaliRencana.date' => 'Format tanggal tidak valid',
-        'tglKembaliRencana.after' => 'Tanggal pengembalian harus setelah tanggal peminjaman',
-        'tglKembaliRencana.before_or_equal' => 'Maksimal peminjaman adalah 14 hari',
-        'alasan_peminjaman.required' => 'Alasan peminjaman harus diisi',
-        'alasan_peminjaman.min' => 'Alasan peminjaman minimal 10 karakter',
-        'alamat_peminjam.required' => 'Alamat peminjam harus diisi',
-        'alamat_peminjam.min' => 'Alamat peminjam minimal 10 karakter',
+        'tgl_peminjaman_diinginkan.after_or_equal' => 'Tanggal peminjaman tidak boleh kurang dari hari ini',
+        'tgl_kembali_rencana.after' => 'Minimal peminjaman adalah 1 hari',
+        'tgl_kembali_rencana.before_or_equal' => 'Maksimal peminjaman adalah 7 hari',
+        'alamat_pengiriman.required' => 'Alamat pengiriman harus diisi',
+        'alamat_pengiriman.min' => 'Alamat pengiriman terlalu pendek'
     ];
 
-    protected $listeners = [
-        'closeDetailModal' => 'closeModal',
-        'toggle-suka' => 'toggleSuka',
-        'showDetailModal' => 'showModal'
-    ];
+    public function updatedTglPeminjamanDiinginkan($value)
+    {
+        if ($value) {
+            $this->maxReturnDate = Carbon::parse($value)->addDays(7)->format('Y-m-d');
+            $this->minReturnDate = Carbon::parse($value)->addDay()->format('Y-m-d');
+            
+            // Reset tanggal pengembalian jika sudah tidak valid
+            if ($this->tgl_kembali_rencana) {
+                $tglKembali = Carbon::parse($this->tgl_kembali_rencana);
+                if ($tglKembali->lte($value) || $tglKembali->gt($this->maxReturnDate)) {
+                    $this->tgl_kembali_rencana = null;
+                }
+            }
+        }
+    }
 
     public function mount($token)
     {
-        // Set tanggal minimal dan maksimal
-        $this->minReturnDate = now()->addDay()->format('Y-m-d');
-        $this->maxReturnDate = now()->addDays(14)->format('Y-m-d');
-
         // Validasi token
-        if (!session('checkout_token') || 
-            session('checkout_token') !== $token || 
-            now()->isAfter(session('checkout_expires_at'))) {
-            return redirect()->route('books.index');
-        }
-
-        // Ambil buku dari session
-        $this->book = Buku::find(session('checkout_book_id'));
-        if (!$this->book) {
-            return redirect()->route('books.index');
+        $checkout = session('checkout_token');
+        $expires = session('checkout_expires_at');
+        
+        if (!$checkout || $checkout !== $token || now()->gt($expires)) {
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Link checkout tidak valid atau sudah kadaluarsa.',
+                'icon' => 'error'
+            ]);
+            return redirect()->route('home');
         }
 
         $this->token = $token;
+        $this->book = Buku::find(session('checkout_book_id'));
+        
+        if (!$this->book) {
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Buku tidak ditemukan.',
+                'icon' => 'error'
+            ]);
+            return redirect()->route('home');
+        }
+
+        // Pre-fill alamat dari data user
+        $this->alamat_pengiriman = auth()->user()->alamat;
     }
 
     public function checkout()
     {
         $this->validate();
 
-        // Cek stok sekali lagi
-        if ($this->book->stok < 1) {
+        try {
+            DB::beginTransaction();
+
+            Peminjaman::create([
+                'id_user' => auth()->id(),
+                'id_buku' => $this->book->id,
+                'alamat_pengiriman' => $this->alamat_pengiriman,
+                'catatan_pengiriman' => $this->catatan_pengiriman,
+                'tgl_peminjaman_diinginkan' => $this->tgl_peminjaman_diinginkan,
+                'tgl_kembali_rencana' => $this->tgl_kembali_rencana,
+                'status' => 'pending'
+            ]);
+
+            // Kurangi stok buku
+            $this->book->decrement('stok');
+
+            // Hapus data checkout dari session
+            session()->forget(['checkout_token', 'checkout_book_id', 'checkout_expires_at']);
+
+            DB::commit();
+
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Peminjaman buku berhasil diajukan.',
+                'icon' => 'success'
+            ]);
+
+            return redirect()->route('home');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
             $this->dispatch('swal', [
                 'title' => 'Gagal!',
-                'text' => 'Maaf, stok buku sudah tidak tersedia.',
+                'text' => 'Terjadi kesalahan saat memproses peminjaman.',
                 'icon' => 'error'
             ]);
-            return redirect()->route('books.index');
         }
-
-        // Buat peminjaman dengan status pending (tidak mengurangi stok)
-        Peminjaman::create([
-            'id_user' => auth()->id(),
-            'id_buku' => $this->book->id,
-            'tgl_peminjaman' => $this->tgl_peminjaman_diinginkan,
-            'tgl_kembali_rencana' => $this->tglKembaliRencana,
-            'status' => 'pending',
-            'total_denda' => 0,
-            'alasan_peminjaman' => $this->alasan_peminjaman,
-            'alamat_peminjam' => $this->alamat_peminjam
-        ]);
-
-        // Hapus data checkout dari session
-        session()->forget(['checkout_token', 'checkout_book_id', 'checkout_expires_at']);
-
-        $this->dispatch('swal', [
-            'title' => 'Berhasil!',
-            'text' => 'Permintaan peminjaman berhasil dibuat! Silahkan tunggu persetujuan admin.',
-            'icon' => 'success'
-        ]);
-
-        return redirect()->route('user.peminjaman');
-    }
-
-    public function closeModal()
-    {
-        $this->showDetailModal = false;
-        $this->selectedBook = null;
-    }
-
-    public function showModal($bookId)
-    {
-        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
-        $this->showDetailModal = true;
-    }
-
-    public function getTglPeminjamanMaxProperty()
-    {
-        return now()->addDays(14)->format('Y-m-d');
     }
 
     public function render()
     {
-        return view('livewire.user.checkout');
+        return view('livewire.user.checkout')->layout('layouts.user');
     }
 } 
