@@ -51,8 +51,10 @@ class Index extends Component
             });
         }
 
+        $books = $query->paginate(15);
+
         return view('livewire.home.books.index', [
-            'books' => $query->paginate(15),
+            'books' => $books,
             'categories' => Buku::distinct('kategori')->pluck('kategori')
         ])->layout('layouts.user', [
             'title' => 'Daftar Buku - PondokBaca'

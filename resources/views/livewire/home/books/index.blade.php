@@ -1,7 +1,7 @@
 <div>
     <!-- Category Filter -->
     <div class="flex gap-3 overflow-x-auto pb-6 mb-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <button wire:click="$set('selectedCategory', '')"
+        <button wire:click="selectCategory('')"
                 @class([
                     'flex items-center gap-2 px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-colors',
                     'bg-emerald-500 text-white' => $selectedCategory === '',
@@ -17,7 +17,7 @@
             <span>Semua</span>
         </button>
         @foreach($categories as $category)
-            <button wire:click="$set('selectedCategory', '{{ $category }}')"
+            <button wire:click="selectCategory('{{ $category }}')"
                     @class([
                         'flex items-center gap-2 px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-colors',
                         'bg-emerald-500 text-white' => $selectedCategory === $category,
@@ -116,7 +116,9 @@
     </div>
 
     <!-- Books Grid -->
-    @livewire('components.book-card', ['books' => $books->items()])
+    <div wire:key="books-grid-{{ $selectedCategory }}">
+        @livewire('components.book-card', ['books' => $books->items()], key('book-card-' . $selectedCategory))
+    </div>
 
     <!-- Pagination -->
     <div class="mt-6">
