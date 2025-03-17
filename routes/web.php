@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout/{token}', \App\Livewire\User\Checkout::class)
         ->name('user.checkout');
 
-    Route::get('/peminjaman', App\Livewire\User\Peminjaman\Index::class)->name('user.peminjaman');
+    Route::get('/peminjaman', App\Livewire\User\Peminjamans\Index::class)->name('user.peminjaman');
 });
    
 // Admin Routes
