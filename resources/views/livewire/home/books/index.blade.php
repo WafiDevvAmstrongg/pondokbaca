@@ -131,7 +131,4 @@
             {{ $books->links() }}
         </div>
     </div>
-
-    <!-- Book Detail Modal -->
-    @livewire('components.book-card')
 </div>
