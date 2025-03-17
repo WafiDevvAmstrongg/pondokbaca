@@ -224,19 +224,17 @@
                         <div class="p-3 sm:p-4">
                             <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
                             <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-1">{{ $book->penulis }}</p>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-yellow-400 text-sm">★</span>
-                                        <span class="text-xs text-gray-600">{{ number_format($book->ratings_avg_rating, 1) }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-1">
-                                        <button wire:click.stop="toggleSuka({{ $book->id }})" 
-                                                class="text-sm {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
-                                            ♥
-                                        </button>
-                                        <span class="text-xs text-gray-600">{{ $book->suka_count }}</span>
-                                    </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-yellow-400 text-base">★</span>
+                                    <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating, 1) }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                            class="text-base hover:scale-110 transition-transform {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
+                                        ♥
+                                    </button>
+                                    <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count }}</span>
                                 </div>
                             </div>
                         </div>
@@ -277,19 +275,17 @@
                         <div class="p-3 sm:p-4">
                             <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
                             <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-1">{{ $book->penulis }}</p>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1">
-                                        <span class="text-yellow-400 text-sm">★</span>
-                                        <span class="text-xs text-gray-600">{{ number_format($book->ratings_avg_rating, 1) }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-1">
-                                        <button wire:click.stop="toggleSuka({{ $book->id }})" 
-                                                class="text-sm {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
-                                            ♥
-                                        </button>
-                                        <span class="text-xs text-gray-600">{{ $book->suka_count }}</span>
-                                    </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-yellow-400 text-base">★</span>
+                                    <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating, 1) }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                            class="text-base hover:scale-110 transition-transform {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
+                                        ♥
+                                    </button>
+                                    <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count }}</span>
                                 </div>
                             </div>
                         </div>
