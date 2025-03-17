@@ -177,6 +177,16 @@
                 <span>Silakan upload foto bukti pengiriman untuk mengkonfirmasi pengiriman buku.</span>
             </div>
             
+            <div class="alert alert-success mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <div class="font-bold">Nomor Resi:</div>
+                    <div class="text-sm">{{ $nomorResi }}</div>
+                </div>
+            </div>
+            
             <form wire:submit="confirmShipment">
                 <div class="form-control mb-4">
                     <label class="label">
@@ -195,25 +205,6 @@
                             <span class="label-text-alt text-error">{{ $message }}</span>
                         </label>
                     @enderror
-                </div>
-
-                <div class="form-control mb-4">
-                    <label class="label">
-                        <span class="label-text">Nomor Resi (Opsional)</span>
-                    </label>
-                    <input type="text" 
-                           wire:model="nomorResi" 
-                           class="input input-bordered" 
-                           placeholder="Masukkan nomor resi pengiriman">
-                </div>
-
-                <div class="form-control mb-4">
-                    <label class="label">
-                        <span class="label-text">Catatan Pengiriman (Opsional)</span>
-                    </label>
-                    <textarea wire:model="catatanPengiriman" 
-                              class="textarea textarea-bordered" 
-                              placeholder="Masukkan catatan pengiriman"></textarea>
                 </div>
 
                 <div class="modal-action">

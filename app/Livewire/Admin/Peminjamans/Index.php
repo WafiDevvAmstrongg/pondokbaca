@@ -8,6 +8,7 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class Index extends Component
 {
@@ -45,23 +46,19 @@ class Index extends Component
 
     public function openShipmentModal($loanId)
     {
+        $loan = Peminjaman::findOrFail($loanId);
         $this->selectedLoanId = $loanId;
+        $this->nomorResi = $loan->nomor_resi;
         $this->showShipmentModal = true;
-        $this->resetShipmentForm();
+        $this->buktiPengiriman = null;
     }
 
     public function closeShipmentModal()
     {
         $this->showShipmentModal = false;
         $this->selectedLoanId = null;
-        $this->resetShipmentForm();
-    }
-
-    public function resetShipmentForm()
-    {
         $this->buktiPengiriman = null;
         $this->nomorResi = '';
-        $this->catatanPengiriman = '';
     }
 
     public function confirmShipment()
@@ -83,8 +80,6 @@ class Index extends Component
             $loan->update([
                 'status' => 'dikirim',
                 'bukti_pengiriman' => $path,
-                'nomor_resi' => $this->nomorResi,
-                'catatan_pengiriman' => $this->catatanPengiriman,
                 'tgl_dikirim' => now()
             ]);
 
@@ -99,9 +94,13 @@ class Index extends Component
         $loan = Peminjaman::findOrFail($loanId);
         
         if ($loan->status === 'pending') {
+            // Generate nomor resi saat peminjaman disetujui
+            $nomorResi = 'PJM-' . strtoupper(Str::random(8)) . '-' . date('Ymd');
+            
             $loan->update([
                 'status' => 'diproses',
-                'id_staff' => auth()->id()
+                'id_staff' => auth()->id(),
+                'nomor_resi' => $nomorResi
             ]);
 
             session()->flash('message', 'Peminjaman berhasil disetujui.');
