@@ -13,11 +13,17 @@ class BookCard extends Component
     public $selectedBook = null;
     public $checkoutToken = null;
     public $isSukaByUser = false;
+    public $books = null;
 
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
         'toggle-suka' => 'toggleSuka'
     ];
+
+    public function mount($books = null)
+    {
+        $this->books = $books;
+    }
 
     public function showDetail($bookId)
     {
@@ -116,12 +122,16 @@ class BookCard extends Component
 
     public function render()
     {
-        $books = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
-                     ->withAvg('ratings', 'rating')
-                     ->withCount('suka')
-                     ->take(5)
-                     ->get();
+        if (!$this->books) {
+            $this->books = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
+                               ->withAvg('ratings', 'rating')
+                               ->withCount('suka')
+                               ->take(5)
+                               ->get();
+        }
 
-        return view('livewire.components.book-card', compact('books'));
+        return view('livewire.components.book-card', [
+            'books' => $this->books
+        ]);
     }
 }

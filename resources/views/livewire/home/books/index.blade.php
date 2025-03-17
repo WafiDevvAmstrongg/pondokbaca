@@ -116,46 +116,7 @@
     </div>
 
     <!-- Books Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-        @foreach ($books as $book)
-            <div class="group relative">
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                     wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
-                    <div class="aspect-[3/4] overflow-hidden relative">
-                        <img src="{{ Storage::url($book->cover_img) }}" 
-                             alt="{{ $book->judul }}"
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                        @if($book->stok > 0)
-                            <div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
-                                Tersedia
-                            </div>
-                        @else
-                            <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                Dipinjam
-                            </div>
-                        @endif
-                    </div>
-                    <div class="p-3 sm:p-4">
-                        <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-1">{{ $book->penulis }}</p>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-yellow-400 text-base">★</span>
-                                <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating, 1) }}</span>
-                            </div>
-                            <div class="flex items-center gap-1.5">
-                                <button wire:click.stop="$dispatch('toggle-suka', { bookId: {{ $book->id }} })" 
-                                        class="text-base hover:scale-110 transition-transform {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
-                                    ♥
-                                </button>
-                                <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
+    @livewire('components.book-card', ['books' => $books])
 
     <!-- Pagination -->
     <div class="mt-6">
