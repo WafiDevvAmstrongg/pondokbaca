@@ -7,16 +7,22 @@ use App\Models\Peminjaman;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 
 class Index extends Component
 {
     use WithPagination;
+    use WithFileUploads;
 
     public $search = '';
     public $status = '';
     public $showRejectModal = false;
+    public $showShipmentModal = false;
     public $selectedLoanId = null;
     public $alasanPenolakan = '';
+    public $buktiPengiriman;
+    public $nomorResi = '';
+    public $catatanPengiriman = '';
 
     public function updatingSearch()
     {
@@ -35,6 +41,57 @@ class Index extends Component
         $this->showRejectModal = false;
         $this->selectedLoanId = null;
         $this->alasanPenolakan = '';
+    }
+
+    public function openShipmentModal($loanId)
+    {
+        $this->selectedLoanId = $loanId;
+        $this->showShipmentModal = true;
+        $this->resetShipmentForm();
+    }
+
+    public function closeShipmentModal()
+    {
+        $this->showShipmentModal = false;
+        $this->selectedLoanId = null;
+        $this->resetShipmentForm();
+    }
+
+    public function resetShipmentForm()
+    {
+        $this->buktiPengiriman = null;
+        $this->nomorResi = '';
+        $this->catatanPengiriman = '';
+    }
+
+    public function confirmShipment()
+    {
+        $this->validate([
+            'buktiPengiriman' => 'required|image|max:2048', // max 2MB
+        ], [
+            'buktiPengiriman.required' => 'Bukti pengiriman harus diupload.',
+            'buktiPengiriman.image' => 'File harus berupa gambar.',
+            'buktiPengiriman.max' => 'Ukuran gambar maksimal 2MB.'
+        ]);
+
+        $loan = Peminjaman::findOrFail($this->selectedLoanId);
+        
+        if ($loan->status === 'diproses') {
+            // Upload bukti pengiriman
+            $path = $this->buktiPengiriman->store('bukti-pengiriman', 'public');
+
+            $loan->update([
+                'status' => 'dikirim',
+                'bukti_pengiriman' => $path,
+                'nomor_resi' => $this->nomorResi,
+                'catatan_pengiriman' => $this->catatanPengiriman,
+                'tgl_dikirim' => now()
+            ]);
+
+            session()->flash('message', 'Peminjaman berhasil dikonfirmasi pengirimannya.');
+        }
+
+        $this->closeShipmentModal();
     }
 
     public function approve($loanId)

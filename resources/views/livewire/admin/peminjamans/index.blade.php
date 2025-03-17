@@ -104,6 +104,12 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
+                                @elseif($loan->status === 'diproses')
+                                    <button wire:click="openShipmentModal({{ $loan->id }})" class="btn btn-sm btn-ghost text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7M13 3v18m0-18l4 4m-4-4l-4 4" />
+                                        </svg>
+                                    </button>
                                 @else
                                     <button wire:click="showDetail({{ $loan->id }})" class="btn btn-sm btn-ghost">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,6 +159,69 @@
                 <div class="modal-action">
                     <button type="submit" class="btn btn-error">Tolak Peminjaman</button>
                     <button type="button" class="btn" wire:click="closeRejectModal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+    @endif
+
+    <!-- Modal Shipment -->
+    @if($showShipmentModal)
+    <dialog class="modal modal-open">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Konfirmasi Pengiriman</h3>
+            <div class="alert alert-info mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Silakan upload foto bukti pengiriman untuk mengkonfirmasi pengiriman buku.</span>
+            </div>
+            
+            <form wire:submit="confirmShipment">
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Bukti Pengiriman</span>
+                    </label>
+                    <input type="file" 
+                           wire:model="buktiPengiriman" 
+                           class="file-input file-input-bordered w-full" 
+                           accept="image/*"
+                           required>
+                    <div wire:loading wire:target="buktiPengiriman">
+                        <span class="text-sm text-gray-500">Mengupload...</span>
+                    </div>
+                    @error('buktiPengiriman') 
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ $message }}</span>
+                        </label>
+                    @enderror
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Nomor Resi (Opsional)</span>
+                    </label>
+                    <input type="text" 
+                           wire:model="nomorResi" 
+                           class="input input-bordered" 
+                           placeholder="Masukkan nomor resi pengiriman">
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Catatan Pengiriman (Opsional)</span>
+                    </label>
+                    <textarea wire:model="catatanPengiriman" 
+                              class="textarea textarea-bordered" 
+                              placeholder="Masukkan catatan pengiriman"></textarea>
+                </div>
+
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="confirmShipment">Konfirmasi Pengiriman</span>
+                        <span wire:loading wire:target="confirmShipment">Memproses...</span>
+                    </button>
+                    <button type="button" class="btn" wire:click="closeShipmentModal">Batal</button>
                 </div>
             </form>
         </div>
