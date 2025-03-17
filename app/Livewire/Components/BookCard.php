@@ -4,8 +4,10 @@ namespace App\Livewire\Components;
 
 use App\Models\Buku;
 use App\Models\Suka;
+use App\Models\Rating;
 use Livewire\Component;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 
 class BookCard extends Component
 {
@@ -14,6 +16,9 @@ class BookCard extends Component
     public $checkoutToken = null;
     public $isSukaByUser = false;
     public $books = null;
+    public $ratings = [];
+    public $showAllRatings = false;
+    public $limitRatings = 3; // Default limit to show initially
 
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
@@ -34,13 +39,34 @@ class BookCard extends Component
     {
         $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
         $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
+        
+        // Load ratings with user relationship
+        $this->loadRatings($bookId);
+        
+        $this->showAllRatings = false; // Reset to show limited ratings first
         $this->showDetailModal = true;
+    }
+
+    public function loadRatings($bookId)
+    {
+        // Load all ratings with user relationship and make sure it's a collection
+        $this->ratings = Rating::with('user')
+                          ->where('id_buku', $bookId)
+                          ->orderBy('created_at', 'desc')
+                          ->get()
+                          ->toArray(); // Convert to array to ensure proper serialization with Livewire
+    }
+
+    public function showAllRatings()
+    {
+        $this->showAllRatings = true;
     }
 
     public function closeModal()
     {
         $this->showDetailModal = false;
         $this->selectedBook = null;
+        $this->ratings = [];
     }
 
     public function toggleSuka($bookId)
@@ -57,8 +83,8 @@ class BookCard extends Component
 
         $user = auth()->user();
         $existingSuka = Suka::where('id_user', $user->id)
-                           ->where('id_buku', $bookId)
-                           ->first();
+                          ->where('id_buku', $bookId)
+                          ->first();
 
         if ($existingSuka) {
             $existingSuka->delete();
@@ -132,9 +158,15 @@ class BookCard extends Component
             // This instance is only for showing the modal
             $this->books = collect();
         }
+        
+        // Handle ratings pagination manually since we have an array
+        $displayRatings = $this->showAllRatings 
+            ? $this->ratings 
+            : array_slice($this->ratings, 0, $this->limitRatings);
     
         return view('livewire.components.book-card', [
-            'books' => $this->books
+            'books' => $this->books,
+            'ratings' => $displayRatings
         ]);
     }
 }
