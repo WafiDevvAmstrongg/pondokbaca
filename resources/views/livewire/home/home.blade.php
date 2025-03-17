@@ -1,122 +1,99 @@
 <div class="space-y-8">
     <!-- Hero Banner -->
-    <div class="relative w-full h-64 sm:h-72 md:h-80 rounded-2xl overflow-hidden shadow-xl carousel-container">
+    <div class="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 rounded-2xl overflow-hidden shadow-xl carousel-container">
         <!-- Carousel Slides -->
         <div class="carousel-track flex transition-transform duration-500 ease-in-out h-full">
             <!-- Slide 1 -->
             <div class="carousel-slide w-full h-full flex-shrink-0 bg-gradient-to-r from-emerald-600 to-emerald-400">
                 <div class="absolute inset-0 bg-[url('/img/pattern.png')] opacity-10"></div>
-                <div class="flex items-center h-full px-6 sm:px-10">
+                <div class="flex items-center h-full px-4 sm:px-6 lg:px-10">
                     <div class="max-w-xl">
-                        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4">Selamat Datang di
-                            PondokBaca</h1>
-                        <p class="text-emerald-50 text-base sm:text-lg mb-4 sm:mb-6">Temukan berbagai koleksi buku islami
-                            dan umum untuk menambah pengetahuan dan wawasan Anda.</p>
-                        <a href="#"
-                            class="bg-white text-emerald-600 hover:bg-emerald-50 py-2 px-4 rounded-lg font-medium transition-colors inline-block text-sm sm:text-base">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">Selamat Datang di PondokBaca</h1>
+                        <p class="text-emerald-50 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6">Temukan berbagai koleksi buku islami dan umum untuk menambah pengetahuan dan wawasan Anda.</p>
+                        <a href="#" class="bg-white text-emerald-600 hover:bg-emerald-50 py-2 px-4 rounded-lg font-medium transition-colors inline-block text-sm sm:text-base">
                             Jelajahi Koleksi
                         </a>
                     </div>
                 </div>
                 <!-- Decorative Book Illustrations - Only show on larger screens -->
                 <div class="hidden lg:block absolute -right-10 bottom-5 transform -rotate-12">
-                    <div class="w-32 h-48 bg-white rounded-lg shadow-lg"></div>
+                    <div class="w-24 h-36 xl:w-32 xl:h-48 bg-white rounded-lg shadow-lg"></div>
                 </div>
                 <div class="hidden lg:block absolute right-16 bottom-10 transform rotate-6">
-                    <div class="w-32 h-48 bg-emerald-200 rounded-lg shadow-lg"></div>
+                    <div class="w-24 h-36 xl:w-32 xl:h-48 bg-emerald-200 rounded-lg shadow-lg"></div>
                 </div>
             </div>
 
             <!-- Slide 2 -->
             <div class="carousel-slide w-full h-full flex-shrink-0 bg-gradient-to-r from-blue-600 to-blue-400">
                 <div class="absolute inset-0 bg-[url('/img/pattern.png')] opacity-10"></div>
-                <div class="flex items-center h-full px-6 sm:px-10">
+                <div class="flex items-center h-full px-4 sm:px-6 lg:px-10">
                     <div class="max-w-xl">
-                        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4">Koleksi Buku
-                            Terbaru</h1>
-                        <p class="text-blue-50 text-base sm:text-lg mb-4 sm:mb-6">Dapatkan buku-buku terbitan terbaru
-                            dengan kualitas terbaik untuk memperkaya wawasan Anda.</p>
-                        <a href="#"
-                            class="bg-white text-blue-600 hover:bg-blue-50 py-2 px-4 rounded-lg font-medium transition-colors inline-block text-sm sm:text-base">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">Koleksi Buku Terbaru</h1>
+                        <p class="text-blue-50 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6">Dapatkan buku-buku terbitan terbaru dengan kualitas terbaik.</p>
+                        <a href="#" class="bg-white text-blue-600 hover:bg-blue-50 py-2 px-4 rounded-lg font-medium transition-colors inline-block text-sm sm:text-base">
                             Lihat Koleksi Terbaru
                         </a>
                     </div>
                 </div>
                 <!-- Decorative Elements - Only show on larger screens -->
                 <div class="hidden lg:block absolute right-10 bottom-10">
-                    <div class="w-32 h-48 bg-white rounded-lg shadow-lg transform rotate-3"></div>
-                    <div
-                        class="w-32 h-48 bg-blue-200 rounded-lg shadow-lg absolute -top-10 -left-8 transform -rotate-6">
-                    </div>
+                    <div class="w-24 h-36 xl:w-32 xl:h-48 bg-white rounded-lg shadow-lg transform rotate-3"></div>
+                    <div class="w-24 h-36 xl:w-32 xl:h-48 bg-blue-200 rounded-lg shadow-lg absolute -top-10 -left-8 transform -rotate-6"></div>
                 </div>
             </div>
 
             <!-- Slide 3 -->
             <div class="carousel-slide w-full h-full flex-shrink-0 bg-gradient-to-r from-amber-600 to-amber-400">
                 <div class="absolute inset-0 bg-[url('/img/pattern.png')] opacity-10"></div>
-                <div class="flex items-center h-full px-6 sm:px-10">
+                <div class="flex items-center h-full px-4 sm:px-6 lg:px-10">
                     <div class="max-w-xl">
-                        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-4">Promo Bulanan
-                        </h1>
-                        <p class="text-amber-50 text-base sm:text-lg mb-4 sm:mb-6">Nikmati diskon spesial untuk
-                            pembelian buku-buku pilihan sepanjang bulan ini.</p>
-                        <a href="#"
-                            class="bg-white text-amber-600 hover:bg-amber-50 py-2 px-4 rounded-lg font-medium transition-colors inline-block text-sm sm:text-base">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">Promo Bulanan</h1>
+                        <p class="text-amber-50 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6">Nikmati diskon spesial untuk pembelian buku-buku pilihan.</p>
+                        <a href="#" class="bg-white text-amber-600 hover:bg-amber-50 py-2 px-4 rounded-lg font-medium transition-colors inline-block text-sm sm:text-base">
                             Lihat Promo
                         </a>
                     </div>
                 </div>
                 <!-- Decorative Elements - Only show on larger screens -->
                 <div class="hidden lg:block absolute right-16 top-10">
-                    <div class="w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center">
-                        <span class="text-amber-600 text-xl font-bold">30%</span>
+                    <div class="w-16 h-16 xl:w-20 xl:h-20 bg-white rounded-full shadow-lg flex items-center justify-center">
+                        <span class="text-amber-600 text-lg xl:text-xl font-bold">30%</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Arrows - Positioned inset to ensure visibility -->
-        <button
-            class="carousel-arrow carousel-prev absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-emerald-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md transition-colors z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
+        <!-- Navigation Arrows -->
+        <button class="carousel-arrow carousel-prev absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
         </button>
-        <button
-            class="carousel-arrow carousel-next absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-emerald-600 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md transition-colors z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
+        <button class="carousel-arrow carousel-next absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-colors z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
         </button>
 
         <!-- Pagination Dots -->
         <div class="carousel-pagination absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-            <button
-                class="carousel-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white/50 hover:bg-white/90 transition-colors"
-                data-index="0"></button>
-            <button
-                class="carousel-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white/50 hover:bg-white/90 transition-colors"
-                data-index="1"></button>
-            <button
-                class="carousel-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-white/50 hover:bg-white/90 transition-colors"
-                data-index="2"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white/90 transition-colors" data-index="0"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white/90 transition-colors" data-index="1"></button>
+            <button class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white/90 transition-colors" data-index="2"></button>
         </div>
     </div>
 
     <!-- Categories Section -->
-    <section class="py-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Kategori Buku</h2>
+    <section class="py-4 sm:py-6">
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Kategori Buku</h2>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
             @foreach ($categories as $category)
-                <a href="#"
-                    class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow text-center group">
-                    <div
-                        class="w-16 h-16 mx-auto mb-3 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <a href="#" class="bg-white rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow text-center group">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                         @switch($category)
                             @case('al-quran')
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none"
@@ -210,35 +187,36 @@
                                 </svg>
                         @endswitch
                     </div>
-                    <h3 class="font-medium text-gray-800 capitalize">{{ str_replace('-', ' ', $category) }}</h3>
+                    <h3 class="text-sm sm:text-base font-medium text-gray-800 capitalize">{{ str_replace('-', ' ', $category) }}</h3>
                 </a>
             @endforeach
         </div>
     </section>
 
     <!-- Most Favorite Books Section -->
-    <section class="py-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Buku Terfavorit</h2>
-            <a href="#"
-                class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors">Lihat
-                Semua</a>
+    <section class="py-4 sm:py-6">
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Buku Terfavorit</h2>
+            <a href="#" class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors text-sm sm:text-base">
+                Lihat Semua
+            </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             @foreach ($favoriteBooks as $book)
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                     wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
                     <div class="aspect-[3/4] overflow-hidden">
-                        <img src="{{ Storage::url($book->cover_img) }}" alt="{{ $book->judul }}"
-                            class="w-full h-full object-cover">
+                        <img src="{{ Storage::url($book->cover_img) }}" 
+                             alt="{{ $book->judul }}"
+                             class="w-full h-full object-cover">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-medium text-gray-900 mb-1">{{ $book->judul }}</h3>
-                        <p class="text-sm text-gray-600">{{ $book->penulis }}</p>
+                    <div class="p-3 sm:p-4">
+                        <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 line-clamp-1">{{ $book->penulis }}</p>
                         <div class="flex items-center mt-2">
                             <span class="text-red-400">♥</span>
-                            <span class="ml-1 text-sm">{{ $book->suka_count }}</span>
+                            <span class="ml-1 text-xs sm:text-sm">{{ $book->suka_count }}</span>
                         </div>
                     </div>
                 </div>
@@ -247,28 +225,29 @@
     </section>
 
     <!-- Top Rated Books Section -->
-    <section class="py-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Buku Rating Tertinggi</h2>
-            <a href="#"
-                class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors">Lihat
-                Semua</a>
+    <section class="py-4 sm:py-6">
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Buku Rating Tertinggi</h2>
+            <a href="#" class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors text-sm sm:text-base">
+                Lihat Semua
+            </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             @foreach ($topRatedBooks as $book)
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                     wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
                     <div class="aspect-[3/4] overflow-hidden">
-                        <img src="{{ Storage::url($book->cover_img) }}" alt="{{ $book->judul }}"
-                            class="w-full h-full object-cover">
+                        <img src="{{ Storage::url($book->cover_img) }}" 
+                             alt="{{ $book->judul }}"
+                             class="w-full h-full object-cover">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-medium text-gray-900 mb-1">{{ $book->judul }}</h3>
-                        <p class="text-sm text-gray-600">{{ $book->penulis }}</p>
+                    <div class="p-3 sm:p-4">
+                        <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 line-clamp-1">{{ $book->penulis }}</p>
                         <div class="flex items-center mt-2">
                             <span class="text-yellow-400">★</span>
-                            <span class="ml-1 text-sm">{{ number_format($book->ratings_avg_rating, 1) }}</span>
+                            <span class="ml-1 text-xs sm:text-sm">{{ number_format($book->ratings_avg_rating, 1) }}</span>
                         </div>
                     </div>
                 </div>
