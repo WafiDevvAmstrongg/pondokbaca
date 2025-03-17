@@ -86,11 +86,10 @@ class Index extends Component
             session()->flash('message', 'Peminjaman berhasil dikonfirmasi pengirimannya.');
             
             // Tambahkan dispatch untuk memaksa re-render
-            $this->dispatch('loan-updated');
+            $this->dispatch('$refresh');
         }
 
         $this->closeShipmentModal();
-        $this->refresh();
     }
 
     public function approve($loanId)
@@ -110,9 +109,8 @@ class Index extends Component
             session()->flash('message', 'Peminjaman berhasil disetujui.');
             
             // Tambahkan dispatch untuk memaksa re-render
-            $this->dispatch('loan-updated');
+            $this->dispatch('$refresh');
         }
-        $this->refresh();
     }
 
     public function reject()
@@ -137,7 +135,7 @@ class Index extends Component
         }
 
         $this->closeRejectModal();
-        $this->refresh();
+        $this->dispatch('$refresh');
     }
 
     public function render()
