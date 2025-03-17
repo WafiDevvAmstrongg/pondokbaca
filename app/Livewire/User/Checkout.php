@@ -5,7 +5,6 @@ namespace App\Livewire\User;
 use App\Models\Buku;
 use App\Models\Peminjaman;
 use Livewire\Component;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class Checkout extends Component
@@ -13,6 +12,17 @@ class Checkout extends Component
     public $token;
     public $book;
     public $tglKembaliRencana;
+    public $showDetailModal = false;
+    public $selectedBook = null;
+    public $checkoutToken = null;
+    public $isSukaByUser = false;
+    public $books = null;
+
+    protected $listeners = [
+        'closeDetailModal' => 'closeModal',
+        'toggle-suka' => 'toggleSuka',
+        'showDetailModal' => 'showModal'
+    ];
 
     public function mount($token)
     {
@@ -48,13 +58,13 @@ class Checkout extends Component
             return redirect()->route('books.index');
         }
 
-        // Buat peminjaman dengan status pending
+        // Buat peminjaman dengan status pending (tidak mengurangi stok)
         Peminjaman::create([
             'id_user' => auth()->id(),
             'id_buku' => $this->book->id,
             'tgl_peminjaman' => now(),
             'tgl_kembali_rencana' => $this->tglKembaliRencana,
-            'status' => 'pending', // Status awal pending, tidak mengurangi stok
+            'status' => 'pending',
             'total_denda' => 0
         ]);
 
@@ -68,6 +78,19 @@ class Checkout extends Component
         ]);
 
         return redirect()->route('user.peminjaman');
+    }
+
+    public function closeModal()
+    {
+        $this->showDetailModal = false;
+        $this->selectedBook = null;
+    }
+
+    public function showModal($bookId)
+    {
+        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
+        $this->showDetailModal = true;
     }
 
     public function render()
