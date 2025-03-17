@@ -66,6 +66,7 @@
                                     </label>
                                     <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-xl w-52 mt-2">
                                         <li><a href="{{ route('profile') }}" class="rounded-lg">Profile</a></li>
+                                        <li><a href="{{ route('user.peminjaman') }}">Peminjaman Saya</a></li>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf
                                             <li><button class="rounded-lg text-error w-full text-left">Logout</button></li>
