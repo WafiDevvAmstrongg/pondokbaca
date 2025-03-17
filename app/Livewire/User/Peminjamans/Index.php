@@ -12,6 +12,7 @@ class Index extends Component
 
     public $status = '';
     public $search = '';
+    public $selectedLoan = null;
 
     public function updatingSearch()
     {
@@ -21,6 +22,16 @@ class Index extends Component
     public function updatingStatus()
     {
         $this->resetPage();
+    }
+
+    public function showProof($loanId)
+    {
+        $this->selectedLoan = Peminjaman::find($loanId);
+    }
+
+    public function closeModal()
+    {
+        $this->selectedLoan = null;
     }
 
     public function render()
@@ -42,4 +53,4 @@ class Index extends Component
             'loans' => $loans
         ])->layout('layouts.user');
     }
-} 
+}

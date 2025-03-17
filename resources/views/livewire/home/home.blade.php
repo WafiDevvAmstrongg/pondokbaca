@@ -217,7 +217,7 @@
                                 </div>
                             @else
                                 <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Dipinjam
+                                    Kosong
                                 </div>
                             @endif
                         </div>
@@ -268,7 +268,7 @@
                                 </div>
                             @else
                                 <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Dipinjam
+                                    Kosong
                                 </div>
                             @endif
                         </div>

@@ -85,6 +85,14 @@
                                         No. Resi: {{ $loan->nomor_resi }}
                                     </div>
                                 @endif
+
+                                @if($loan->bukti_pengiriman)
+                                    <div class="mt-3">
+                                        <button wire:click="showProof({{ $loan->id }})" class="btn btn-sm btn-outline btn-primary">
+                                            Lihat Bukti Pengiriman
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @empty
@@ -105,6 +113,7 @@
                                 <th>Tenggat</th>
                                 <th>Status</th>
                                 <th>Info</th>
+                                <th>Bukti</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -160,10 +169,19 @@
                                             </div>
                                         @endif
                                     </td>
+                                    <td>
+                                        @if($loan->bukti_pengiriman)
+                                            <button wire:click="showProof({{ $loan->id }})" class="btn btn-xs btn-outline btn-primary">
+                                                Lihat Bukti
+                                            </button>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">
+                                    <td colspan="7" class="text-center py-4">
                                         Tidak ada data peminjaman
                                     </td>
                                 </tr>
@@ -179,4 +197,28 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal untuk Bukti Pengiriman -->
+    @if($selectedLoan)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg p-4 max-w-lg w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Bukti Pengiriman</h3>
+                    <button wire:click="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex justify-center">
+                    <img src="{{ Storage::url($selectedLoan->bukti_pengiriman) }}" 
+                         alt="Bukti Pengiriman" 
+                         class="max-h-96 object-contain">
+                </div>
+                <div class="mt-4 text-center">
+                    <button wire:click="closeModal" class="btn btn-primary">Tutup</button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
