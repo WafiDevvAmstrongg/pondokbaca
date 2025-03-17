@@ -20,6 +20,8 @@ class Checkout extends Component
     public $tgl_peminjaman_diinginkan;
     public $alasan_peminjaman;
     public $alamat_peminjam;
+    public $maxReturnDate;
+    public $minReturnDate;
 
     protected $rules = [
         'tgl_peminjaman_diinginkan' => 'required|date|after:today',
@@ -50,6 +52,10 @@ class Checkout extends Component
 
     public function mount($token)
     {
+        // Set tanggal minimal dan maksimal
+        $this->minReturnDate = now()->addDay()->format('Y-m-d');
+        $this->maxReturnDate = now()->addDays(14)->format('Y-m-d');
+
         // Validasi token
         if (!session('checkout_token') || 
             session('checkout_token') !== $token || 
