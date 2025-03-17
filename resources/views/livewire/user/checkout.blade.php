@@ -26,7 +26,7 @@
                             <span class="label-text">Tanggal Peminjaman</span>
                         </label>
                         <input type="date" 
-                               wire:model="tgl_peminjaman_diinginkan" 
+                               wire:model.live="tgl_peminjaman_diinginkan" 
                                min="{{ date('Y-m-d') }}"
                                class="input input-bordered" 
                                required />
@@ -43,12 +43,13 @@
                                wire:model="tgl_kembali_rencana"
                                min="{{ $tgl_peminjaman_diinginkan ?? date('Y-m-d') }}"
                                max="{{ $maxReturnDate }}"
-                               class="input input-bordered" 
+                               class="input input-bordered {{ !$tgl_peminjaman_diinginkan ? 'cursor-not-allowed bg-gray-100' : '' }}" 
+                               {{ !$tgl_peminjaman_diinginkan ? 'disabled' : '' }}
                                required />
                         @error('tgl_kembali_rencana') 
                             <span class="text-error text-sm mt-1">{{ $message }}</span> 
                         @enderror
-                        <span class="text-sm text-gray-500 mt-1">Maksimal 7 hari peminjaman</span>
+                        <span class="text-sm text-gray-500 mt-1">Maksimal {{ $maxReturnDate ? Carbon\Carbon::parse($maxReturnDate)->format('d M Y') : '7 hari' }} dari tanggal peminjaman</span>
                     </div>
                 </div>
 
