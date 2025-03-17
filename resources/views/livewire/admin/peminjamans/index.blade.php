@@ -51,7 +51,7 @@
                                     </span>
                                     <!-- Tampilkan tanggal di mobile -->
                                     <span class="block text-xs text-gray-400 sm:hidden">
-                                        {{ $loan->tgl_pinjam ? $loan->tgl_pinjam->format('d/m/Y') : '-' }} -
+                                        {{ $loan->tgl_dikirim ? $loan->tgl_dikirim->format('d/m/Y') : '-' }} -
                                         {{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d/m/Y') : '-' }}
                                     </span>
                                 </div>
@@ -70,7 +70,7 @@
                             </div>
                         </td>
                         <td class="py-4 hidden lg:table-cell">
-                            {{ $loan->tgl_pinjam ? $loan->tgl_pinjam->format('d/m/Y') : '-' }}
+                            {{ $loan->tgl_dikirim ? $loan->tgl_dikirim->format('d/m/Y') : '-' }}
                         </td>
                         <td class="py-4 hidden sm:table-cell">
                             {{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d/m/Y') : '-' }}
