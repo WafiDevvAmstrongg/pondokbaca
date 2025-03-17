@@ -14,10 +14,65 @@ class Index extends Component
 
     public $search = '';
     public $status = '';
+    public $showRejectModal = false;
+    public $selectedLoanId = null;
+    public $alasanPenolakan = '';
 
     public function updatingSearch()
     {
         $this->resetPage();
+    }
+
+    public function showRejectModal($loanId)
+    {
+        $this->selectedLoanId = $loanId;
+        $this->showRejectModal = true;
+        $this->alasanPenolakan = '';
+    }
+
+    public function closeRejectModal()
+    {
+        $this->showRejectModal = false;
+        $this->selectedLoanId = null;
+        $this->alasanPenolakan = '';
+    }
+
+    public function approve($loanId)
+    {
+        $loan = Peminjaman::findOrFail($loanId);
+        
+        if ($loan->status === 'pending') {
+            $loan->update([
+                'status' => 'diproses',
+                'id_staff' => auth()->id()
+            ]);
+
+            session()->flash('message', 'Peminjaman berhasil disetujui.');
+        }
+    }
+
+    public function reject()
+    {
+        $this->validate([
+            'alasanPenolakan' => 'required|min:10'
+        ], [
+            'alasanPenolakan.required' => 'Alasan penolakan harus diisi.',
+            'alasanPenolakan.min' => 'Alasan penolakan minimal 10 karakter.'
+        ]);
+
+        $loan = Peminjaman::findOrFail($this->selectedLoanId);
+        
+        if ($loan->status === 'pending') {
+            $loan->update([
+                'status' => 'ditolak',
+                'alasan_penolakan' => $this->alasanPenolakan,
+                'id_staff' => auth()->id()
+            ]);
+
+            session()->flash('message', 'Peminjaman telah ditolak.');
+        }
+
+        $this->closeRejectModal();
     }
 
     public function render()
