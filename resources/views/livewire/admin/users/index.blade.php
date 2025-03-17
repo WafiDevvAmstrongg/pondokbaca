@@ -43,7 +43,7 @@
                         <td class="py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl overflow-hidden">
-                                    <img src="{{ $user->profile_img ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
+                                    <img src="{{ $user->profile_img ? Storage::url('profiles/' . $user->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=random' }}" 
                                          alt="{{ $user->name }}"
                                          class="w-full h-full object-cover">
                                 </div>
