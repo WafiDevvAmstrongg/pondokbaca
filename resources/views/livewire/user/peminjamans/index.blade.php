@@ -18,6 +18,7 @@
                         <option value="diproses">Diproses</option>
                         <option value="dikirim">Dikirim</option>
                         <option value="dipinjam">Dipinjam</option>
+                        <option value="dikembalikan">Dikembalikan</option>
                         <option value="terlambat">Terlambat</option>
                         <option value="selesai">Selesai</option>
                         <option value="ditolak">Ditolak</option>
@@ -61,6 +62,7 @@
                                                 'diproses' => 'badge-info',
                                                 'dikirim' => 'badge-primary',
                                                 'dipinjam' => 'badge-success',
+                                                'dikembalikan' => 'badge-success',
                                                 'terlambat' => 'badge-error',
                                                 'selesai' => 'badge-success',
                                                 'ditolak' => 'badge-error',
@@ -86,13 +88,21 @@
                                     </div>
                                 @endif
 
-                                @if($loan->bukti_pengiriman)
-                                    <div class="mt-3">
-                                        <button wire:click="showProof({{ $loan->id }})" class="btn btn-sm btn-outline btn-primary">
-                                            Lihat Bukti Pengiriman
+                                <div class="mt-3 flex justify-end">
+                                    @if($loan->status === 'dipinjam')
+                                        <button wire:click="returnBook({{ $loan->id }})" class="btn btn-sm btn-primary">
+                                            Kembalikan
                                         </button>
-                                    </div>
-                                @endif
+                                    @elseif($loan->status === 'dikembalikan' && !$loan->hasRating)
+                                        <button wire:click="showRatingForm({{ $loan->id }})" class="btn btn-sm btn-secondary">
+                                            Beri Rating
+                                        </button>
+                                    @elseif($loan->bukti_pengiriman)
+                                        <button wire:click="showProof({{ $loan->id }})" class="btn btn-sm btn-outline">
+                                            Lihat Bukti
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @empty
@@ -113,7 +123,7 @@
                                 <th>Tenggat</th>
                                 <th>Status</th>
                                 <th>Info</th>
-                                <th>Bukti</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -145,6 +155,7 @@
                                                 'diproses' => 'badge-info',
                                                 'dikirim' => 'badge-primary',
                                                 'dipinjam' => 'badge-success',
+                                                'dikembalikan' => 'badge-success',
                                                 'terlambat' => 'badge-error',
                                                 'selesai' => 'badge-success',
                                                 'ditolak' => 'badge-error',
@@ -170,8 +181,16 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if($loan->bukti_pengiriman)
-                                            <button wire:click="showProof({{ $loan->id }})" class="btn btn-xs btn-outline btn-primary">
+                                        @if($loan->status === 'dipinjam')
+                                            <button wire:click="returnBook({{ $loan->id }})" class="btn btn-xs btn-primary">
+                                                Kembalikan
+                                            </button>
+                                        @elseif($loan->status === 'dikembalikan' && !$loan->hasRating)
+                                            <button wire:click="showRatingForm({{ $loan->id }})" class="btn btn-xs btn-secondary">
+                                                Beri Rating
+                                            </button>
+                                        @elseif($loan->bukti_pengiriman)
+                                            <button wire:click="showProof({{ $loan->id }})" class="btn btn-xs btn-outline">
                                                 Lihat Bukti
                                             </button>
                                         @else
@@ -199,7 +218,7 @@
     </div>
 
     <!-- Modal untuk Bukti Pengiriman -->
-    @if($selectedLoan)
+    @if($selectedLoan && $showingProof)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-white rounded-lg p-4 max-w-lg w-full mx-4">
                 <div class="flex justify-between items-center mb-4">
@@ -216,6 +235,95 @@
                          class="max-h-96 object-contain">
                 </div>
                 <div class="mt-4 text-center">
+                    <button wire:click="closeModal" class="btn btn-primary">Tutup</button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal untuk Form Rating -->
+    @if($selectedLoan && $showingRatingForm)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg p-4 max-w-lg w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Beri Rating untuk "{{ $selectedLoan->buku->judul }}"</h3>
+                    <button wire:click="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form wire:submit.prevent="submitRating">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Rating</label>
+                        <div class="flex space-x-2">
+                            @for($i = 1; $i <= 5; $i++)
+                                <button type="button" wire:click="setRating({{ $i }})" class="text-2xl">
+                                    @if($i <= $rating)
+                                        <span class="text-yellow-400">★</span>
+                                    @else
+                                        <span class="text-gray-300">★</span>
+                                    @endif
+                                </button>
+                            @endfor
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="komentar" class="block text-sm font-medium mb-2">Komentar</label>
+                        <textarea wire:model="komentar" id="komentar" rows="4" class="textarea textarea-bordered w-full"></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="foto" class="block text-sm font-medium mb-2">Foto Review (Opsional)</label>
+                        <input type="file" wire:model="fotoReview" id="foto" class="file-input file-input-bordered w-full" />
+                        @error('fotoReview') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        
+                        @if ($fotoReview)
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Preview:</p>
+                                <img src="{{ $fotoReview->temporaryUrl() }}" class="mt-1 h-32 object-cover">
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <div class="flex justify-end space-x-2 mt-4">
+                        <button type="button" wire:click="closeModal" class="btn btn-outline">Batal</button>
+                        <button type="submit" class="btn btn-primary">Kirim Rating</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Konfirmasi Modal -->
+    @if($showingConfirmation)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg p-4 max-w-md w-full mx-4">
+                <div class="text-center mb-4">
+                    <h3 class="text-lg font-semibold">Konfirmasi Pengembalian</h3>
+                    <p class="mt-2">Apakah Anda yakin ingin mengembalikan buku "{{ $selectedLoan ? $selectedLoan->buku->judul : '' }}"?</p>
+                </div>
+                
+                <div class="flex justify-center space-x-4 mt-4">
+                    <button wire:click="closeModal" class="btn btn-outline">Batal</button>
+                    <button wire:click="confirmReturn" class="btn btn-primary">Ya, Kembalikan</button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Success Modal -->
+    @if($showingSuccess)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg p-4 max-w-md w-full mx-4">
+                <div class="text-center mb-4">
+                    <div class="text-4xl text-green-500 mb-2">✓</div>
+                    <h3 class="text-lg font-semibold">{{ $successMessage }}</h3>
+                </div>
+                
+                <div class="flex justify-center mt-4">
                     <button wire:click="closeModal" class="btn btn-primary">Tutup</button>
                 </div>
             </div>

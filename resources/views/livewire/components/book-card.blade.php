@@ -85,11 +85,12 @@
     @endif
 
     <!-- Book Grid -->
+    @if(count($books) > 0)
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
         @foreach ($books as $book)
             <div class="group relative">
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                     wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
+                     wire:click="showDetail({{ $book->id }})">
                     <div class="aspect-[3/4] overflow-hidden relative">
                         <img src="{{ Storage::url($book->cover_img) }}" 
                              alt="{{ $book->judul }}"
@@ -110,14 +111,14 @@
                         <div class="flex items-center gap-4">
                             <div class="flex items-center gap-1.5">
                                 <span class="text-yellow-400 text-base">★</span>
-                                <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating, 1) }}</span>
+                                <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating ?? 0, 1) }}</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <button wire:click.stop="toggleSuka({{ $book->id }})" 
-                                        class="text-base hover:scale-110 transition-transform {{ $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
+                                <button wire:click.stop="$dispatch('toggle-suka', { bookId: {{ $book->id }} })" 
+                                        class="text-base hover:scale-110 transition-transform {{ method_exists($book, 'isSukaBy') && $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
                                     ♥
                                 </button>
-                                <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count }}</span>
+                                <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count ?? 0 }}</span>
                             </div>
                         </div>
                     </div>
@@ -125,6 +126,7 @@
             </div>
         @endforeach
     </div>
+    @endif
 
     <script>
         document.addEventListener('livewire:initialized', () => {

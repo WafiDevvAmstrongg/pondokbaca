@@ -19,6 +19,8 @@ class PeminjamanObserver
         // Jika status berubah menjadi 'dikembalikan', tambah stok
         if ($peminjaman->status === 'dikembalikan' && 
             in_array($peminjaman->getOriginal('status'), ['dipinjam', 'terlambat'])) {
+            // Get the book instance here before using it
+            $buku = Buku::find($peminjaman->id_buku);
             $buku->increment('stok');
             
             // Set tanggal kembali aktual
@@ -26,26 +28,6 @@ class PeminjamanObserver
                 'tgl_kembali_aktual' => now(),
                 'total_denda' => 0 // Reset denda jika ada
             ]);
-        }
-
-        // Logika pengecekan keterlambatan tetap sama
-        if (in_array($peminjaman->status, ['dipinjam', 'terlambat'])) {
-            $today = Carbon::now()->startOfDay();
-            $dueDate = Carbon::parse($peminjaman->tgl_kembali_rencana)->endOfDay();
-
-            if ($today->greaterThan($dueDate)) {
-                if ($peminjaman->status !== 'terlambat') {
-                    $peminjaman->status = 'terlambat';
-                }
-
-                $daysLate = $today->diffInDays($dueDate->startOfDay());
-                $totalDenda = $daysLate * $peminjaman->buku->denda_harian;
-                
-                if ($peminjaman->total_denda !== $totalDenda) {
-                    $peminjaman->total_denda = $totalDenda;
-                    $peminjaman->save();
-                }
-            }
         }
     }
 

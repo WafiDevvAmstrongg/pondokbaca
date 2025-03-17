@@ -13,42 +13,80 @@ class Home extends Component
     public function render()
     {
         // Fetch popular books (most likes)
-        $favoriteBooks = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
-                             ->withCount('suka')
-                             ->orderByDesc('suka_count')
-                             ->take(5)
-                             ->get();
+        $favoriteBooks = Buku::select([
+                'bukus.id', 
+                'bukus.judul', 
+                'bukus.penulis', 
+                'bukus.cover_img', 
+                'bukus.deskripsi', 
+                'bukus.stok'
+            ])
+            ->withCount('suka')
+            ->withAvg('ratings', 'rating')  // Include average rating
+            ->orderByDesc('suka_count')
+            ->take(5)
+            ->get();
         
-        // Fetch highest rated books using simplified Wilson Score for MariaDB
+        // Fetch highest rated books using Wilson Score confidence formula
+        // This balances average rating with number of ratings and borrowing frequency
         $topRatedBooks = Buku::select([
-            'bukus.id',
-            'bukus.judul',
-            'bukus.penulis',
-            'bukus.cover_img',
-            'bukus.deskripsi',
-            'bukus.stok',
-            'bukus.kategori',
-            DB::raw('COUNT(ratings.id) as total_ratings'),
-            DB::raw('AVG(ratings.rating) as avg_rating'),
-            DB::raw('(AVG(ratings.rating) * COUNT(ratings.rating) / (COUNT(ratings.rating) + 500)) as adjusted_score')
-        ])
-        ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
-        ->groupBy([
-            'bukus.id',
-            'bukus.judul',
-            'bukus.penulis',
-            'bukus.cover_img',
-            'bukus.deskripsi',
-            'bukus.stok',
-            'bukus.kategori'
-        ])
-        ->having('total_ratings', '>', 0)
-        ->orderByDesc('adjusted_score')
-        ->take(5)
-        ->get();
+                'bukus.id',
+                'bukus.judul',
+                'bukus.penulis',
+                'bukus.cover_img',
+                'bukus.deskripsi',
+                'bukus.stok'
+            ])
+            ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
+            ->leftJoin('peminjamans', 'bukus.id', '=', 'peminjamans.id_buku')
+            ->select([
+                'bukus.id',
+                'bukus.judul',
+                'bukus.penulis',
+                'bukus.cover_img',
+                'bukus.deskripsi',
+                'bukus.stok',
+                DB::raw('COUNT(DISTINCT ratings.id) as total_ratings'),
+                DB::raw('AVG(ratings.rating) as ratings_avg_rating'),
+                DB::raw('COUNT(DISTINCT peminjamans.id) as borrow_count'),
+                // Formula that considers both ratings and borrowing frequency
+                DB::raw('(AVG(ratings.rating) * COUNT(DISTINCT ratings.id) / (COUNT(DISTINCT ratings.id) + 10) + 
+                         (COUNT(DISTINCT peminjamans.id) / 100)) as adjusted_score')
+            ])
+            ->groupBy([
+                'bukus.id',
+                'bukus.judul',
+                'bukus.penulis',
+                'bukus.cover_img',
+                'bukus.deskripsi',
+                'bukus.stok'
+            ])
+            ->having('total_ratings', '>', 0)
+            ->orderByDesc('adjusted_score')
+            ->take(5)
+            ->get();
+        
+        // Add isSukaBy method to check if current user has liked each book
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $favoriteBooks->each(function($book) use ($userId) {
+                $book->isSukaBy = function($id) use ($book, $userId) {
+                    return $book->suka->contains('id_user', $userId);
+                };
+            });
+            
+            $topRatedBooks->each(function($book) use ($userId) {
+                $book->isSukaBy = function($id) use ($book, $userId) {
+                    return $book->suka->contains('id_user', $userId);
+                };
+            });
+        }
         
         // Get all available categories
-        $categories = Buku::distinct('kategori')->pluck('kategori');
+        $categories = [
+            'al-quran', 'hadis', 'fikih', 'akidah', 'sirah', 
+            'tafsir', 'tarbiyah', 'sejarah', 'buku-anak', 'novel'
+        ];
 
         return view('livewire.home.home', [
             'favoriteBooks' => $favoriteBooks,

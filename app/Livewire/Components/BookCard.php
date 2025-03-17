@@ -127,14 +127,12 @@ class BookCard extends Component
 
     public function render()
     {
-        if (!$this->books) {
-            $this->books = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
-                               ->withAvg('ratings', 'rating')
-                               ->withCount('suka')
-                               ->take(5)
-                               ->get();
+        // Only fetch books if none were passed
+        if ($this->books === null) {
+            // This instance is only for showing the modal
+            $this->books = collect();
         }
-
+    
         return view('livewire.components.book-card', [
             'books' => $this->books
         ]);
