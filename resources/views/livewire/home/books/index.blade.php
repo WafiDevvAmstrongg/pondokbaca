@@ -116,7 +116,7 @@
     </div>
 
     <!-- Books Grid -->
-    @livewire('components.book-card', ['books' => $books])
+    @livewire('components.book-card', ['books' => $books->items()])
 
     <!-- Pagination -->
     <div class="mt-6">

@@ -22,7 +22,11 @@ class BookCard extends Component
 
     public function mount($books = null)
     {
-        $this->books = $books;
+        if (is_object($books) && method_exists($books, 'items')) {
+            $this->books = $books->items();
+        } else {
+            $this->books = $books;
+        }
     }
 
     public function showDetail($bookId)
