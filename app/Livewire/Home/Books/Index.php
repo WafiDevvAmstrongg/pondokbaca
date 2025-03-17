@@ -14,6 +14,12 @@ class Index extends Component
     public $search = '';
     
     protected $listeners = ['search-updated' => 'updateSearch'];
+    protected $queryString = ['selectedCategory'];
+
+    public function updatedSelectedCategory()
+    {
+        $this->resetPage();
+    }
 
     public function updateSearch($search)
     {
@@ -25,7 +31,6 @@ class Index extends Component
     {
         $this->selectedCategory = $this->selectedCategory === $category ? '' : $category;
         $this->resetPage();
-        $this->dispatch('refresh-books');
     }
 
     public function render()
@@ -46,12 +51,9 @@ class Index extends Component
             });
         }
 
-        $books = $query->paginate(15);
-        $categories = Buku::distinct('kategori')->pluck('kategori');
-
         return view('livewire.home.books.index', [
-            'books' => $books,
-            'categories' => $categories
+            'books' => $query->paginate(15),
+            'categories' => Buku::distinct('kategori')->pluck('kategori')
         ])->layout('layouts.user', [
             'title' => 'Daftar Buku - PondokBaca'
         ]);
