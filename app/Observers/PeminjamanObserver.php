@@ -3,13 +3,55 @@
 namespace App\Observers;
 
 use App\Models\Peminjaman;
+use App\Models\Buku;
 use Carbon\Carbon;
 
 class PeminjamanObserver
 {
+    public function updated(Peminjaman $peminjaman)
+    {
+        // Jika status berubah menjadi 'diproses', kurangi stok
+        if ($peminjaman->status === 'diproses' && $peminjaman->getOriginal('status') === 'pending') {
+            $buku = Buku::find($peminjaman->id_buku);
+            $buku->decrement('stok');
+        }
+        
+        // Jika status berubah menjadi 'dikembalikan', tambah stok
+        if ($peminjaman->status === 'dikembalikan' && 
+            in_array($peminjaman->getOriginal('status'), ['dipinjam', 'terlambat'])) {
+            $buku->increment('stok');
+            
+            // Set tanggal kembali aktual
+            $peminjaman->update([
+                'tgl_kembali_aktual' => now(),
+                'total_denda' => 0 // Reset denda jika ada
+            ]);
+        }
+
+        // Logika pengecekan keterlambatan tetap sama
+        if (in_array($peminjaman->status, ['dipinjam', 'terlambat'])) {
+            $today = Carbon::now()->startOfDay();
+            $dueDate = Carbon::parse($peminjaman->tgl_kembali_rencana)->endOfDay();
+
+            if ($today->greaterThan($dueDate)) {
+                if ($peminjaman->status !== 'terlambat') {
+                    $peminjaman->status = 'terlambat';
+                }
+
+                $daysLate = $today->diffInDays($dueDate->startOfDay());
+                $totalDenda = $daysLate * $peminjaman->buku->denda_harian;
+                
+                if ($peminjaman->total_denda !== $totalDenda) {
+                    $peminjaman->total_denda = $totalDenda;
+                    $peminjaman->save();
+                }
+            }
+        }
+    }
+
     public function retrieved(Peminjaman $peminjaman)
     {
-        // Hanya cek untuk peminjaman yang sedang dipinjam atau terlambat
+        // Hanya cek keterlambatan untuk status dipinjam/terlambat
         if (!in_array($peminjaman->status, ['dipinjam', 'terlambat'])) {
             return;
         }
@@ -17,20 +59,14 @@ class PeminjamanObserver
         $today = Carbon::now()->startOfDay();
         $dueDate = Carbon::parse($peminjaman->tgl_kembali_rencana)->endOfDay();
 
-        // Hanya hitung denda jika sudah masuk hari berikutnya
         if ($today->greaterThan($dueDate)) {
-            // Update status menjadi terlambat jika belum
             if ($peminjaman->status !== 'terlambat') {
                 $peminjaman->status = 'terlambat';
             }
 
-            // Hitung jumlah hari terlambat
             $daysLate = $today->diffInDays($dueDate->startOfDay());
-            
-            // Hitung total denda
             $totalDenda = $daysLate * $peminjaman->buku->denda_harian;
             
-            // Update total denda
             if ($peminjaman->total_denda !== $totalDenda) {
                 $peminjaman->total_denda = $totalDenda;
                 $peminjaman->save();
