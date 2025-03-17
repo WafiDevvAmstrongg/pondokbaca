@@ -17,24 +17,17 @@ class Home extends Component
                              ->take(5)
                              ->get();
         
-        // Fetch highest rated books using Wilson Score
-        $confidence = 1.96; // 95% confidence interval
+        // Fetch highest rated books using simplified Wilson Score for MariaDB
         $topRatedBooks = Buku::select([
             'bukus.*',
             DB::raw('COUNT(ratings.id) as total_ratings'),
             DB::raw('AVG(ratings.rating) as avg_rating'),
-            DB::raw("(
-                (AVG(ratings.rating) + $confidence * $confidence / (2 * COUNT(ratings.rating)) 
-                - $confidence * SQRT((AVG(ratings.rating) * (1 - AVG(ratings.rating)) 
-                + $confidence * $confidence / (4 * COUNT(ratings.rating))) / COUNT(ratings.rating))) 
-                / (1 + $confidence * $confidence / COUNT(ratings.rating))
-                AS wilson_score
-            )")
+            DB::raw('(AVG(ratings.rating) * COUNT(ratings.rating) / (COUNT(ratings.rating) + 500)) as adjusted_score')
         ])
         ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
         ->groupBy('bukus.id')
         ->having('total_ratings', '>', 0)
-        ->orderByDesc('wilson_score')
+        ->orderByDesc('adjusted_score')
         ->take(5)
         ->get();
         
