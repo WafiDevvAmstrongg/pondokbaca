@@ -28,25 +28,10 @@ class Navigation extends Component
         }
 
         $this->isSearching = true;
-        $this->dispatch('search-debounced');
-    }
-
-    public function searchBooks()
-    {
-        if (strlen($this->search) < 2) {
-            $this->searchResults = [];
-            $this->showDropdown = false;
-            $this->isSearching = false;
-            return;
-        }
-
         $this->searchResults = Buku::where('judul', 'like', '%' . $this->search . '%')
             ->orWhere('penulis', 'like', '%' . $this->search . '%')
-            ->orWhere('isbn', 'like', '%' . $this->search . '%')
-            ->select(['id', 'judul', 'penulis', 'cover_img'])
             ->take(5)
             ->get();
-
         $this->showDropdown = true;
         $this->isSearching = false;
     }
@@ -74,7 +59,7 @@ class Navigation extends Component
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
-        return redirect('/');
+        return $this->redirect('/', navigate: true);
     }
 
     public function render()
