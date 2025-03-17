@@ -48,7 +48,7 @@
                                 
                                 <div class="grid grid-cols-2 gap-2 text-sm">
                                     <div>Tanggal Pinjam:</div>
-                                    <div>{{ $loan->tgl_peminjaman ? $loan->tgl_peminjaman->format('d/m/Y') : '-' }}</div>
+                                    <div>{{ $loan->tgl_peminjaman_diinginkan ? $loan->tgl_peminjaman_diinginkan->format('d/m/Y') : '-' }}</div>
                                     
                                     <div>Tenggat:</div>
                                     <div>{{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d/m/Y') : '-' }}</div>
@@ -127,7 +127,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ $loan->tgl_peminjaman ? $loan->tgl_peminjaman->format('d/m/Y') : '-' }}</td>
+                                    <td>{{ $loan->tgl_peminjaman_diinginkan ? $loan->tgl_peminjaman_diinginkan->format('d/m/Y') : '-' }}</td>
                                     <td>{{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d/m/Y') : '-' }}</td>
                                     <td>
                                         <div class="badge {{ 

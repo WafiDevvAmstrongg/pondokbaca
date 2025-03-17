@@ -106,8 +106,6 @@ class Checkout extends Component
                 'status' => 'pending'
             ]);
 
-            // Kurangi stok buku
-            $this->book->decrement('stok');
 
             // Hapus data checkout dari session
             session()->forget(['checkout_token', 'checkout_book_id', 'checkout_expires_at']);
