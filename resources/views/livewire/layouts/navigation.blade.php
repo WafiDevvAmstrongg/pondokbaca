@@ -2,7 +2,7 @@
             <header class="bg-white border-b border-gray-100 sticky top-0 z-10">
                 <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
                     <!-- Search Container -->
-                    <div class="flex-1 max-w-[480px] relative search-container">
+                    <div class="flex-1 max-w-[480px] relative">
                         <div class="relative">
                             <input type="text" 
                                    wire:model.live.debounce.500ms="search" 
@@ -25,9 +25,9 @@
                             </div>
                         </div>
 
-                        <!-- Search Results Dropdown - Full width on mobile -->
+                        <!-- Search Results Dropdown -->
                         @if($showDropdown && count($searchResults) > 0)
-                            <div class="fixed inset-x-0 top-[4.5rem] mx-4 sm:mx-6 lg:mx-auto lg:max-w-[480px] bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                            <div class="absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
                                 @foreach($searchResults as $book)
                                     <button wire:click="showBookDetail({{ $book->id }})"
                                             class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left">
