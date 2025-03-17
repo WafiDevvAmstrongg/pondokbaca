@@ -90,6 +90,7 @@ class Index extends Component
         }
 
         $this->closeShipmentModal();
+        $this->refresh();
     }
 
     public function approve($loanId)
@@ -111,6 +112,7 @@ class Index extends Component
             // Tambahkan dispatch untuk memaksa re-render
             $this->dispatch('loan-updated');
         }
+        $this->refresh();
     }
 
     public function reject()
@@ -135,6 +137,7 @@ class Index extends Component
         }
 
         $this->closeRejectModal();
+        $this->refresh();
     }
 
     public function render()
