@@ -1,7 +1,7 @@
             <!-- Header -->
             <header class="bg-white border-b border-gray-100 sticky top-0 z-10">
                 <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
-                    <!-- Search -->
+                    <!-- Search Container -->
                     <div class="flex-1 max-w-[480px] relative search-container">
                         <div class="relative">
                             <input type="text" 
@@ -25,9 +25,9 @@
                             </div>
                         </div>
 
-                        <!-- Search Results Dropdown -->
+                        <!-- Search Results Dropdown - Full width on mobile -->
                         @if($showDropdown && count($searchResults) > 0)
-                            <div class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                            <div class="fixed inset-x-0 top-[4.5rem] mx-4 sm:mx-6 lg:mx-auto lg:max-w-[480px] bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
                                 @foreach($searchResults as $book)
                                     <button wire:click="showBookDetail({{ $book->id }})"
                                             class="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left">
@@ -51,37 +51,29 @@
                         @auth
                             <div class="relative" x-data="{ open: false }">
                                 <div class="dropdown dropdown-end">
-                                    <label tabindex="0"
-                                        class="flex items-center gap-3 px-2 py-1 rounded-xl cursor-pointer hover:bg-gray-50">
+                                    <label tabindex="0" class="flex items-center gap-3 px-2 py-1 rounded-xl cursor-pointer hover:bg-gray-50">
                                         <div class="w-10 h-10 rounded-xl overflow-hidden">
                                             @if (Auth::user()->profile_img)
-                                                <img src="{{ Storage::url('profiles/' . Auth::user()->profile_img) }}"
-                                                    alt="Profile" class="w-full h-full object-cover" />
+                                                <img src="{{ Storage::url('profiles/' . Auth::user()->profile_img) }}" alt="Profile" class="w-full h-full object-cover" />
                                             @else
-                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRglLn-gRzqwE4qOH2qXiLb1bb2KlwMO5cjRA&s"
-                                                    alt="Profile" class="w-full h-full object-cover" />
+                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRglLn-gRzqwE4qOH2qXiLb1bb2KlwMO5cjRA&s" alt="Profile" class="w-full h-full object-cover" />
                                             @endif
                                         </div>
-                                        <span class="font-medium">{{ Auth::user()->name }}</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 9l-7 7-7-7" />
+                                        <span class="font-medium hidden sm:block">{{ Auth::user()->name }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </label>
-                                    <ul tabindex="0"
-                                        class="dropdown-content menu p-2 shadow-lg bg-white rounded-xl w-52 mt-2">
+                                    <ul tabindex="0" class="dropdown-content menu p-2 shadow-lg bg-white rounded-xl w-52 mt-2">
                                         <li><a href="{{ route('profile') }}" class="rounded-lg">Profile</a></li>
-                                        <li>
-                                            <button wire:click="logout"
-                                                class="rounded-lg text-error w-full text-left">Logout</button>
-                                        </li>
+                                        <li><button wire:click="logout" class="rounded-lg text-error w-full text-left">Logout</button></li>
                                     </ul>
                                 </div>
                             </div>
                         @else
-                            <button wire:click="$dispatch('open-login-modal')"
-                                class="btn bg-[#1F4B3F] hover:bg-[#2A6554] text-white">Masuk</button>
+                            <button wire:click="$dispatch('open-login-modal')" class="btn bg-[#1F4B3F] hover:bg-[#2A6554] text-white text-sm sm:text-base">
+                                Masuk
+                            </button>
                         @endauth
                     </div>
                 </div>
