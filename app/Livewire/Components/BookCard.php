@@ -12,8 +12,13 @@ class BookCard extends Component
     public $showDetailModal = false;
     public $selectedBook = null;
     public $checkoutToken = null;
-    public $books;
+    public $books = [];
     public $isSukaByUser = false;
+
+    public function mount($books = null)
+    {
+        $this->books = $books;
+    }
 
     protected $listeners = ['closeDetailModal' => 'closeModal'];
 
