@@ -1,6 +1,6 @@
 <div>
     <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
         <div class="bg-white rounded-xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-medium text-gray-400">Total Users</h3>
@@ -27,7 +27,7 @@
 
         <div class="bg-white rounded-xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400">Total Peminjaman</h3>
+                <h3 class="text-sm font-medium text-gray-400">Total Loans</h3>
                 <span class="p-2 bg-purple-50 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -39,7 +39,7 @@
 
         <div class="bg-white rounded-xl p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400">Peminjaman Aktif</h3>
+                <h3 class="text-sm font-medium text-gray-400">Active Loans</h3>
                 <span class="p-2 bg-yellow-50 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -50,40 +50,37 @@
         </div>
     </div>
 
-    <!-- Recent Loans -->
+    <!-- Recent Loans Table -->
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
-            <h2 class="text-xl font-semibold text-gray-800">Peminjaman Terbaru</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Recent Loans</h2>
         </div>
         <div class="p-6">
             <div class="overflow-x-auto">
-                <table class="table">
+                <table class="w-full">
                     <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Book</th>
-                            <th>Status</th>
-                            <th>Date</th>
+                        <tr class="text-left border-b border-gray-100">
+                            <th class="pb-4 font-medium text-gray-400">User</th>
+                            <th class="pb-4 font-medium text-gray-400">Book</th>
+                            <th class="pb-4 font-medium text-gray-400">Status</th>
+                            <th class="pb-4 font-medium text-gray-400">Date</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-100">
                         @foreach($recentLoans as $loan)
                         <tr>
-                            <td>
+                            <td class="py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg overflow-hidden">
-                                        <img src="{{ $loan->user->profile_img ? Storage::url('profiles/' . $loan->user->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($loan->user->name).'&background=random' }}" title="{{ $loan->user->name }}" 
-                                             alt="{{ $loan->user->name }}" 
+                                    <div class="w-8 h-8 rounded-full overflow-hidden">
+                                        <img src="{{ $loan->user->profile_img ?? 'https://ui-avatars.com/api/?name='.$loan->user->name }}" 
+                                             alt="{{ $loan->user->name }}"
                                              class="w-full h-full object-cover">
                                     </div>
-                                    <div>
-                                        <p class="font-medium text-sm">{{ $loan->user->name }}</p>
-                                        <p class="text-xs text-gray-500">{{ $loan->user->email }}</p>
-                                    </div>
+                                    <span class="font-medium text-gray-900">{{ $loan->user->name }}</span>
                                 </div>
                             </td>
-                            <td>{{ $loan->buku->judul }}</td>
-                            <td>
+                            <td class="py-4">{{ Str::limit($loan->buku->judul, 30) }}</td>
+                            <td class="py-4">
                                 <span class="badge {{ 
                                     match($loan->status) {
                                         'pending' => 'badge-warning',
@@ -99,7 +96,7 @@
                                     {{ $loan->status }}
                                 </span>
                             </td>
-                            <td>{{ $loan->created_at->format('d M Y') }}</td>
+                            <td class="py-4">{{ $loan->created_at->format('d M Y') }}</td>
                         </tr>
                         @endforeach
                     </tbody>
