@@ -1,14 +1,14 @@
 <div>
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 class="text-xl font-semibold text-gray-800">Data Peminjaman</h2>
             </div>
-            <div class="mt-4 flex gap-4">
-                <input type="text" wire:model.defer="search" placeholder="Cari peminjaman..." 
-                       class="input input-bordered w-full max-w-xs" />
+            <div class="mt-4 flex flex-col sm:flex-row gap-4">
+                <input type="text" wire:model.live="search" placeholder="Cari peminjaman..." 
+                       class="input input-bordered w-full sm:w-auto" />
                 
-                <select wire:model.defer="status" class="select select-bordered">
+                <select wire:model.live="status" class="select select-bordered w-full sm:w-auto">
                     <option value="">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="diproses">Diproses</option>
@@ -20,104 +20,101 @@
                 </select>
             </div>
         </div>
-        <div class="p-6">
-            <div class="overflow-x-auto">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Peminjam</th>
-                            <th>Buku</th>
-                            <th>Status</th>
-                            <th>Tanggal Peminjaman</th>
-                            <th>Tangal Pengembalian</th>
-                            <th>Denda</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($loans as $loan)
-                        <tr>
-                            <td>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg overflow-hidden">
-                                        <img src="{{ $loan->user->profile_img ? Storage::url('profiles/' . $loan->user->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=random' }}"
-                                        alt="{{ $loan->user->name }}" 
-                                        class="w-full h-full object-cover">
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-sm">{{ $loan->user->name }}</p>
-                                        <p class="text-xs text-gray-500">{{ $loan->user->email }}</p>
-                                    </div>
+
+        <div class="p-4">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-left border-b border-gray-100">
+                        <th class="pb-4 font-medium text-gray-400">Peminjam</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden md:table-cell">Buku</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden lg:table-cell">Tgl Pinjam</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden sm:table-cell">Tgl Kembali</th>
+                        <th class="pb-4 font-medium text-gray-400">Status</th>
+                        <th class="pb-4 font-medium text-gray-400">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach($loans as $loan)
+                    <tr>
+                        <td class="py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full overflow-hidden">
+                                    <img src="{{ $loan->user->profile_img ?? 'https://ui-avatars.com/api/?name='.$loan->user->name }}" 
+                                         alt="{{ $loan->user->name }}"
+                                         class="w-full h-full object-cover">
                                 </div>
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-16 rounded-lg overflow-hidden">
-                                        <img src="{{ $loan->buku->cover_img ? Storage::url($loan->buku->cover_img) : asset('images/default-book.jpg') }}" 
-                                             alt="{{ $loan->buku->judul }}" 
+                                <div>
+                                    <span class="font-medium">{{ $loan->user->name }}</span>
+                                    <!-- Tampilkan info buku di mobile -->
+                                    <span class="block text-sm text-gray-500 md:hidden">
+                                        {{ Str::limit($loan->buku->judul, 30) }}
+                                    </span>
+                                    <!-- Tampilkan tanggal di mobile -->
+                                    <span class="block text-xs text-gray-400 sm:hidden">
+                                        {{ $loan->tgl_pinjam ? $loan->tgl_pinjam->format('d/m/Y') : '-' }} -
+                                        {{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d/m/Y') : '-' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 hidden md:table-cell">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-14 rounded-lg overflow-hidden bg-gray-100">
+                                    @if($loan->buku->cover_img)
+                                        <img src="{{ Storage::url($loan->buku->cover_img) }}" 
+                                             alt="{{ $loan->buku->judul }}"
                                              class="w-full h-full object-cover">
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-sm">{{ $loan->buku->judul }}</p>
-                                        <p class="text-xs text-gray-500">{{ $loan->buku->penulis }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                @php
-                                    $statusClasses = [
-                                        'pending' => 'badge-warning',
-                                        'diproses' => 'badge-info',
-                                        'dikirim' => 'badge-primary',
-                                        'dipinjam' => 'badge-success',
-                                        'terlambat' => 'badge-error',
-                                        'dikembalikan' => 'badge-neutral',
-                                        'ditolak' => 'badge-error'
-                                    ];
-                                @endphp
-                                <span class="badge {{ $statusClasses[$loan->status] ?? 'badge-ghost' }}">
-                                    {{ $loan->status }}
-                                </span>
-                            </td>
-                            <td>{{ $loan->tgl_peminjaman_diinginkan ? $loan->tgl_peminjaman_diinginkan->format('d M Y') : '-' }}</td>
-                            <td>{{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d M Y') : '-' }}</td>
-                            <td>
-                                @if($loan->total_denda > 0)
-                                    <span class="text-error font-medium">Rp {{ number_format($loan->total_denda, 0, ',', '.') }}</span>
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-sm btn-ghost" title="View Details">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                    </button>
-                                    @if($loan->status === 'pending')
-                                        <button class="btn btn-sm btn-ghost text-success" title="Accept">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </button>
-                                        <button class="btn btn-sm btn-ghost text-error" title="Reject">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
                                     @endif
                                 </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">
-                {{ $loans->links() }}
-            </div>
+                                <span class="font-medium">{{ Str::limit($loan->buku->judul, 30) }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 hidden lg:table-cell">
+                            {{ $loan->tgl_pinjam ? $loan->tgl_pinjam->format('d/m/Y') : '-' }}
+                        </td>
+                        <td class="py-4 hidden sm:table-cell">
+                            {{ $loan->tgl_kembali_rencana ? $loan->tgl_kembali_rencana->format('d/m/Y') : '-' }}
+                        </td>
+                        <td class="py-4">
+                            <span class="badge {{ 
+                                match($loan->status) {
+                                    'pending' => 'badge-warning',
+                                    'diproses' => 'badge-info',
+                                    'dikirim' => 'badge-primary',
+                                    'dipinjam' => 'badge-success',
+                                    'terlambat' => 'badge-error',
+                                    'dikembalikan' => 'badge-neutral',
+                                    'ditolak' => 'badge-error',
+                                    default => 'badge-ghost'
+                                }
+                            }}">
+                                {{ $loan->status }}
+                            </span>
+                        </td>
+                        <td class="py-4">
+                            <div class="flex gap-2">
+                                <button wire:click="showDetail({{ $loan->id }})" class="btn btn-sm btn-ghost">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                                <button wire:click="updateStatus({{ $loan->id }})" class="btn btn-sm btn-ghost">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="p-4">
+            {{ $loans->links() }}
         </div>
     </div>
+
+    <!-- Modal detail dan update status tetap sama -->
 </div>
