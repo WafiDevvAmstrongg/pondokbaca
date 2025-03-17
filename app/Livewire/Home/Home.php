@@ -19,13 +19,27 @@ class Home extends Component
         
         // Fetch highest rated books using simplified Wilson Score for MariaDB
         $topRatedBooks = Buku::select([
-            'bukus.*',
+            'bukus.id',
+            'bukus.judul',
+            'bukus.penulis',
+            'bukus.cover_img',
+            'bukus.deskripsi',
+            'bukus.stok',
+            'bukus.kategori',
             DB::raw('COUNT(ratings.id) as total_ratings'),
             DB::raw('AVG(ratings.rating) as avg_rating'),
             DB::raw('(AVG(ratings.rating) * COUNT(ratings.rating) / (COUNT(ratings.rating) + 500)) as adjusted_score')
         ])
         ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
-        ->groupBy('bukus.id')
+        ->groupBy([
+            'bukus.id',
+            'bukus.judul',
+            'bukus.penulis',
+            'bukus.cover_img',
+            'bukus.deskripsi',
+            'bukus.stok',
+            'bukus.kategori'
+        ])
         ->having('total_ratings', '>', 0)
         ->orderByDesc('adjusted_score')
         ->take(5)
