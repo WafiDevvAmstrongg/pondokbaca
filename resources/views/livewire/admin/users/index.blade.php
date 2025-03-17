@@ -1,9 +1,9 @@
 <div>
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 class="text-xl font-semibold text-gray-800">Data User</h2>
-                <button wire:click="create" class="btn btn-primary">Tambah User</button>
+                <button wire:click="create" class="btn btn-primary w-full sm:w-auto">Tambah User</button>
             </div>
             <div class="mt-4">
                 <input type="text" wire:model.live="search" placeholder="Cari users..." 
@@ -20,137 +20,113 @@
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm text-green-700">
-                        {{ $notificationMessage }}
-                    </p>
+                    <p class="text-sm text-green-700">{{ $notificationMessage }}</p>
                 </div>
             </div>
         </div>
         @endif
-        
-        <div class="p-6">
-            <div class="overflow-x-auto">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users as $user)
-                        <tr>
-                            <td>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl overflow-hidden">
-                                        <img src="{{ $user->profile_img ? Storage::url('profiles/' . $user->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=random' }}"
-                                             alt="{{ $user->name }}" 
-                                             class="w-full h-full object-cover">
-                                    </div>
-                                    <span class="font-medium">{{ $user->name }}</span>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-left border-b border-gray-100">
+                        <th class="p-4 font-medium text-gray-400">User</th>
+                        <th class="p-4 font-medium text-gray-400">Email</th>
+                        <th class="p-4 font-medium text-gray-400">Role</th>
+                        <th class="p-4 font-medium text-gray-400">Status</th>
+                        <th class="p-4 font-medium text-gray-400">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach($users as $user)
+                    <tr>
+                        <td class="p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl overflow-hidden">
+                                    <img src="{{ $user->profile_img ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
+                                         alt="{{ $user->name }}"
+                                         class="w-full h-full object-cover">
                                 </div>
-                            </td>
-                            <td>{{ $user->email }}</td>
-                            <td>
-                                <span class="badge {{ 
-                                    match($user->role) {
-                                        'admin' => 'badge-primary',
-                                        'staff' => 'badge-secondary',
-                                        'user' => 'badge-ghost',
-                                        default => 'badge-ghost'
-                                    }
-                                }}">
-                                    {{ $user->role }}
-                                </span>
-                            </td>
-                            <td>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" 
-                                           class="toggle toggle-success"
-                                           wire:click="toggleActive({{ $user->id }})"
-                                           @checked($user->is_active) />
-                                </label>
-                            </td>
-                            <td>
+                                <span class="font-medium">{{ $user->name }}</span>
+                            </div>
+                        </td>
+                        <td class="p-4">{{ $user->email }}</td>
+                        <td class="p-4">
+                            <span class="badge {{ $user->role === 'admin' ? 'badge-primary' : 'badge-secondary' }}">
+                                {{ $user->role }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <div class="form-control">
+                                <input type="checkbox" 
+                                       class="toggle toggle-success"
+                                       wire:click="toggleActive({{ $user->id }})"
+                                       @checked($user->is_active)>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex gap-2">
                                 <button wire:click="edit({{ $user->id }})" class="btn btn-sm btn-ghost">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-4">Tidak ada user yang ditemukan</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">
-                {{ $users->links() }}
-            </div>
+                                <button wire:click="delete({{ $user->id }})" class="btn btn-sm btn-ghost text-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="p-4">
+            {{ $users->links() }}
         </div>
     </div>
 
-    <!-- Modal Form with Good UI and Good Functionality -->
     @if($showModal)
-    <dialog class="modal" {{ $showModal ? 'open' : '' }}>
+    <dialog class="modal modal-open">
         <div class="modal-box">
-            <h3 class="font-bold text-lg mb-4">{{ $userId ? 'Edit User: ' . $name : 'Tambah User Baru' }}</h3>
-            <form wire:submit.prevent="save">
-                <div class="form-control">
+            <h3 class="font-bold text-lg mb-4">{{ $userId ? 'Edit User' : 'Tambah User' }}</h3>
+            <form wire:submit="save">
+                <div class="form-control mb-4">
                     <label class="label">
                         <span class="label-text">Nama</span>
                     </label>
-                    <input type="text" wire:model.defer="name" class="input input-bordered" required />
-                    @error('name')
-                        <span class="text-error text-sm mt-1">{{ $message }}</span>
-                    @enderror
+                    <input type="text" wire:model="name" class="input input-bordered" required>
+                    @error('name') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="form-control mt-4">
+                <div class="form-control mb-4">
                     <label class="label">
                         <span class="label-text">Email</span>
                     </label>
-                    <input type="email" wire:model.defer="email" class="input input-bordered" required />
-                    @error('email')
-                        <span class="text-error text-sm mt-1">{{ $message }}</span>
-                    @enderror
+                    <input type="email" wire:model="email" class="input input-bordered" required>
+                    @error('email') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="form-control mt-4">
+                <div class="form-control mb-4">
                     <label class="label">
-                        <span class="label-text">Password {{ $userId ? '(Biarkan kosong jika tidak diubah)' : '' }}</span>
+                        <span class="label-text">Password {{ $userId ? '(Kosongkan jika tidak ingin mengubah)' : '' }}</span>
                     </label>
-                    <input type="password" wire:model.defer="password" class="input input-bordered" {{ $userId ? '' : 'required' }} />
-                    @error('password')
-                        <span class="text-error text-sm mt-1">{{ $message }}</span>
-                    @enderror
+                    <input type="password" wire:model="password" class="input input-bordered" {{ $userId ? '' : 'required' }}>
+                    @error('password') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="form-control mt-4">
+                <div class="form-control mb-4">
                     <label class="label">
                         <span class="label-text">Role</span>
                     </label>
-                    <select wire:model.defer="role" class="select select-bordered" required>
+                    <select wire:model="role" class="select select-bordered" required>
                         <option value="user">User</option>
                         <option value="staff">Staff</option>
                         <option value="admin">Admin</option>
                     </select>
-                    @error('role')
-                        <span class="text-error text-sm mt-1">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-control mt-4">
-                    <label class="label cursor-pointer">
-                        <span class="label-text">Active</span>
-                        <input type="checkbox" wire:model.defer="is_active" class="toggle" />
-                    </label>
+                    @error('role') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="modal-action">
@@ -161,13 +137,13 @@
         </div>
     </dialog>
     @endif
-
-    <script>
-    document.addEventListener('livewire:initialized', () => {
-        Livewire.on('propertyUpdated', () => {
-            // Tambahan untuk debugging
-            console.log('User properties telah diperbarui');
-        });
-    });
-    </script>
 </div>
+
+<script>
+document.addEventListener('livewire:initialized', () => {
+    Livewire.on('propertyUpdated', () => {
+        // Tambahan untuk debugging
+        console.log('User properties telah diperbarui');
+    });
+});
+</script>

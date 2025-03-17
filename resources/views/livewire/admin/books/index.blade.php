@@ -1,9 +1,9 @@
 <div>
     <div class="bg-white rounded-xl shadow-sm">
         <div class="p-6 border-b border-gray-100">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 class="text-xl font-semibold text-gray-800">Data Buku</h2>
-                <button wire:click="create" class="btn btn-primary">Tambah Buku</button>
+                <button wire:click="create" class="btn btn-primary w-full sm:w-auto">Tambah Buku</button>
             </div>
             <div class="mt-4">
                 <input type="text" wire:model.live="search" placeholder="Cari buku..." 
@@ -11,7 +11,6 @@
             </div>
         </div>
         
-        <!-- Success Notification -->
         @if ($showSuccessNotification)
         <div id="successNotification" class="bg-green-50 border-l-4 border-green-500 p-4 m-4 rounded-lg">
             <div class="flex items-center">
@@ -21,82 +20,74 @@
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <p class="text-sm text-green-700">
-                        {{ $notificationMessage }}
-                    </p>
+                    <p class="text-sm text-green-700">{{ $notificationMessage }}</p>
                 </div>
             </div>
         </div>
         @endif
-        
-        <div class="p-6">
-            <div class="overflow-x-auto">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Cover</th>
-                            <th>Judul</th>
-                            <th>Penulis</th>
-                            <th>Kategori</th>
-                            <th>Stok</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($books as $book)
-                        <tr>
-                            <td>
-                                <div class="w-16 h-20 rounded-lg overflow-hidden">
-                                    <img src="{{ $book->cover_img ? Storage::url($book->cover_img) : asset('images/default-book.jpg') }}" 
-                                         alt="{{ $book->judul }}" 
-                                         class="w-full h-full object-cover">
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-left border-b border-gray-100">
+                        <th class="p-4 font-medium text-gray-400">Buku</th>
+                        <th class="p-4 font-medium text-gray-400">Penulis</th>
+                        <th class="p-4 font-medium text-gray-400">ISBN</th>
+                        <th class="p-4 font-medium text-gray-400">Kategori</th>
+                        <th class="p-4 font-medium text-gray-400">Stok</th>
+                        <th class="p-4 font-medium text-gray-400">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach($books as $book)
+                    <tr>
+                        <td class="p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-16 rounded-lg overflow-hidden bg-gray-100">
+                                    @if($book->cover_img)
+                                        <img src="{{ Storage::url($book->cover_img) }}" 
+                                             alt="{{ $book->judul }}"
+                                             class="w-full h-full object-cover">
+                                    @endif
                                 </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <p class="font-medium">{{ $book->judul }}</p>
-                                    <p class="text-sm text-gray-500">ISBN: {{ $book->isbn ?? 'N/A' }}</p>
-                                </div>
-                            </td>
-                            <td>{{ $book->penulis }}</td>
-                            <td>
-                                <span class="badge badge-ghost">{{ $book->kategori }}</span>
-                            </td>
-                            <td>{{ $book->stok }}</td>
-                            <td>
+                                <span class="font-medium">{{ $book->judul }}</span>
+                            </div>
+                        </td>
+                        <td class="p-4">{{ $book->penulis }}</td>
+                        <td class="p-4">{{ $book->isbn }}</td>
+                        <td class="p-4">
+                            <span class="badge badge-ghost">{{ $book->kategori }}</span>
+                        </td>
+                        <td class="p-4">{{ $book->stok }}</td>
+                        <td class="p-4">
+                            <div class="flex gap-2">
                                 <button wire:click="edit({{ $book->id }})" class="btn btn-sm btn-ghost">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                <button wire:click="delete({{ $book->id }})" class="btn btn-sm btn-ghost text-error" 
-                                        onclick="return confirm('Yakin ingin menghapus buku ini?')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <button wire:click="delete({{ $book->id }})" class="btn btn-sm btn-ghost text-error">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-4">Tidak ada buku yang ditemukan</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">
-                {{ $books->links() }}
-            </div>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="p-4">
+            {{ $books->links() }}
         </div>
     </div>
 
-    <!-- Modal Form -->
     @if($showModal)
-    <dialog class="modal" {{ $showModal ? 'open' : '' }}>
+    <dialog class="modal modal-open">
         <div class="modal-box">
-            <h3 class="font-bold text-lg mb-4">{{ $bukuId ? 'Edit Buku: ' . $judul : 'Tambah Buku Baru' }}</h3>
-            <form wire:submit.prevent="save">
+            <h3 class="font-bold text-lg mb-4">{{ $bukuId ? 'Edit Buku' : 'Tambah Buku' }}</h3>
+            <form wire:submit="save">
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Judul</span>
