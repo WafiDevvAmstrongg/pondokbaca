@@ -12,6 +12,7 @@ class BookCard extends Component
     public $showDetailModal = false;
     public $selectedBook = null;
     public $checkoutToken = null;
+    public $books;
     public $isSukaByUser = false;
 
     protected $listeners = ['closeDetailModal' => 'closeModal'];
@@ -27,72 +28,51 @@ class BookCard extends Component
     {
         $this->showDetailModal = false;
         $this->selectedBook = null;
+        $this->checkoutToken = null;
     }
 
     public function toggleSuka($bookId)
     {
         if (!auth()->check()) {
-            $this->dispatch('swal', [
-                'title' => 'Perhatian!',
-                'text' => 'Silakan login terlebih dahulu untuk menyukai buku.',
-                'icon' => 'info'
-            ]);
             $this->dispatch('open-login-modal');
             return;
         }
 
         $user = auth()->user();
+        $book = Buku::find($bookId);
+
+        if (!$book) {
+            return;
+        }
+
         $existingSuka = Suka::where('id_user', $user->id)
                            ->where('id_buku', $bookId)
                            ->first();
 
         if ($existingSuka) {
             $existingSuka->delete();
-            $this->isSukaByUser = false;
-            $this->dispatch('swal', [
-                'title' => 'Berhasil!',
-                'text' => 'Buku telah dihapus dari daftar suka.',
-                'icon' => 'success'
-            ]);
         } else {
             Suka::create([
                 'id_user' => $user->id,
                 'id_buku' => $bookId
             ]);
-            $this->isSukaByUser = true;
-            $this->dispatch('swal', [
-                'title' => 'Berhasil!',
-                'text' => 'Buku telah ditambahkan ke daftar suka.',
-                'icon' => 'success'
-            ]);
         }
 
-        // Refresh book data
-        if ($this->selectedBook && $this->selectedBook->id === $bookId) {
-            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-        }
-
-        // Emit event untuk update tampilan di komponen lain
-        $this->dispatch('book-suka-updated');
+        // Refresh the books collection to update the suka count
+        $this->dispatch('refresh-books')->to('home.books.index');
     }
 
-    public function initiateCheckout()
+    public function checkout()
     {
         if (!auth()->check()) {
-            $this->closeModal();
-            $this->dispatch('swal', [
-                'title' => 'Perhatian!',
-                'text' => 'Silakan login terlebih dahulu untuk meminjam buku.',
-                'icon' => 'info'
-            ]);
             $this->dispatch('open-login-modal');
             return;
         }
 
-        if ($this->selectedBook->stok < 1) {
+        if (!$this->selectedBook->isAvailable()) {
             $this->dispatch('swal', [
-                'title' => 'Gagal!',
-                'text' => 'Maaf, stok buku sedang tidak tersedia.',
+                'title' => 'Maaf!',
+                'text' => 'Buku ini sedang tidak tersedia.',
                 'icon' => 'error'
             ]);
             return;
@@ -113,12 +93,6 @@ class BookCard extends Component
 
     public function render()
     {
-        $books = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
-                     ->withAvg('ratings', 'rating')
-                     ->withCount('suka')
-                     ->take(5)
-                     ->get();
-
-        return view('livewire.components.book-card', compact('books'));
+        return view('livewire.components.book-card');
     }
 }
