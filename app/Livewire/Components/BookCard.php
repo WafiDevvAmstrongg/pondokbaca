@@ -75,8 +75,8 @@ class BookCard extends Component
             $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
         }
 
-        // Emit event untuk update tampilan di komponen lain
-        $this->dispatch('book-suka-updated');
+        // Emit event untuk update tampilan di semua komponen
+        $this->dispatch('refresh-books');
     }
 
     public function initiateCheckout()

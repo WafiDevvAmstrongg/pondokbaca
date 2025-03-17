@@ -8,6 +8,8 @@ use Livewire\Component;
 
 class Home extends Component
 {
+    protected $listeners = ['refresh-books' => '$refresh'];
+
     public function render()
     {
         // Fetch popular books (most likes)
