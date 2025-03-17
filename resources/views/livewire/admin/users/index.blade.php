@@ -26,37 +26,40 @@
         </div>
         @endif
 
-        <div class="overflow-x-auto">
+        <div class="p-4">
             <table class="w-full">
                 <thead>
                     <tr class="text-left border-b border-gray-100">
-                        <th class="p-4 font-medium text-gray-400">User</th>
-                        <th class="p-4 font-medium text-gray-400">Email</th>
-                        <th class="p-4 font-medium text-gray-400">Role</th>
-                        <th class="p-4 font-medium text-gray-400">Status</th>
-                        <th class="p-4 font-medium text-gray-400">Action</th>
+                        <th class="pb-4 font-medium text-gray-400">User</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden sm:table-cell">Email</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden lg:table-cell">Role</th>
+                        <th class="pb-4 font-medium text-gray-400">Status</th>
+                        <th class="pb-4 font-medium text-gray-400">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($users as $user)
                     <tr>
-                        <td class="p-4">
+                        <td class="py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl overflow-hidden">
                                     <img src="{{ $user->profile_img ?? 'https://ui-avatars.com/api/?name='.$user->name }}" 
                                          alt="{{ $user->name }}"
                                          class="w-full h-full object-cover">
                                 </div>
-                                <span class="font-medium">{{ $user->name }}</span>
+                                <div>
+                                    <span class="font-medium">{{ $user->name }}</span>
+                                    <span class="block text-sm text-gray-500 sm:hidden">{{ $user->email }}</span>
+                                </div>
                             </div>
                         </td>
-                        <td class="p-4">{{ $user->email }}</td>
-                        <td class="p-4">
+                        <td class="py-4 hidden sm:table-cell">{{ $user->email }}</td>
+                        <td class="py-4 hidden lg:table-cell">
                             <span class="badge {{ $user->role === 'admin' ? 'badge-primary' : 'badge-secondary' }}">
                                 {{ $user->role }}
                             </span>
                         </td>
-                        <td class="p-4">
+                        <td class="py-4">
                             <div class="form-control">
                                 <input type="checkbox" 
                                        class="toggle toggle-success"
@@ -64,7 +67,7 @@
                                        @checked($user->is_active)>
                             </div>
                         </td>
-                        <td class="p-4">
+                        <td class="py-4">
                             <div class="flex gap-2">
                                 <button wire:click="edit({{ $user->id }})" class="btn btn-sm btn-ghost">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

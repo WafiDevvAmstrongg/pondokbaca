@@ -26,22 +26,22 @@
         </div>
         @endif
 
-        <div class="overflow-x-auto">
+        <div class="p-4">
             <table class="w-full">
                 <thead>
                     <tr class="text-left border-b border-gray-100">
-                        <th class="p-4 font-medium text-gray-400">Buku</th>
-                        <th class="p-4 font-medium text-gray-400">Penulis</th>
-                        <th class="p-4 font-medium text-gray-400">ISBN</th>
-                        <th class="p-4 font-medium text-gray-400">Kategori</th>
-                        <th class="p-4 font-medium text-gray-400">Stok</th>
-                        <th class="p-4 font-medium text-gray-400">Action</th>
+                        <th class="pb-4 font-medium text-gray-400">Buku</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden sm:table-cell">Penulis</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden lg:table-cell">ISBN</th>
+                        <th class="pb-4 font-medium text-gray-400 hidden md:table-cell">Kategori</th>
+                        <th class="pb-4 font-medium text-gray-400">Stok</th>
+                        <th class="pb-4 font-medium text-gray-400">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($books as $book)
                     <tr>
-                        <td class="p-4">
+                        <td class="py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-16 rounded-lg overflow-hidden bg-gray-100">
                                     @if($book->cover_img)
@@ -50,16 +50,20 @@
                                              class="w-full h-full object-cover">
                                     @endif
                                 </div>
-                                <span class="font-medium">{{ $book->judul }}</span>
+                                <div>
+                                    <span class="font-medium">{{ $book->judul }}</span>
+                                    <span class="block text-sm text-gray-500 sm:hidden">{{ $book->penulis }}</span>
+                                    <span class="block text-sm text-gray-500 md:hidden">{{ $book->kategori }}</span>
+                                </div>
                             </div>
                         </td>
-                        <td class="p-4">{{ $book->penulis }}</td>
-                        <td class="p-4">{{ $book->isbn }}</td>
-                        <td class="p-4">
+                        <td class="py-4 hidden sm:table-cell">{{ $book->penulis }}</td>
+                        <td class="py-4 hidden lg:table-cell">{{ $book->isbn }}</td>
+                        <td class="py-4 hidden md:table-cell">
                             <span class="badge badge-ghost">{{ $book->kategori }}</span>
                         </td>
-                        <td class="p-4">{{ $book->stok }}</td>
-                        <td class="p-4">
+                        <td class="py-4">{{ $book->stok }}</td>
+                        <td class="py-4">
                             <div class="flex gap-2">
                                 <button wire:click="edit({{ $book->id }})" class="btn btn-sm btn-ghost">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
