@@ -17,10 +17,9 @@ class BookCard extends Component
 
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
-        'toggle-suka' => 'toggleSuka'
+        'toggle-suka' => 'toggleSuka',
+        'showDetailModal' => 'showModal'
     ];
-
-    protected $queryString = ['selectedCategory'];
 
     public function mount($books = null)
     {
@@ -129,15 +128,11 @@ class BookCard extends Component
     public function render()
     {
         if (!$this->books) {
-            $query = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
-                         ->withAvg('ratings', 'rating')
-                         ->withCount('suka');
-
-            if (request()->has('selectedCategory')) {
-                $query->where('kategori', request()->selectedCategory);
-            }
-
-            $this->books = $query->take(5)->get();
+            $this->books = Buku::select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok'])
+                               ->withAvg('ratings', 'rating')
+                               ->withCount('suka')
+                               ->take(5)
+                               ->get();
         }
 
         return view('livewire.components.book-card', [
