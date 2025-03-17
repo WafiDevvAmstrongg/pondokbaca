@@ -1,6 +1,6 @@
-<div class="space-y-8">
+<div class="space-y-6 sm:space-y-8">
     <!-- Hero Banner -->
-    <div class="relative w-full h-64 sm:h-72 md:h-80 rounded-2xl overflow-hidden shadow-xl carousel-container">
+    <div class="relative w-full h-48 sm:h-64 md:h-72 lg:h-80 rounded-2xl overflow-hidden shadow-xl carousel-container">
         <!-- Carousel Slides -->
         <div class="carousel-track flex transition-transform duration-500 ease-in-out h-full">
             <!-- Slide 1 -->
@@ -105,12 +105,29 @@
         </div>
     </div>
 
-    <!-- Categories Section -->
-    <section class="py-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Kategori Buku</h2>
+    <!-- Popular Books -->
+    <div class="space-y-4">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Buku Terfavorit</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+            @foreach($favoriteBooks as $book)
+                @livewire('components.book-card', ['book' => $book], key('fav-'.$book->id))
+            @endforeach
         </div>
+    </div>
 
+    <!-- Top Rated Books -->
+    <div class="space-y-4">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Rating Tertinggi</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+            @foreach($topRatedBooks as $book)
+                @livewire('components.book-card', ['book' => $book], key('top-'.$book->id))
+            @endforeach
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="space-y-4">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Kategori</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @foreach ($categories as $category)
                 <a href="#"
@@ -214,67 +231,7 @@
                 </a>
             @endforeach
         </div>
-    </section>
-
-    <!-- Most Favorite Books Section -->
-    <section class="py-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Buku Terfavorit</h2>
-            <a href="#"
-                class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors">Lihat
-                Semua</a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            @foreach ($favoriteBooks as $book)
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                    wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
-                    <div class="aspect-[3/4] overflow-hidden">
-                        <img src="{{ Storage::url($book->cover_img) }}" alt="{{ $book->judul }}"
-                            class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-medium text-gray-900 mb-1">{{ $book->judul }}</h3>
-                        <p class="text-sm text-gray-600">{{ $book->penulis }}</p>
-                        <div class="flex items-center mt-2">
-                            <span class="text-red-400">♥</span>
-                            <span class="ml-1 text-sm">{{ $book->suka_count }}</span>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
-
-    <!-- Top Rated Books Section -->
-    <section class="py-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Buku Rating Tertinggi</h2>
-            <a href="#"
-                class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors">Lihat
-                Semua</a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            @foreach ($topRatedBooks as $book)
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                    wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
-                    <div class="aspect-[3/4] overflow-hidden">
-                        <img src="{{ Storage::url($book->cover_img) }}" alt="{{ $book->judul }}"
-                            class="w-full h-full object-cover">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-medium text-gray-900 mb-1">{{ $book->judul }}</h3>
-                        <p class="text-sm text-gray-600">{{ $book->penulis }}</p>
-                        <div class="flex items-center mt-2">
-                            <span class="text-yellow-400">★</span>
-                            <span class="ml-1 text-sm">{{ number_format($book->ratings_avg_rating, 1) }}</span>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </section>
+    </div>
 
     <!-- Include Book Card Component for Detail Modal -->
     <div>

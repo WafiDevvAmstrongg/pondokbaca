@@ -41,7 +41,7 @@
                         </label>
                         <input type="date" 
                                wire:model="tgl_kembali_rencana"
-                               min="{{ $tgl_peminjaman_diinginkan ?? date('Y-m-d') }}"
+                               min="{{ $minReturnDate ?? Carbon\Carbon::parse($tgl_peminjaman_diinginkan)->addDay()->format('Y-m-d') }}"
                                max="{{ $maxReturnDate }}"
                                class="input input-bordered {{ !$tgl_peminjaman_diinginkan ? 'cursor-not-allowed bg-gray-100' : '' }}" 
                                {{ !$tgl_peminjaman_diinginkan ? 'disabled' : '' }}
@@ -49,7 +49,10 @@
                         @error('tgl_kembali_rencana') 
                             <span class="text-error text-sm mt-1">{{ $message }}</span> 
                         @enderror
-                        <span class="text-sm text-gray-500 mt-1">Maksimal {{ $maxReturnDate ? Carbon\Carbon::parse($maxReturnDate)->format('d M Y') : '7 hari' }} dari tanggal peminjaman</span>
+                        <span class="text-sm text-gray-500 mt-1">
+                            Minimal {{ $minReturnDate ? Carbon\Carbon::parse($minReturnDate)->format('d M Y') : '1 hari' }} dan 
+                            maksimal {{ $maxReturnDate ? Carbon\Carbon::parse($maxReturnDate)->format('d M Y') : '7 hari' }} dari tanggal peminjaman
+                        </span>
                     </div>
                 </div>
 

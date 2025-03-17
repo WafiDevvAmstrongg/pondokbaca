@@ -1,12 +1,12 @@
-<div class="space-y-8">
+<div class="space-y-6 sm:space-y-8">
     <!-- Header -->
     <div>
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Daftar Buku</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Daftar Buku</h1>
         <p class="text-gray-500">Jelajahi koleksi buku islami kami yang lengkap dan bermanfaat</p>
     </div>
 
     <!-- Categories -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Kategori</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <!-- Al-Quran & Hadits -->
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Books Grid -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h2 class="text-lg font-semibold text-gray-900">
@@ -77,49 +77,11 @@
             @endif
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
             @forelse($books as $book)
-                <div class="group relative">
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                         wire:click="$dispatch('showDetailModal', { bookId: {{ $book->id }} })">
-                        <div class="aspect-[3/4] overflow-hidden relative">
-                            <img src="{{ Storage::url($book->cover_img) }}" 
-                                 alt="{{ $book->judul }}"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            @if($book->stok > 0)
-                                <div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Tersedia
-                                </div>
-                            @else
-                                <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                    Dipinjam
-                                </div>
-                            @endif
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-medium text-gray-900 mb-1 line-clamp-1">{{ $book->judul }}</h3>
-                            <p class="text-sm text-gray-600 mb-2 line-clamp-1">{{ $book->penulis }}</p>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-1">
-                                    <span class="text-yellow-400">★</span>
-                                    <span class="text-sm text-gray-600">{{ number_format($book->ratings_avg_rating, 1) }}</span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-red-400">♥</span>
-                                    <span class="text-sm text-gray-600">{{ $book->suka_count }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @livewire('components.book-card', ['book' => $book], key($book->id))
             @empty
-                <div class="col-span-full py-12 text-center">
-                    <div class="w-24 h-24 mx-auto mb-4 text-gray-300">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
+                <div class="col-span-full text-center py-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada buku ditemukan</h3>
                     <p class="text-gray-500">Coba pilih kategori lain atau reset filter</p>
                 </div>

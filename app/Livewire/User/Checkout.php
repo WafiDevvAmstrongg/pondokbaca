@@ -17,6 +17,7 @@ class Checkout extends Component
     public $tgl_peminjaman_diinginkan;
     public $tgl_kembali_rencana;
     public $maxReturnDate;
+    public $minReturnDate;
 
     protected function rules()
     {
@@ -25,7 +26,7 @@ class Checkout extends Component
             'tgl_kembali_rencana' => [
                 'required',
                 'date',
-                'after_or_equal:tgl_peminjaman_diinginkan',
+                'after:tgl_peminjaman_diinginkan',
                 'before_or_equal:maxReturnDate'
             ],
             'alamat_pengiriman' => 'required|string|min:10',
@@ -35,7 +36,7 @@ class Checkout extends Component
 
     protected $messages = [
         'tgl_peminjaman_diinginkan.after_or_equal' => 'Tanggal peminjaman tidak boleh kurang dari hari ini',
-        'tgl_kembali_rencana.after_or_equal' => 'Tanggal pengembalian harus setelah tanggal peminjaman',
+        'tgl_kembali_rencana.after' => 'Minimal peminjaman adalah 1 hari',
         'tgl_kembali_rencana.before_or_equal' => 'Maksimal peminjaman adalah 7 hari',
         'alamat_pengiriman.required' => 'Alamat pengiriman harus diisi',
         'alamat_pengiriman.min' => 'Alamat pengiriman terlalu pendek'
@@ -45,9 +46,14 @@ class Checkout extends Component
     {
         if ($value) {
             $this->maxReturnDate = Carbon::parse($value)->addDays(7)->format('Y-m-d');
+            $this->minReturnDate = Carbon::parse($value)->addDay()->format('Y-m-d');
+            
             // Reset tanggal pengembalian jika sudah tidak valid
-            if ($this->tgl_kembali_rencana && Carbon::parse($this->tgl_kembali_rencana)->gt($this->maxReturnDate)) {
-                $this->tgl_kembali_rencana = null;
+            if ($this->tgl_kembali_rencana) {
+                $tglKembali = Carbon::parse($this->tgl_kembali_rencana);
+                if ($tglKembali->lte($value) || $tglKembali->gt($this->maxReturnDate)) {
+                    $this->tgl_kembali_rencana = null;
+                }
             }
         }
     }
