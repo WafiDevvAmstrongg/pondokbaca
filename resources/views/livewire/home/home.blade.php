@@ -298,7 +298,7 @@
     </section>
 
     <!-- Single Book Detail Modal Component -->
-    @livewire('components.book-card')
+    @livewire('components.book-card', ['modalOnly' => true])
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
