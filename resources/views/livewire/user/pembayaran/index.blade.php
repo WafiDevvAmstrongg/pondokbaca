@@ -17,7 +17,7 @@
                     <div class="text-center py-8">
                         <h3 class="text-lg font-medium text-gray-900">Tidak ada denda yang perlu dibayar</h3>
                         <p class="mt-1 text-sm text-gray-500">Anda dapat meminjam buku kembali</p>
-                        <a href="{{ route('books.index') }}" class="btn btn-primary mt-4">Lihat Koleksi Buku</a>
+                        <a href="{{ route('books') }}" class="btn btn-primary mt-4">Lihat Koleksi Buku</a>
                     </div>
                 @else
                     <div class="overflow-x-auto">

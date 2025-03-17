@@ -62,6 +62,6 @@ class Index extends Component
         return view('livewire.user.pembayaran.index', [
             'loans' => $loans,
             'totalDenda' => $totalDenda
-        ])->layout('layouts.app');
+        ])->layout('layouts.user');
     }
 } 
