@@ -21,8 +21,9 @@ class Home extends Component
                 'bukus.deskripsi', 
                 'bukus.stok'
             ])
+            ->with('suka') // Eager load suka relation
             ->withCount('suka')
-            ->withAvg('ratings', 'rating')  // Include average rating
+            ->withAvg('ratings', 'rating')
             ->orderByDesc('suka_count')
             ->take(5)
             ->get();
@@ -37,6 +38,9 @@ class Home extends Component
                 'bukus.deskripsi',
                 'bukus.stok'
             ])
+            ->with('suka') // Eager load suka relation
+            ->withCount('suka')
+            ->withAvg('ratings', 'rating')
             ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
             ->leftJoin('peminjamans', 'bukus.id', '=', 'peminjamans.id_buku')
             ->select([

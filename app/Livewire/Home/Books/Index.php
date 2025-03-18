@@ -37,6 +37,7 @@ class Index extends Component
     {
         $query = Buku::query()
             ->select(['id', 'judul', 'penulis', 'cover_img', 'deskripsi', 'stok', 'kategori'])
+            ->with('suka')
             ->withAvg('ratings', 'rating')
             ->withCount('suka');
 

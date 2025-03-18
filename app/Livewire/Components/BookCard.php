@@ -23,19 +23,15 @@ class BookCard extends Component
 
     public function mount($books = null)
     {
-        if (is_object($books) && method_exists($books, 'items')) {
-            $this->books = collect($books->items())->map(function($book) {
-                return Buku::with(['suka'])->withCount('suka')->find($book->id);
-            });
-        } else {
-            $this->books = $books;
-        }
+        $this->books = $books;
     }
 
     public function showDetail($bookId)
     {
-        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-        $this->isSukaByUser = auth()->check() ? $this->hasSukaBook($bookId) : false;
+        $this->selectedBook = Buku::with(['ratings', 'suka'])
+            ->withCount('suka')
+            ->withAvg('ratings', 'rating')
+            ->find($bookId);
         $this->showDetailModal = true;
     }
 
@@ -73,24 +69,8 @@ class BookCard extends Component
             $message = 'Buku telah ditambahkan ke daftar suka.';
         }
 
-        // Refresh data buku yang diupdate
-        foreach ($this->books as $key => $book) {
-            if ($book->id === $bookId) {
-                // Update suka_count dan load relasi suka
-                $this->books[$key] = Buku::with(['suka'])
-                    ->withCount('suka')
-                    ->withAvg('ratings', 'rating')
-                    ->find($bookId);
-            }
-        }
-
-        // Update selectedBook jika sedang dibuka
-        if ($this->selectedBook && $this->selectedBook->id === $bookId) {
-            $this->selectedBook = Buku::with(['ratings', 'suka'])
-                ->withCount('suka')
-                ->find($bookId);
-            $this->isSukaByUser = !$existingSuka;
-        }
+        // Refresh the entire component
+        $this->dispatch('refresh-books');
 
         $this->dispatch('swal', [
             'title' => 'Berhasil!',
