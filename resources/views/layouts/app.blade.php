@@ -11,21 +11,22 @@
 </head>
 
 <body class="bg-[#F8FAFC]">
-    {{ $slot }}
+    <div>
+        {{ $slot }}
+    </div>
+    
     @livewireScripts
     @stack('scripts')
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.addEventListener('livewire:initialized', () => {
-                Livewire.on('swal', (params) => {
-                    Swal.fire({
-                        title: params.title,
-                        text: params.text,
-                        icon: params.icon,
-                        confirmButtonColor: '#1F4B3F',
-                        confirmButtonText: 'OK'
-                    });
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('swal', (params) => {
+                Swal.fire({
+                    title: params.title,
+                    text: params.text,
+                    icon: params.icon,
+                    confirmButtonColor: '#1F4B3F',
+                    confirmButtonText: 'OK'
                 });
             });
         });
