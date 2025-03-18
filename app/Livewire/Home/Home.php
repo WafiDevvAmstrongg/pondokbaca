@@ -22,7 +22,9 @@ class Home extends Component
                 'bukus.stok',
                 'bukus.isbn',
                 'bukus.penerbit',
-                'bukus.tahun_terbit'
+                'bukus.tahun_terbit',
+                'bukus.kategori',
+                'bukus.denda_harian'
             ])
             ->with(['suka', 'ratings.user']) // Eager load semua relasi yang diperlukan
             ->withCount('suka')
@@ -42,7 +44,9 @@ class Home extends Component
                 'bukus.stok',
                 'bukus.isbn',
                 'bukus.penerbit',
-                'bukus.tahun_terbit'
+                'bukus.tahun_terbit',
+                'bukus.kategori',
+                'bukus.denda_harian'
             ])
             ->with(['suka', 'ratings.user']) // Eager load semua relasi yang diperlukan
             ->withCount('suka')
@@ -67,7 +71,11 @@ class Home extends Component
                 'bukus.stok',
                 'bukus.isbn',
                 'bukus.penerbit',
-                'bukus.tahun_terbit'
+                'bukus.tahun_terbit',
+                'bukus.kategori',
+                'bukus.denda_harian',
+                'bukus.created_at',
+                'bukus.updated_at'
             ])
             ->having('total_ratings', '>', 0)
             ->orderByDesc('adjusted_score')
