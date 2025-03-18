@@ -109,10 +109,13 @@
                         <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
                         <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-1">{{ $book->penulis }}</p>
                         <div class="flex items-center gap-4">
+                            @if($showRating)
                             <div class="flex items-center gap-1.5">
                                 <span class="text-yellow-400 text-base">★</span>
                                 <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating ?? 0, 1) }}</span>
                             </div>
+                            @endif
+                            @if($showLikes)
                             <div class="flex items-center gap-1.5">
                                 <button wire:click.stop="toggleSuka({{ $book->id }})" 
                                         class="text-base hover:scale-110 transition-transform {{ $book->suka->where('id_user', auth()->id())->count() > 0 ? 'text-red-500' : 'text-gray-300' }}">
@@ -120,6 +123,7 @@
                                 </button>
                                 <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count ?? 0 }}</span>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

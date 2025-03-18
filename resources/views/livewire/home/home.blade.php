@@ -215,38 +215,40 @@
         </div>
     </section>
 
-    <!-- Replace the current book sections with this in your home view -->
-
     <!-- Most Favorite Books Section -->
     <section class="py-4 sm:py-6">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Buku Terfavorit</h2>
-            <a href="#"
-                class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors text-sm sm:text-base">
+            <a href="#" class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors text-sm sm:text-base">
                 Lihat Semua
             </a>
         </div>
 
-        <!-- Use Livewire BookCard component -->
-        @livewire('components.book-card', ['books' => $favoriteBooks])
+        @livewire('components.book-card', [
+            'books' => $favoriteBooks,
+            'showLikes' => true,
+            'showRating' => false
+        ])
     </section>
 
     <!-- Top Rated Books Section -->
     <section class="py-4 sm:py-6">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Buku Rating Tertinggi</h2>
-            <a href="#"
-                class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors text-sm sm:text-base">
+            <a href="#" class="bg-emerald-500/20 hover:bg-emerald-500/40 hover:text-emerald-600 py-2 px-4 rounded-lg text-emerald-500 font-medium transition-colors text-sm sm:text-base">
                 Lihat Semua
             </a>
         </div>
 
-        <!-- Use Livewire BookCard component -->
-        @livewire('components.book-card', ['books' => $topRatedBooks])
+        @livewire('components.book-card', [
+            'books' => $topRatedBooks,
+            'showLikes' => false,
+            'showRating' => true
+        ])
     </section>
 
-        <!-- Add this at the bottom to handle the detail modal -->
-        {{-- @livewire('components.book-card', ['books' => null]) --}}
+    <!-- Add this at the bottom to handle the detail modal -->
+    {{-- @livewire('components.book-card', ['books' => null]) --}}
 
     <!-- Include Book Card Component for Detail Modal -->
     {{-- <div>

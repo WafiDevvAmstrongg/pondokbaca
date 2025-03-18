@@ -14,6 +14,8 @@ class BookCard extends Component
     public $checkoutToken = null;
     public $isSukaByUser = false;
     public $books = null;
+    public $showLikes = true;
+    public $showRating = true;
 
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
@@ -21,9 +23,11 @@ class BookCard extends Component
         'showDetailModal' => 'showModal'
     ];
 
-    public function mount($books = null)
+    public function mount($books = null, $showLikes = true, $showRating = true)
     {
         $this->books = $books;
+        $this->showLikes = $showLikes;
+        $this->showRating = $showRating;
     }
 
     public function showDetail($bookId)
