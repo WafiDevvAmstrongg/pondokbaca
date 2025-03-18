@@ -19,9 +19,12 @@ class Home extends Component
                 'bukus.penulis', 
                 'bukus.cover_img', 
                 'bukus.deskripsi', 
-                'bukus.stok'
+                'bukus.stok',
+                'bukus.isbn',
+                'bukus.penerbit',
+                'bukus.tahun_terbit'
             ])
-            ->with('suka') // Eager load suka relation
+            ->with(['suka', 'ratings.user']) // Eager load semua relasi yang diperlukan
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->orderByDesc('suka_count')
@@ -36,20 +39,18 @@ class Home extends Component
                 'bukus.penulis',
                 'bukus.cover_img',
                 'bukus.deskripsi',
-                'bukus.stok'
+                'bukus.stok',
+                'bukus.isbn',
+                'bukus.penerbit',
+                'bukus.tahun_terbit'
             ])
-            ->with('suka') // Eager load suka relation
+            ->with(['suka', 'ratings.user']) // Eager load semua relasi yang diperlukan
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
             ->leftJoin('peminjamans', 'bukus.id', '=', 'peminjamans.id_buku')
             ->select([
-                'bukus.id',
-                'bukus.judul',
-                'bukus.penulis',
-                'bukus.cover_img',
-                'bukus.deskripsi',
-                'bukus.stok',
+                'bukus.*',
                 DB::raw('COUNT(DISTINCT ratings.id) as total_ratings'),
                 DB::raw('AVG(ratings.rating) as ratings_avg_rating'),
                 DB::raw('COUNT(DISTINCT peminjamans.id) as borrow_count'),
@@ -63,7 +64,10 @@ class Home extends Component
                 'bukus.penulis',
                 'bukus.cover_img',
                 'bukus.deskripsi',
-                'bukus.stok'
+                'bukus.stok',
+                'bukus.isbn',
+                'bukus.penerbit',
+                'bukus.tahun_terbit'
             ])
             ->having('total_ratings', '>', 0)
             ->orderByDesc('adjusted_score')
