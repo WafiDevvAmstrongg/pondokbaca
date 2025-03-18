@@ -1,7 +1,7 @@
 <!-- Detail Modal -->
 @if($showDetailModal && $selectedBook)
-<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
-    <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70" x-data>
+    <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto" @click.outside="$wire.closeModal()">
         <div class="p-6">
             <!-- Book Details Section -->
             <div class="flex flex-col md:flex-row gap-6">
@@ -132,7 +132,8 @@
                     
                     @if(count($this->ratings) > $this->limitRatings && !$showAllRatings)
                         <div class="mt-4 text-center">
-                            <button wire:click="showAllRatings" 
+                            <button type="button" 
+                                    wire:click="showAllRatings" 
                                     class="text-blue-600 hover:text-blue-800 font-medium">
                                 Lihat semua ulasan ({{ count($this->ratings) }})
                             </button>
@@ -145,10 +146,19 @@
                 @endif
             </div>
         </div>
-        <div class="border-t border-gray-100 p-4 flex justify-end">
-            <button wire:click="closeModal" type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
+        <div class="border-t border-gray-100 p-4 flex justify-end gap-2">
+            <button type="button" 
+                    wire:click="closeModal" 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
                 Tutup
             </button>
+            @if(auth()->check() && $selectedBook->stok > 0)
+                <button type="button"
+                        wire:click="initiateCheckout"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded transition-colors">
+                    Pinjam Sekarang
+                </button>
+            @endif
         </div>
     </div>
 </div>
@@ -216,6 +226,14 @@
             if (e.key === 'Escape') {
                 @this.closeModal();
             }
+        });
+
+        Livewire.on('redirect-to', (data) => {
+            window.location.href = data.url;
+        });
+
+        Livewire.on('modal-closed', () => {
+            // Additional cleanup if needed
         });
     });
 </script>
