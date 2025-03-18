@@ -29,9 +29,13 @@ class BookCard extends Component
     public function mount($books = null)
     {
         if (is_object($books) && method_exists($books, 'items')) {
-            $this->books = $books->items();
+            $this->books = collect($books->items())->map(function ($book) {
+                return (object) $book;
+            })->toArray();
         } else if (is_array($books)) {
-            $this->books = collect($books);
+            $this->books = collect($books)->map(function ($book) {
+                return (object) $book;
+            })->toArray();
         } else {
             $this->books = $books;
         }
@@ -113,12 +117,16 @@ class BookCard extends Component
         // Update books collection dengan cara yang lebih aman
         if ($this->books) {
             $this->books = collect($this->books)->map(function($book) use ($updatedBook) {
-                if ($book->id === $updatedBook->id) {
-                    // Pastikan properti penting tetap ada
-                    $updatedBook->isSukaByUser = auth()->check() ? $updatedBook->isSukaBy(auth()->id()) : false;
-                    return $updatedBook;
+                if ((is_object($book) ? $book->id : $book['id']) === $updatedBook->id) {
+                    // Convert to array and ensure all properties are accessible
+                    return (object) array_merge((array) $book, [
+                        'id' => $updatedBook->id,
+                        'suka_count' => $updatedBook->suka_count,
+                        'ratings_avg_rating' => $updatedBook->ratings_avg_rating,
+                        'isSukaByUser' => auth()->check() ? $updatedBook->isSukaBy(auth()->id()) : false
+                    ]);
                 }
-                return $book;
+                return (object) $book;
             })->toArray();
         }
 

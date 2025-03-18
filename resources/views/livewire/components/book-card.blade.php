@@ -159,14 +159,14 @@
 @if(count($books) > 0)
 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
     @foreach ($books as $book)
-        <div class="group relative" wire:key="book-card-{{ $book->id }}">
+        <div class="group relative" wire:key="book-card-{{ is_object($book) ? $book->id : $book['id'] }}">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                 wire:click="showDetail({{ $book->id }})">
+                 wire:click="showDetail({{ is_object($book) ? $book->id : $book['id'] }})">
                 <div class="aspect-[3/4] overflow-hidden relative">
-                    <img src="{{ Storage::url($book->cover_img) }}" 
-                         alt="{{ $book->judul }}"
+                    <img src="{{ Storage::url(is_object($book) ? $book->cover_img : $book['cover_img']) }}" 
+                         alt="{{ is_object($book) ? $book->judul : $book['judul'] }}"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    @if($book->stok > 0)
+                    @if((is_object($book) ? $book->stok : $book['stok']) > 0)
                         <div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
                             Tersedia
                         </div>
@@ -177,21 +177,29 @@
                     @endif
                 </div>
                 <div class="p-3 sm:p-4">
-                    <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">{{ $book->judul }}</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-1">{{ $book->penulis }}</p>
+                    <h3 class="font-medium text-gray-900 mb-1 text-sm sm:text-base line-clamp-1">
+                        {{ is_object($book) ? $book->judul : $book['judul'] }}
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-1">
+                        {{ is_object($book) ? $book->penulis : $book['penulis'] }}
+                    </p>
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-1.5">
                             <span class="text-yellow-400 text-base">★</span>
-                            <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating ?? 0, 1) }}</span>
+                            <span class="text-sm text-gray-600 font-medium">
+                                {{ number_format(is_object($book) ? ($book->ratings_avg_rating ?? 0) : ($book['ratings_avg_rating'] ?? 0), 1) }}
+                            </span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                            <button wire:click.stop="toggleSuka({{ is_object($book) ? $book->id : $book['id'] }})" 
                                     wire:loading.class="opacity-50"
                                     wire:loading.attr="disabled"
-                                    class="text-base hover:scale-110 transition-transform {{ auth()->check() && $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
+                                    class="text-base hover:scale-110 transition-transform {{ auth()->check() && (is_object($book) ? $book->isSukaByUser : $book['isSukaByUser']) ? 'text-red-500' : 'text-gray-300' }}">
                                 ♥
                             </button>
-                            <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count ?? 0 }}</span>
+                            <span class="text-sm text-gray-600 font-medium">
+                                {{ is_object($book) ? ($book->suka_count ?? 0) : ($book['suka_count'] ?? 0) }}
+                            </span>
                         </div>
                     </div>
                 </div>
