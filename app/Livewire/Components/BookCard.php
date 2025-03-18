@@ -48,8 +48,18 @@ class BookCard extends Component
 
     public function closeModal()
     {
+        // Reset modal state
         $this->showDetailModal = false;
         $this->selectedBook = null;
+
+        // Refresh books collection dengan eager loading
+        if ($this->books) {
+            $this->books = Buku::whereIn('id', $this->books->pluck('id'))
+                ->with('suka')
+                ->withCount('suka')
+                ->withAvg('ratings', 'rating')
+                ->get();
+        }
     }
 
     public function toggleSuka($bookId)
