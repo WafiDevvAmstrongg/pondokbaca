@@ -37,14 +37,26 @@ class BookCard extends Component
 
     public function showDetail($bookId)
     {
-        // Load buku dengan semua relasi yang diperlukan
+        // Load buku dengan semua relasi yang diperlukan secara lengkap
         $this->selectedBook = Buku::with([
-                'ratings.user', // Include user relation for ratings
-                'suka'
+                'ratings.user',
+                'suka.user', // Eager load user relation dari suka
             ])
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->find($bookId);
+
+        // Refresh buku dalam koleksi untuk memastikan data konsisten
+        if ($this->books) {
+            $this->books = Buku::whereIn('id', $this->books->pluck('id'))
+                ->with([
+                    'ratings.user',
+                    'suka.user' // Eager load user relation dari suka
+                ])
+                ->withCount('suka')
+                ->withAvg('ratings', 'rating')
+                ->get();
+        }
         
         $this->showDetailModal = true;
     }
@@ -58,7 +70,10 @@ class BookCard extends Component
         // Refresh books collection dengan eager loading
         if ($this->books) {
             $this->books = Buku::whereIn('id', $this->books->pluck('id'))
-                ->with('suka')
+                ->with([
+                    'ratings.user',
+                    'suka.user' // Eager load user relation dari suka
+                ])
                 ->withCount('suka')
                 ->withAvg('ratings', 'rating')
                 ->get();
@@ -94,15 +109,23 @@ class BookCard extends Component
         }
 
         // Refresh the books collection with eager loading
-        $this->books = Buku::whereIn('id', $this->books->pluck('id'))
-            ->with('suka')
-            ->withCount('suka')
-            ->withAvg('ratings', 'rating')
-            ->get();
+        if ($this->books) {
+            $this->books = Buku::whereIn('id', $this->books->pluck('id'))
+                ->with([
+                    'ratings.user',
+                    'suka.user' // Eager load user relation dari suka
+                ])
+                ->withCount('suka')
+                ->withAvg('ratings', 'rating')
+                ->get();
+        }
 
         // If modal is open, refresh the selected book
         if ($this->selectedBook && $this->selectedBook->id === $bookId) {
-            $this->selectedBook = Buku::with(['ratings', 'suka'])
+            $this->selectedBook = Buku::with([
+                    'ratings.user',
+                    'suka.user' // Eager load user relation dari suka
+                ])
                 ->withCount('suka')
                 ->withAvg('ratings', 'rating')
                 ->find($bookId);

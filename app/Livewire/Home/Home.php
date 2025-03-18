@@ -26,7 +26,10 @@ class Home extends Component
                 'bukus.kategori',
                 'bukus.denda_harian'
             ])
-            ->with(['suka', 'ratings.user']) // Eager load semua relasi yang diperlukan
+            ->with([
+                'suka.user',
+                'ratings.user'
+            ])
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->orderByDesc('suka_count')
@@ -48,7 +51,10 @@ class Home extends Component
                 'bukus.kategori',
                 'bukus.denda_harian'
             ])
-            ->with(['suka', 'ratings.user']) // Eager load semua relasi yang diperlukan
+            ->with([
+                'suka.user',
+                'ratings.user'
+            ])
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->leftJoin('ratings', 'bukus.id', '=', 'ratings.id_buku')
