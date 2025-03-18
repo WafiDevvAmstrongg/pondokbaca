@@ -209,10 +209,15 @@
 </div>
 @endif
 
+<!-- Move script to bottom and wrap in DOMContentLoaded -->
+@push('scripts')
 <script>
-    document.addEventListener('livewire:initialized', () => {
-        Livewire.on('showDetailModal', (data) => {
-            @this.showDetail(data.bookId);
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('showDetailModal', (data) => {
+                @this.showDetail(data.bookId);
+            });
         });
     });
 </script>
+@endpush
