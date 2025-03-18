@@ -28,10 +28,21 @@ class BookCard extends Component
 
     public function showDetail($bookId)
     {
+        // Load buku dengan semua relasi yang diperlukan
         $this->selectedBook = Buku::with(['ratings', 'suka'])
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->find($bookId);
+
+        // Refresh buku dalam koleksi untuk memastikan data konsisten
+        if ($this->books) {
+            $this->books = Buku::whereIn('id', $this->books->pluck('id'))
+                ->with('suka')
+                ->withCount('suka')
+                ->withAvg('ratings', 'rating')
+                ->get();
+        }
+        
         $this->showDetailModal = true;
     }
 
