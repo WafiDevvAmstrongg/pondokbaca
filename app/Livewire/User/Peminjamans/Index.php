@@ -58,38 +58,19 @@ class Index extends Component
 
     public function confirmReturn()
     {
-        try {
-            DB::beginTransaction();
-            
-            if (!$this->selectedLoan) {
-                throw new \Exception('Peminjaman tidak ditemukan');
-            }
-
-            // Update status peminjaman
-            $this->selectedLoan->update([
-                'status' => 'dikembalikan',
-                'tgl_kembali_aktual' => now()
-            ]);
-
-            DB::commit();
-
-            // Reset state dan tampilkan pesan sukses
-            $this->showingConfirmation = false;
-            $this->successMessage = 'Buku berhasil dikembalikan!';
-            $this->showingSuccess = true;
-
-            // Refresh data
-            $this->dispatch('refreshPeminjaman');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            $this->dispatch('swal', [
-                'title' => 'Gagal!',
-                'text' => 'Terjadi kesalahan saat memproses pengembalian.',
-                'icon' => 'error'
-            ]);
-        }
+        // Simple direct update without any complex logic
+        Peminjaman::where('id', $this->selectedLoan->id)->update([
+            'status' => 'dikembalikan',
+            'tgl_kembali_aktual' => now()
+        ]);
+        
+        // Close modal and show success immediately
+        $this->showingConfirmation = false;
+        $this->successMessage = 'Buku berhasil dikembalikan!';
+        $this->showingSuccess = true;
+        
+        // Force re-render the component
+        $this->render();
     }
 
     // Tambahkan method untuk refresh data
@@ -177,15 +158,15 @@ class Index extends Component
                 $query->where('status', $this->status);
             })
             ->latest()
-            ->get();
-            
+            ->paginate(10); // Change from get() to paginate()
+                
         // Add flag to check if book has been rated
         foreach ($loans as $loan) {
             $loan->hasRating = Rating::where('id_user', auth()->id())
                 ->where('id_buku', $loan->id_buku)
                 ->exists();
         }
-
+    
         return view('livewire.user.peminjamans.index', [
             'loans' => $loans
         ])->layout('layouts.user');
