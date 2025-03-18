@@ -326,8 +326,21 @@
                 </div>
 
                 <div class="flex justify-center space-x-4 mt-4">
-                    <button wire:click="closeModal" class="btn btn-outline">Batal</button>
-                    <button wire:click="confirmReturn" class="btn btn-primary">Ya, Kembalikan</button>
+                    <button wire:click="closeModal" 
+                            class="btn btn-outline"
+                            wire:loading.attr="disabled">
+                        Batal
+                    </button>
+                    <button wire:click="confirmReturn" 
+                            class="btn btn-primary"
+                            wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="confirmReturn">
+                            Ya, Kembalikan
+                        </span>
+                        <span wire:loading wire:target="confirmReturn">
+                            Memproses...
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -349,3 +362,13 @@
         </div>
     @endif
 </div>
+
+<!-- Tambahkan script untuk refresh halaman -->
+<script>
+document.addEventListener('livewire:initialized', () => {
+    Livewire.on('refreshPeminjaman', () => {
+        // Refresh komponen setelah pengembalian berhasil
+        Livewire.dispatch('$refresh');
+    });
+});
+</script>

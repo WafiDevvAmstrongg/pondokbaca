@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class Index extends Component
 {
@@ -57,24 +58,43 @@ class Index extends Component
 
     public function confirmReturn()
     {
-        if ($this->selectedLoan && $this->selectedLoan->status === 'dipinjam') {
-            $this->selectedLoan->status = 'dikembalikan';
-            $this->selectedLoan->tgl_kembali_aktual = now();
-            $this->selectedLoan->save();
+        try {
+            DB::beginTransaction();
             
+            if (!$this->selectedLoan) {
+                throw new \Exception('Peminjaman tidak ditemukan');
+            }
+
+            // Update status peminjaman
+            $this->selectedLoan->update([
+                'status' => 'dikembalikan',
+                'tgl_kembali_aktual' => now()
+            ]);
+
+            DB::commit();
+
+            // Reset state dan tampilkan pesan sukses
             $this->showingConfirmation = false;
-            $this->successMessage = 'Buku berhasil dikembalikan! Terima kasih telah menggunakan layanan perpustakaan kami.';
+            $this->successMessage = 'Buku berhasil dikembalikan!';
             $this->showingSuccess = true;
+
+            // Refresh data
+            $this->dispatch('refreshPeminjaman');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
             
-            // Refresh data tanpa reload penuh
-            $this->dispatch('refreshData');
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Terjadi kesalahan saat memproses pengembalian.',
+                'icon' => 'error'
+            ]);
         }
     }
-    
-    // Tambahkan method ini
-    public function refreshData()
+
+    // Tambahkan method untuk refresh data
+    public function refreshPeminjaman()
     {
-        // Kosongkan render cache
         $this->render();
     }
 
@@ -157,7 +177,7 @@ class Index extends Component
                 $query->where('status', $this->status);
             })
             ->latest()
-            ->paginate(10);
+            ->get();
             
         // Add flag to check if book has been rated
         foreach ($loans as $loan) {
