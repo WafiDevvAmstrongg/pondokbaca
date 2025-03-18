@@ -30,11 +30,33 @@ class BookCard extends Component
     {
         if (is_object($books) && method_exists($books, 'items')) {
             $this->books = collect($books->items())->map(function ($book) {
-                return (object) $book;
+                $bookData = [
+                    'id' => $book->id,
+                    'judul' => $book->judul,
+                    'penulis' => $book->penulis,
+                    'cover_img' => $book->cover_img,
+                    'deskripsi' => $book->deskripsi,
+                    'stok' => $book->stok,
+                    'suka_count' => $book->suka_count ?? 0,
+                    'ratings_avg_rating' => $book->ratings_avg_rating ?? 0,
+                    'isSukaByUser' => auth()->check() ? (isset($book->isSukaByUser) ? $book->isSukaByUser : $book->isSukaBy(auth()->id())) : false
+                ];
+                return (object) $bookData;
             })->toArray();
         } else if (is_array($books)) {
             $this->books = collect($books)->map(function ($book) {
-                return (object) $book;
+                $bookData = [
+                    'id' => $book['id'] ?? $book->id,
+                    'judul' => $book['judul'] ?? $book->judul,
+                    'penulis' => $book['penulis'] ?? $book->penulis,
+                    'cover_img' => $book['cover_img'] ?? $book->cover_img,
+                    'deskripsi' => $book['deskripsi'] ?? $book->deskripsi,
+                    'stok' => $book['stok'] ?? $book->stok,
+                    'suka_count' => $book['suka_count'] ?? $book->suka_count ?? 0,
+                    'ratings_avg_rating' => $book['ratings_avg_rating'] ?? $book->ratings_avg_rating ?? 0,
+                    'isSukaByUser' => auth()->check() ? (isset($book['isSukaByUser']) ? $book['isSukaByUser'] : (isset($book->isSukaByUser) ? $book->isSukaByUser : false)) : false
+                ];
+                return (object) $bookData;
             })->toArray();
         } else {
             $this->books = $books;
@@ -118,15 +140,19 @@ class BookCard extends Component
         if ($this->books) {
             $this->books = collect($this->books)->map(function($book) use ($updatedBook) {
                 if ((is_object($book) ? $book->id : $book['id']) === $updatedBook->id) {
-                    // Convert to array and ensure all properties are accessible
-                    return (object) array_merge((array) $book, [
+                    return (object) [
                         'id' => $updatedBook->id,
+                        'judul' => $updatedBook->judul,
+                        'penulis' => $updatedBook->penulis,
+                        'cover_img' => $updatedBook->cover_img,
+                        'deskripsi' => $updatedBook->deskripsi,
+                        'stok' => $updatedBook->stok,
                         'suka_count' => $updatedBook->suka_count,
                         'ratings_avg_rating' => $updatedBook->ratings_avg_rating,
                         'isSukaByUser' => auth()->check() ? $updatedBook->isSukaBy(auth()->id()) : false
-                    ]);
+                    ];
                 }
-                return (object) $book;
+                return $book;
             })->toArray();
         }
 
