@@ -146,7 +146,8 @@
             </div>
         </div>
         <div class="border-t border-gray-100 p-4 flex justify-end">
-            <button wire:click="closeModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
+            <button wire:click="closeModal" 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
                 Tutup
             </button>
         </div>
@@ -184,8 +185,8 @@
                             <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating ?? 0, 1) }}</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <button wire:click.stop="$dispatch('toggle-suka', { bookId: {{ $book->id }} })" 
-                                    class="text-base hover:scale-110 transition-transform {{ method_exists($book, 'isSukaBy') && $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
+                            <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                    class="text-base hover:scale-110 transition-transform {{ auth()->check() && $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
                                 ♥
                             </button>
                             <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count ?? 0 }}</span>

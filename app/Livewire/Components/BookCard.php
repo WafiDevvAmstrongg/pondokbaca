@@ -30,6 +30,8 @@ class BookCard extends Component
     {
         if (is_object($books) && method_exists($books, 'items')) {
             $this->books = $books->items();
+        } else if (is_array($books)) {
+            $this->books = collect($books);
         } else {
             $this->books = $books;
         }
@@ -38,12 +40,12 @@ class BookCard extends Component
     public function showDetail($bookId)
     {
         $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
+        $this->isSukaByUser = auth()->check() ? $this->selectedBook->isSukaBy(auth()->id()) : false;
         
         // Load ratings with user relationship
         $this->loadRatings($bookId);
         
-        $this->showAllRatings = false; // Reset to show limited ratings first
+        $this->showAllRatings = false;
         $this->showDetailModal = true;
     }
 
@@ -89,28 +91,38 @@ class BookCard extends Component
         if ($existingSuka) {
             $existingSuka->delete();
             $this->isSukaByUser = false;
-            $this->dispatch('swal', [
-                'title' => 'Berhasil!',
-                'text' => 'Buku telah dihapus dari daftar suka.',
-                'icon' => 'success'
-            ]);
         } else {
             Suka::create([
                 'id_user' => $user->id,
                 'id_buku' => $bookId
             ]);
             $this->isSukaByUser = true;
-            $this->dispatch('swal', [
-                'title' => 'Berhasil!',
-                'text' => 'Buku telah ditambahkan ke daftar suka.',
-                'icon' => 'success'
-            ]);
         }
 
         // Refresh book data
         if ($this->selectedBook && $this->selectedBook->id === $bookId) {
             $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
         }
+
+        // Refresh books collection
+        if ($this->books) {
+            $updatedBook = Buku::withCount('suka')
+                ->withAvg('ratings', 'rating')
+                ->find($bookId);
+            
+            $this->books = $this->books->map(function($book) use ($updatedBook) {
+                if ($book->id === $updatedBook->id) {
+                    return $updatedBook;
+                }
+                return $book;
+            });
+        }
+
+        $this->dispatch('swal', [
+            'title' => 'Berhasil!',
+            'text' => $existingSuka ? 'Buku telah dihapus dari daftar suka.' : 'Buku telah ditambahkan ke daftar suka.',
+            'icon' => 'success'
+        ]);
 
         // Emit event untuk update tampilan di semua komponen
         $this->dispatch('refresh-books');
