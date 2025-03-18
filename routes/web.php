@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', \App\Livewire\User\Profile\Index::class)
         ->name('profile');
 
+    Route::get('/favorites', \App\Livewire\User\Favorit\Index::class)
+        ->name('favorites');
+
     // User Loans
     Route::get('/my-loans', \App\Livewire\User\Peminjamans\Index::class)
         ->name('my-loans');
