@@ -1,7 +1,10 @@
 <!-- Detail Modal -->
 @if($showDetailModal && $selectedBook)
-<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70" x-data>
-    <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto" @click.outside="$wire.closeModal()">
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70" 
+     x-data 
+     x-on:keydown.escape.window="$wire.closeModal()"
+     x-on:click="$event.target === $el && $wire.closeModal()">
+    <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="p-6">
             <!-- Book Details Section -->
             <div class="flex flex-col md:flex-row gap-6">
@@ -146,15 +149,17 @@
                 @endif
             </div>
         </div>
+        
+        <!-- Footer Actions -->
         <div class="border-t border-gray-100 p-4 flex justify-end gap-2">
             <button type="button" 
-                    wire:click="closeModal" 
+                    x-on:click="$wire.closeModal()"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
                 Tutup
             </button>
             @if(auth()->check() && $selectedBook->stok > 0)
                 <button type="button"
-                        wire:click="initiateCheckout"
+                        x-on:click="$wire.initiateCheckout()"
                         class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded transition-colors">
                     Pinjam Sekarang
                 </button>
@@ -208,6 +213,7 @@
 </div>
 @endif
 
+@script
 <script>
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('showDetailModal', (data) => {
@@ -228,8 +234,8 @@
             }
         });
 
-        Livewire.on('redirect-to', (data) => {
-            window.location.href = data.url;
+        Livewire.on('redirect-to', ({ url }) => {
+            window.location.href = url;
         });
 
         Livewire.on('modal-closed', () => {
@@ -237,3 +243,4 @@
         });
     });
 </script>
+@endscript

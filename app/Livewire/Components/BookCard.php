@@ -23,7 +23,7 @@ class BookCard extends Component
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
         'toggle-suka' => 'toggleSuka',
-        'showDetailModal' => 'showModal'
+        'showDetailModal' => 'showDetail'
     ];
 
     public function mount($books = null)
@@ -68,15 +68,10 @@ class BookCard extends Component
 
     public function closeModal()
     {
-        try {
-            $this->showDetailModal = false;
-            $this->selectedBook = null;
-            $this->ratings = [];
-            $this->showAllRatings = false;
-            $this->dispatch('modal-closed');
-        } catch (\Exception $e) {
-            // Handle error silently
-        }
+        $this->showDetailModal = false;
+        $this->selectedBook = null;
+        $this->ratings = [];
+        $this->showAllRatings = false;
     }
 
     public function toggleSuka($bookId)
@@ -128,49 +123,39 @@ class BookCard extends Component
 
     public function initiateCheckout()
     {
-        try {
-            if (!auth()->check()) {
-                $this->dispatch('swal', [
-                    'title' => 'Perhatian!',
-                    'text' => 'Silakan login terlebih dahulu untuk meminjam buku.',
-                    'icon' => 'info'
-                ]);
-                $this->dispatch('open-login-modal');
-                $this->closeModal();
-                return;
-            }
-
-            if ($this->selectedBook->stok < 1) {
-                $this->dispatch('swal', [
-                    'title' => 'Gagal!',
-                    'text' => 'Maaf, stok buku sedang tidak tersedia.',
-                    'icon' => 'error'
-                ]);
-                return;
-            }
-
-            // Generate token unik untuk checkout
-            $token = Str::random(64);
-            
-            // Simpan token dan data checkout ke session
-            session([
-                'checkout_token' => $token,
-                'checkout_book_id' => $this->selectedBook->id,
-                'checkout_expires_at' => now()->addHour()
-            ]);
-
-            $this->closeModal();
-            
-            // Gunakan JavaScript untuk redirect
-            $this->dispatch('redirect-to', ['url' => route('user.checkout', ['token' => $token])]);
-            
-        } catch (\Exception $e) {
+        if (!auth()->check()) {
             $this->dispatch('swal', [
-                'title' => 'Error!',
-                'text' => 'Terjadi kesalahan saat memproses peminjaman.',
+                'title' => 'Perhatian!',
+                'text' => 'Silakan login terlebih dahulu untuk meminjam buku.',
+                'icon' => 'info'
+            ]);
+            $this->dispatch('open-login-modal');
+            $this->closeModal();
+            return;
+        }
+
+        if ($this->selectedBook->stok < 1) {
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Maaf, stok buku sedang tidak tersedia.',
                 'icon' => 'error'
             ]);
+            return;
         }
+
+        $token = Str::random(64);
+        
+        session([
+            'checkout_token' => $token,
+            'checkout_book_id' => $this->selectedBook->id,
+            'checkout_expires_at' => now()->addHour()
+        ]);
+
+        $this->closeModal();
+        
+        $this->dispatch('redirect-to', [
+            'url' => route('user.checkout', ['token' => $token])
+        ]);
     }
 
     public function render()
