@@ -69,8 +69,20 @@ class BookCard extends Component
             $message = 'Buku telah ditambahkan ke daftar suka.';
         }
 
-        // Refresh the entire component
-        $this->dispatch('refresh-books');
+        // Refresh the books collection with eager loading
+        $this->books = Buku::whereIn('id', $this->books->pluck('id'))
+            ->with('suka')
+            ->withCount('suka')
+            ->withAvg('ratings', 'rating')
+            ->get();
+
+        // If modal is open, refresh the selected book
+        if ($this->selectedBook && $this->selectedBook->id === $bookId) {
+            $this->selectedBook = Buku::with(['ratings', 'suka'])
+                ->withCount('suka')
+                ->withAvg('ratings', 'rating')
+                ->find($bookId);
+        }
 
         $this->dispatch('swal', [
             'title' => 'Berhasil!',
