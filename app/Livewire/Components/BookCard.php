@@ -4,10 +4,8 @@ namespace App\Livewire\Components;
 
 use App\Models\Buku;
 use App\Models\Suka;
-use App\Models\Rating;
 use Livewire\Component;
 use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
 
 class BookCard extends Component
 {
@@ -16,15 +14,11 @@ class BookCard extends Component
     public $checkoutToken = null;
     public $isSukaByUser = false;
     public $books = null;
-    public $ratings = [];
-    public $showAllRatings = false;
-    public $limitRatings = 3; // Default limit to show initially
 
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
         'toggle-suka' => 'toggleSuka',
-        'showDetailModal' => 'showDetail',
-        'refresh-books' => '$refresh'
+        'showDetailModal' => 'showModal'
     ];
 
     public function mount($books = null)
@@ -38,47 +32,15 @@ class BookCard extends Component
 
     public function showDetail($bookId)
     {
-        try {
-            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-            $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
-            $this->loadRatings($bookId);
-            $this->showAllRatings = false;
-            $this->showDetailModal = true;
-            $this->dispatch('modal-opened');
-        } catch (\Exception $e) {
-            $this->dispatch('swal', [
-                'title' => 'Error!',
-                'text' => 'Terjadi kesalahan saat memuat detail buku.',
-                'icon' => 'error'
-            ]);
-        }
-    }
-
-    public function loadRatings($bookId)
-    {
-        try {
-            // Load all ratings with user relationship and make sure it's a collection
-            $this->ratings = Rating::with('user')
-                              ->where('id_buku', $bookId)
-                              ->orderBy('created_at', 'desc')
-                              ->get()
-                              ->toArray();
-        } catch (\Exception $e) {
-            $this->ratings = [];
-        }
-    }
-
-    public function showAllRatings()
-    {
-        $this->showAllRatings = true;
+        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
+        $this->showDetailModal = true;
     }
 
     public function closeModal()
     {
         $this->showDetailModal = false;
         $this->selectedBook = null;
-        $this->ratings = [];
-        $this->showAllRatings = false;
     }
 
     public function toggleSuka($bookId)
@@ -95,8 +57,8 @@ class BookCard extends Component
 
         $user = auth()->user();
         $existingSuka = Suka::where('id_user', $user->id)
-                          ->where('id_buku', $bookId)
-                          ->first();
+                           ->where('id_buku', $bookId)
+                           ->first();
 
         if ($existingSuka) {
             $existingSuka->delete();
@@ -131,13 +93,13 @@ class BookCard extends Component
     public function initiateCheckout()
     {
         if (!auth()->check()) {
+            $this->closeModal();
             $this->dispatch('swal', [
                 'title' => 'Perhatian!',
                 'text' => 'Silakan login terlebih dahulu untuk meminjam buku.',
                 'icon' => 'info'
             ]);
             $this->dispatch('open-login-modal');
-            $this->closeModal();
             return;
         }
 
@@ -150,34 +112,29 @@ class BookCard extends Component
             return;
         }
 
+        // Generate token unik untuk checkout
         $token = Str::random(64);
         
+        // Simpan token dan data checkout ke session
         session([
             'checkout_token' => $token,
             'checkout_book_id' => $this->selectedBook->id,
             'checkout_expires_at' => now()->addHour()
         ]);
 
-        $this->closeModal();
-        
-        $this->dispatch('redirect-to', [
-            'url' => route('user.checkout', ['token' => $token])
-        ]);
+        return redirect()->route('user.checkout', ['token' => $token]);
     }
 
     public function render()
     {
+        // Only fetch books if none were passed
         if ($this->books === null) {
+            // This instance is only for showing the modal
             $this->books = collect();
         }
-        
-        $displayRatings = $this->showAllRatings 
-            ? $this->ratings 
-            : array_slice($this->ratings, 0, $this->limitRatings);
     
         return view('livewire.components.book-card', [
-            'books' => $this->books,
-            'ratings' => $displayRatings
+            'books' => $this->books
         ]);
     }
 }
