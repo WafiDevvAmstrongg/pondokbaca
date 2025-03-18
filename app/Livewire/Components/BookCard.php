@@ -25,7 +25,12 @@ class BookCard extends Component
 
     public function mount($books = null, $showLikes = true, $showRating = true)
     {
-        $this->books = $books;
+        // Pastikan $books adalah koleksi Eloquent
+        if (is_array($books)) {
+            $this->books = collect($books);
+        } else {
+            $this->books = $books;
+        }
         $this->showLikes = $showLikes;
         $this->showRating = $showRating;
     }
@@ -33,19 +38,13 @@ class BookCard extends Component
     public function showDetail($bookId)
     {
         // Load buku dengan semua relasi yang diperlukan
-        $this->selectedBook = Buku::with(['ratings', 'suka'])
+        $this->selectedBook = Buku::with([
+                'ratings.user', // Include user relation for ratings
+                'suka'
+            ])
             ->withCount('suka')
             ->withAvg('ratings', 'rating')
             ->find($bookId);
-
-        // Refresh buku dalam koleksi untuk memastikan data konsisten
-        if ($this->books) {
-            $this->books = Buku::whereIn('id', $this->books->pluck('id'))
-                ->with('suka')
-                ->withCount('suka')
-                ->withAvg('ratings', 'rating')
-                ->get();
-        }
         
         $this->showDetailModal = true;
     }

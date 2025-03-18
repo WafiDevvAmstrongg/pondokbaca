@@ -2,9 +2,10 @@
     <!-- Detail Modal -->
     @if($showDetailModal && $selectedBook)
     <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
-        <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto">
             <div class="p-6">
-                <div class="flex flex-col md:flex-row gap-6">
+                <!-- Info Buku -->
+                <div class="flex flex-col md:flex-row gap-6 mb-8">
                     <div class="w-full md:w-1/3">
                         <img src="{{ Storage::url($selectedBook->cover_img) }}" 
                              alt="{{ $selectedBook->judul }}"
@@ -18,6 +19,7 @@
                             <div class="flex items-center">
                                 <span class="text-yellow-400">★</span>
                                 <span class="ml-1">{{ number_format($selectedBook->ratings_avg_rating, 1) }}</span>
+                                <span class="ml-1 text-gray-500">({{ $selectedBook->ratings->count() }} ulasan)</span>
                             </div>
                             <div class="flex items-center gap-1">
                                 <span class="text-red-400">♥</span>
@@ -27,10 +29,28 @@
 
                         <p class="text-gray-700 mb-6">{{ $selectedBook->deskripsi }}</p>
 
+                        <!-- Info Tambahan -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="text-sm">
+                                <p class="text-gray-500">Penerbit</p>
+                                <p class="font-medium">{{ $selectedBook->penerbit }}</p>
+                            </div>
+                            <div class="text-sm">
+                                <p class="text-gray-500">Tahun Terbit</p>
+                                <p class="font-medium">{{ $selectedBook->tahun_terbit }}</p>
+                            </div>
+                            <div class="text-sm">
+                                <p class="text-gray-500">ISBN</p>
+                                <p class="font-medium">{{ $selectedBook->isbn }}</p>
+                            </div>
+                            <div class="text-sm">
+                                <p class="text-gray-500">Stok</p>
+                                <p class="font-medium">{{ $selectedBook->stok }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Aksi -->
                         <div class="space-y-2">
-                            <p class="text-sm text-gray-600">
-                                Stok: <span class="font-medium">{{ $selectedBook->stok }}</span>
-                            </p>
                             @auth
                                 @php
                                     $totalDenda = \App\Models\Peminjaman::where('id_user', auth()->id())
@@ -74,9 +94,108 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Rating & Reviews Section -->
+                <div class="border-t pt-6">
+                    <h3 class="text-xl font-semibold mb-4">Ulasan Pembaca</h3>
+                    
+                    <!-- Rating Summary -->
+                    <div class="flex items-center gap-8 mb-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-gray-900">
+                                {{ number_format($selectedBook->ratings_avg_rating, 1) }}
+                            </div>
+                            <div class="text-yellow-400 text-2xl">★</div>
+                            <div class="text-sm text-gray-500">
+                                {{ $selectedBook->ratings->count() }} ulasan
+                            </div>
+                        </div>
+                        
+                        <!-- Rating Distribution -->
+                        <div class="flex-1">
+                            @for ($i = 5; $i >= 1; $i--)
+                                @php
+                                    $ratingCount = $selectedBook->ratings->where('rating', $i)->count();
+                                    $percentage = $selectedBook->ratings->count() > 0 
+                                        ? ($ratingCount / $selectedBook->ratings->count()) * 100 
+                                        : 0;
+                                @endphp
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm w-3">{{ $i }}</span>
+                                    <span class="text-yellow-400">★</span>
+                                    <div class="flex-1 h-2 bg-gray-200 rounded-full">
+                                        <div class="h-2 bg-yellow-400 rounded-full" 
+                                             style="width: {{ $percentage }}%">
+                                        </div>
+                                    </div>
+                                    <span class="text-sm text-gray-500 w-10">{{ $ratingCount }}</span>
+                                </div>
+                            @endfor
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    <div class="space-y-6">
+                        @forelse($selectedBook->ratings as $rating)
+                            <div class="border-b pb-6">
+                                <div class="flex items-center gap-4 mb-3">
+                                    <div class="flex-shrink-0">
+                                        @if($rating->user->profile_img)
+                                            <img src="{{ Storage::url($rating->user->profile_img) }}" 
+                                                 alt="{{ $rating->user->name }}"
+                                                 class="w-10 h-10 rounded-full object-cover">
+                                        @else
+                                            <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                                                <span class="text-emerald-600 font-medium">
+                                                    {{ strtoupper(substr($rating->user->name, 0, 1)) }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">{{ $rating->user->name }}</h4>
+                                        <div class="flex items-center gap-2">
+                                            <div class="text-yellow-400">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $rating->rating)
+                                                        <span>★</span>
+                                                    @else
+                                                        <span class="text-gray-300">★</span>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span class="text-sm text-gray-500">
+                                                {{ $rating->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @if($rating->komentar)
+                                    <p class="text-gray-700 mb-3">{{ $rating->komentar }}</p>
+                                @endif
+
+                                @if($rating->foto_review)
+                                    <div class="mt-3">
+                                        <img src="{{ Storage::url($rating->foto_review) }}" 
+                                             alt="Review photo" 
+                                             class="rounded-lg max-h-48 object-cover">
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="text-center py-6 text-gray-500">
+                                Belum ada ulasan untuk buku ini
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
+
+            <!-- Modal Footer -->
             <div class="border-t border-gray-100 p-4 flex justify-end">
-                <button wire:click="closeModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
+                <button wire:click="closeModal" 
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
                     Tutup
                 </button>
             </div>
