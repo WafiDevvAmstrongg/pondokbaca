@@ -141,7 +141,7 @@
                                 <div class="flex items-center gap-4 mb-3">
                                     <div class="flex-shrink-0">
                                         @if($rating->user->profile_img)
-                                            <img src="{{ Storage::url($rating->user->profile_img) }}" 
+                                            <img src="{{ Storage::url('profiles/' . $rating->user->profile_img) }}" 
                                                  alt="{{ $rating->user->name }}"
                                                  class="w-10 h-10 rounded-full object-cover">
                                         @else

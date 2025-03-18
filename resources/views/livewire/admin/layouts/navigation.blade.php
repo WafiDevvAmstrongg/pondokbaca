@@ -7,8 +7,11 @@
             <div class="dropdown dropdown-end">
                 <label tabindex="0" class="flex items-center gap-3 px-2 py-1 rounded-xl cursor-pointer hover:bg-gray-50">
                     <div class="w-10 h-10 rounded-xl overflow-hidden">
-                        <img src="{{ auth()->user()->profile_img ?? 'https://ui-avatars.com/api/?name='.auth()->user()->name }}" 
-                             alt="Profile" class="w-full h-full object-cover" />
+                        @if (Auth::user()->profile_img)
+                        <img src="{{ Storage::url('profiles/' . Auth::user()->profile_img) }}" alt="Profile" class="w-full h-full object-cover" />
+                    @else
+                        <img src="{{'https://ui-avatars.com/api/?name='.auth()->user()->name }}" />
+                    @endif
                     </div>
                     <span class="font-medium">{{ auth()->user()->name }}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

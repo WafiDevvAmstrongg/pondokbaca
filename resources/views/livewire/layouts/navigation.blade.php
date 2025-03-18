@@ -56,7 +56,7 @@
                                             @if (Auth::user()->profile_img)
                                                 <img src="{{ Storage::url('profiles/' . Auth::user()->profile_img) }}" alt="Profile" class="w-full h-full object-cover" />
                                             @else
-                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRglLn-gRzqwE4qOH2qXiLb1bb2KlwMO5cjRA&s" alt="Profile" class="w-full h-full object-cover" />
+                                            <img src="{{'https://ui-avatars.com/api/?name='.auth()->user()->name }}" />
                                             @endif
                                         </div>
                                         <span class="font-medium hidden sm:block">{{ Auth::user()->name }}</span>
