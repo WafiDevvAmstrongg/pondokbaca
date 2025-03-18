@@ -18,7 +18,7 @@ class BookCard extends Component
     public $books = null;
     public $ratings = [];
     public $showAllRatings = false;
-    public $limitRatings = 3;
+    public $limitRatings = 3; // Default limit to show initially
 
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
@@ -29,49 +29,44 @@ class BookCard extends Component
     public function mount($books = null)
     {
         if (is_object($books) && method_exists($books, 'items')) {
-            $this->books = collect($books->items())->map(function ($book) {
-                return $this->formatBookData($book);
-            })->toArray();
-        } else if (is_array($books)) {
-            $this->books = collect($books)->map(function ($book) {
-                return $this->formatBookData($book);
-            })->toArray();
+            $this->books = $books->items();
         } else {
-            $this->books = [];
+            $this->books = $books;
         }
-    }
-
-    protected function formatBookData($book)
-    {
-        $data = [
-            'id' => is_array($book) ? ($book['id'] ?? null) : ($book->id ?? null),
-            'judul' => is_array($book) ? ($book['judul'] ?? '') : ($book->judul ?? ''),
-            'penulis' => is_array($book) ? ($book['penulis'] ?? '') : ($book->penulis ?? ''),
-            'cover_img' => is_array($book) ? ($book['cover_img'] ?? '') : ($book->cover_img ?? ''),
-            'deskripsi' => is_array($book) ? ($book['deskripsi'] ?? '') : ($book->deskripsi ?? ''),
-            'stok' => is_array($book) ? ($book['stok'] ?? 0) : ($book->stok ?? 0),
-            'suka_count' => is_array($book) ? ($book['suka_count'] ?? 0) : ($book->suka_count ?? 0),
-            'ratings_avg_rating' => is_array($book) ? ($book['ratings_avg_rating'] ?? 0) : ($book->ratings_avg_rating ?? 0),
-        ];
-
-        if (auth()->check()) {
-            $data['isSukaByUser'] = is_array($book) 
-                ? ($book['isSukaByUser'] ?? false) 
-                : (method_exists($book, 'isSukaBy') ? $book->isSukaBy(auth()->id()) : false);
-        } else {
-            $data['isSukaByUser'] = false;
-        }
-
-        return (object) $data;
     }
 
     public function showDetail($bookId)
     {
         $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-        $this->isSukaByUser = auth()->check() ? $this->selectedBook->isSukaBy(auth()->id()) : false;
+        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
+        
+        // Load ratings with user relationship
         $this->loadRatings($bookId);
-        $this->showAllRatings = false;
+        
+        $this->showAllRatings = false; // Reset to show limited ratings first
         $this->showDetailModal = true;
+    }
+
+    public function loadRatings($bookId)
+    {
+        // Load all ratings with user relationship and make sure it's a collection
+        $this->ratings = Rating::with('user')
+                          ->where('id_buku', $bookId)
+                          ->orderBy('created_at', 'desc')
+                          ->get()
+                          ->toArray(); // Convert to array to ensure proper serialization with Livewire
+    }
+
+    public function showAllRatings()
+    {
+        $this->showAllRatings = true;
+    }
+
+    public function closeModal()
+    {
+        $this->showDetailModal = false;
+        $this->selectedBook = null;
+        $this->ratings = [];
     }
 
     public function toggleSuka($bookId)
@@ -94,81 +89,77 @@ class BookCard extends Component
         if ($existingSuka) {
             $existingSuka->delete();
             $this->isSukaByUser = false;
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Buku telah dihapus dari daftar suka.',
+                'icon' => 'success'
+            ]);
         } else {
             Suka::create([
                 'id_user' => $user->id,
                 'id_buku' => $bookId
             ]);
             $this->isSukaByUser = true;
+            $this->dispatch('swal', [
+                'title' => 'Berhasil!',
+                'text' => 'Buku telah ditambahkan ke daftar suka.',
+                'icon' => 'success'
+            ]);
         }
 
-        // Refresh book data dengan eager loading yang lengkap
-        $updatedBook = Buku::withCount('suka')
-            ->withAvg('ratings', 'rating')
-            ->with(['suka', 'ratings'])
-            ->find($bookId);
-
-        // Update selected book jika sedang ditampilkan di modal
+        // Refresh book data
         if ($this->selectedBook && $this->selectedBook->id === $bookId) {
-            $this->selectedBook = $updatedBook;
+            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
         }
 
-        // Update books collection dengan cara yang lebih aman
-        if ($this->books) {
-            $this->books = collect($this->books)->map(function($book) use ($updatedBook) {
-                if ((is_object($book) ? $book->id : $book['id']) === $updatedBook->id) {
-                    return (object) [
-                        'id' => $updatedBook->id,
-                        'judul' => $updatedBook->judul,
-                        'penulis' => $updatedBook->penulis,
-                        'cover_img' => $updatedBook->cover_img,
-                        'deskripsi' => $updatedBook->deskripsi,
-                        'stok' => $updatedBook->stok,
-                        'suka_count' => $updatedBook->suka_count,
-                        'ratings_avg_rating' => $updatedBook->ratings_avg_rating,
-                        'isSukaByUser' => auth()->check() ? $updatedBook->isSukaBy(auth()->id()) : false
-                    ];
-                }
-                return $book;
-            })->toArray();
-        }
-
-        $this->dispatch('swal', [
-            'title' => 'Berhasil!',
-            'text' => $existingSuka ? 'Buku telah dihapus dari daftar suka.' : 'Buku telah ditambahkan ke daftar suka.',
-            'icon' => 'success'
-        ]);
-
+        // Emit event untuk update tampilan di semua komponen
         $this->dispatch('refresh-books');
     }
 
-    public function loadRatings($bookId)
+    public function initiateCheckout()
     {
-        $this->ratings = Rating::with('user')
-                          ->where('id_buku', $bookId)
-                          ->orderBy('created_at', 'desc')
-                          ->get()
-                          ->toArray();
-    }
+        if (!auth()->check()) {
+            $this->closeModal();
+            $this->dispatch('swal', [
+                'title' => 'Perhatian!',
+                'text' => 'Silakan login terlebih dahulu untuk meminjam buku.',
+                'icon' => 'info'
+            ]);
+            $this->dispatch('open-login-modal');
+            return;
+        }
 
-    public function showAllRatings()
-    {
-        $this->showAllRatings = true;
-    }
+        if ($this->selectedBook->stok < 1) {
+            $this->dispatch('swal', [
+                'title' => 'Gagal!',
+                'text' => 'Maaf, stok buku sedang tidak tersedia.',
+                'icon' => 'error'
+            ]);
+            return;
+        }
 
-    public function closeModal()
-    {
-        $this->showDetailModal = false;
-        $this->selectedBook = null;
-        $this->ratings = [];
+        // Generate token unik untuk checkout
+        $token = Str::random(64);
+        
+        // Simpan token dan data checkout ke session
+        session([
+            'checkout_token' => $token,
+            'checkout_book_id' => $this->selectedBook->id,
+            'checkout_expires_at' => now()->addHour()
+        ]);
+
+        return redirect()->route('user.checkout', ['token' => $token]);
     }
 
     public function render()
     {
+        // Only fetch books if none were passed
         if ($this->books === null) {
+            // This instance is only for showing the modal
             $this->books = collect();
         }
         
+        // Handle ratings pagination manually since we have an array
         $displayRatings = $this->showAllRatings 
             ? $this->ratings 
             : array_slice($this->ratings, 0, $this->limitRatings);
