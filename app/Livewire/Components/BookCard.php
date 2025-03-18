@@ -67,6 +67,7 @@ class BookCard extends Component
         $this->showDetailModal = false;
         $this->selectedBook = null;
         $this->ratings = [];
+        $this->dispatch('modal-closed');
     }
 
     public function toggleSuka($bookId)
@@ -148,6 +149,7 @@ class BookCard extends Component
             'checkout_expires_at' => now()->addHour()
         ]);
 
+        $this->closeModal(); // Tutup modal sebelum redirect
         return redirect()->route('user.checkout', ['token' => $token]);
     }
 

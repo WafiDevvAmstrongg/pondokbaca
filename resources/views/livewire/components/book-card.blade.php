@@ -146,7 +146,7 @@
             </div>
         </div>
         <div class="border-t border-gray-100 p-4 flex justify-end">
-            <button wire:click="closeModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
+            <button wire:click="closeModal" type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded transition-colors">
                 Tutup
             </button>
         </div>
@@ -202,6 +202,20 @@
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('showDetailModal', (data) => {
             @this.showDetail(data.bookId);
+        });
+
+        // Add click handler for modal backdrop
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('fixed')) {
+                @this.closeModal();
+            }
+        });
+
+        // Add keyboard handler for Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                @this.closeModal();
+            }
         });
     });
 </script>
