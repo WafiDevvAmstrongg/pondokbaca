@@ -62,32 +62,51 @@ class BookCard extends Component
 
         if ($existingSuka) {
             $existingSuka->delete();
-            $this->isSukaByUser = false;
-            $this->dispatch('swal', [
-                'title' => 'Berhasil!',
-                'text' => 'Buku telah dihapus dari daftar suka.',
-                'icon' => 'success'
-            ]);
+            $message = 'Buku telah dihapus dari daftar suka.';
         } else {
             Suka::create([
                 'id_user' => $user->id,
                 'id_buku' => $bookId
             ]);
-            $this->isSukaByUser = true;
-            $this->dispatch('swal', [
-                'title' => 'Berhasil!',
-                'text' => 'Buku telah ditambahkan ke daftar suka.',
-                'icon' => 'success'
-            ]);
+            $message = 'Buku telah ditambahkan ke daftar suka.';
         }
 
-        // Refresh book data
+        // Refresh data buku yang diupdate
+        foreach ($this->books as $key => $book) {
+            if ($book->id === $bookId) {
+                // Update suka_count
+                $this->books[$key] = Buku::withCount('suka')
+                    ->withAvg('ratings', 'rating')
+                    ->find($bookId);
+                
+                // Update isSukaBy method
+                $this->books[$key]->isSukaBy = function($userId) use ($user) {
+                    return $this->hasSukaBook($this->books[$key]->id);
+                };
+            }
+        }
+
+        // Update selectedBook jika sedang dibuka
         if ($this->selectedBook && $this->selectedBook->id === $bookId) {
-            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+            $this->selectedBook = Buku::with(['ratings', 'suka'])
+                ->withCount('suka')
+                ->find($bookId);
+            $this->isSukaByUser = !$existingSuka;
         }
 
-        // Emit event untuk update tampilan di semua komponen
-        $this->dispatch('refresh-books');
+        $this->dispatch('swal', [
+            'title' => 'Berhasil!',
+            'text' => $message,
+            'icon' => 'success'
+        ]);
+    }
+
+    private function hasSukaBook($bookId)
+    {
+        if (!auth()->check()) return false;
+        return Suka::where('id_user', auth()->id())
+                   ->where('id_buku', $bookId)
+                   ->exists();
     }
 
     public function initiateCheckout()

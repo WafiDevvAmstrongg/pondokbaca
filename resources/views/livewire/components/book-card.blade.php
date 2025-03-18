@@ -114,8 +114,8 @@
                                 <span class="text-sm text-gray-600 font-medium">{{ number_format($book->ratings_avg_rating ?? 0, 1) }}</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <button wire:click.stop="$dispatch('toggle-suka', { bookId: {{ $book->id }} })" 
-                                        class="text-base hover:scale-110 transition-transform {{ method_exists($book, 'isSukaBy') && $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
+                                <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                        class="text-base hover:scale-110 transition-transform {{ auth()->check() && $book->suka->contains('id_user', auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
                                     ♥
                                 </button>
                                 <span class="text-sm text-gray-600 font-medium">{{ $book->suka_count ?? 0 }}</span>
