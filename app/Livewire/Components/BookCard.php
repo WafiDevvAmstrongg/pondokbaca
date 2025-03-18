@@ -30,43 +30,39 @@ class BookCard extends Component
     {
         if (is_object($books) && method_exists($books, 'items')) {
             $this->books = collect($books->items())->map(function ($book) {
-                $bookData = [
-                    'id' => $book->id,
-                    'judul' => $book->judul,
-                    'penulis' => $book->penulis,
-                    'cover_img' => $book->cover_img,
-                    'deskripsi' => $book->deskripsi,
-                    'stok' => $book->stok,
-                    'suka_count' => $book->suka_count ?? 0,
-                    'ratings_avg_rating' => $book->ratings_avg_rating ?? 0,
-                    'isSukaByUser' => auth()->check() ? (isset($book->isSukaByUser) ? $book->isSukaByUser : $book->isSukaBy(auth()->id())) : false
-                ];
-                return (object) $bookData;
+                return $this->formatBookData($book);
             })->toArray();
         } else if (is_array($books)) {
             $this->books = collect($books)->map(function ($book) {
-                $bookData = [
-                    'id' => $book['id'] ?? $book->id ?? null,
-                    'judul' => $book['judul'] ?? $book->judul ?? '',
-                    'penulis' => $book['penulis'] ?? $book->penulis ?? '',
-                    'cover_img' => $book['cover_img'] ?? $book->cover_img ?? '',
-                    'deskripsi' => $book['deskripsi'] ?? $book->deskripsi ?? '',
-                    'stok' => $book['stok'] ?? $book->stok ?? 0,
-                    'suka_count' => $book['suka_count'] ?? $book->suka_count ?? 0,
-                    'ratings_avg_rating' => $book['ratings_avg_rating'] ?? $book->ratings_avg_rating ?? 0,
-                    'isSukaByUser' => auth()->check() ? (
-                        isset($book['isSukaByUser']) ? $book['isSukaByUser'] : (
-                            isset($book->isSukaByUser) ? $book->isSukaByUser : (
-                                is_object($book) && method_exists($book, 'isSukaBy') ? $book->isSukaBy(auth()->id()) : false
-                            )
-                        )
-                    ) : false
-                ];
-                return (object) $bookData;
+                return $this->formatBookData($book);
             })->toArray();
         } else {
             $this->books = [];
         }
+    }
+
+    protected function formatBookData($book)
+    {
+        $data = [
+            'id' => is_array($book) ? ($book['id'] ?? null) : ($book->id ?? null),
+            'judul' => is_array($book) ? ($book['judul'] ?? '') : ($book->judul ?? ''),
+            'penulis' => is_array($book) ? ($book['penulis'] ?? '') : ($book->penulis ?? ''),
+            'cover_img' => is_array($book) ? ($book['cover_img'] ?? '') : ($book->cover_img ?? ''),
+            'deskripsi' => is_array($book) ? ($book['deskripsi'] ?? '') : ($book->deskripsi ?? ''),
+            'stok' => is_array($book) ? ($book['stok'] ?? 0) : ($book->stok ?? 0),
+            'suka_count' => is_array($book) ? ($book['suka_count'] ?? 0) : ($book->suka_count ?? 0),
+            'ratings_avg_rating' => is_array($book) ? ($book['ratings_avg_rating'] ?? 0) : ($book->ratings_avg_rating ?? 0),
+        ];
+
+        if (auth()->check()) {
+            $data['isSukaByUser'] = is_array($book) 
+                ? ($book['isSukaByUser'] ?? false) 
+                : (method_exists($book, 'isSukaBy') ? $book->isSukaBy(auth()->id()) : false);
+        } else {
+            $data['isSukaByUser'] = false;
+        }
+
+        return (object) $data;
     }
 
     public function showDetail($bookId)
