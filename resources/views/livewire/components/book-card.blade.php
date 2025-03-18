@@ -2,6 +2,7 @@
 @if($showDetailModal && $selectedBook)
 <div class="fixed inset-0 z-40 flex items-center justify-center bg-black/70" 
      x-data 
+     x-init="$watch('showDetailModal', value => { if (!value) $wire.closeModal() })"
      x-on:keydown.escape.window="$wire.closeModal()"
      x-on:click="$event.target === $el && $wire.closeModal()">
     <div class="bg-white rounded-xl w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -171,9 +172,9 @@
 
 <!-- Book Grid -->
 @if(count($books) > 0)
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6" wire:key="book-grid">
     @foreach ($books as $book)
-        <div class="group relative">
+        <div class="group relative" wire:key="book-{{ $book->id }}">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                  wire:click="showDetail({{ $book->id }})">
                 <div class="aspect-[3/4] overflow-hidden relative">
@@ -238,8 +239,14 @@
             window.location.href = url;
         });
 
+        Livewire.on('modal-opened', () => {
+            // Tambahkan event listener ketika modal dibuka
+            document.body.style.overflow = 'hidden';
+        });
+
         Livewire.on('modal-closed', () => {
-            // Additional cleanup if needed
+            // Bersihkan event listener ketika modal ditutup
+            document.body.style.overflow = '';
         });
     });
 </script>

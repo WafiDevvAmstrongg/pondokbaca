@@ -23,7 +23,8 @@ class BookCard extends Component
     protected $listeners = [
         'closeDetailModal' => 'closeModal',
         'toggle-suka' => 'toggleSuka',
-        'showDetailModal' => 'showDetail'
+        'showDetailModal' => 'showDetail',
+        'refresh-books' => '$refresh'
     ];
 
     public function mount($books = null)
@@ -37,14 +38,20 @@ class BookCard extends Component
 
     public function showDetail($bookId)
     {
-        $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
-        $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
-        
-        // Load ratings with user relationship
-        $this->loadRatings($bookId);
-        
-        $this->showAllRatings = false; // Reset to show limited ratings first
-        $this->showDetailModal = true;
+        try {
+            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+            $this->isSukaByUser = auth()->check() ? auth()->user()->hasSukaBook($bookId) : false;
+            $this->loadRatings($bookId);
+            $this->showAllRatings = false;
+            $this->showDetailModal = true;
+            $this->dispatch('modal-opened');
+        } catch (\Exception $e) {
+            $this->dispatch('swal', [
+                'title' => 'Error!',
+                'text' => 'Terjadi kesalahan saat memuat detail buku.',
+                'icon' => 'error'
+            ]);
+        }
     }
 
     public function loadRatings($bookId)
@@ -160,13 +167,10 @@ class BookCard extends Component
 
     public function render()
     {
-        // Only fetch books if none were passed
         if ($this->books === null) {
-            // This instance is only for showing the modal
             $this->books = collect();
         }
         
-        // Handle ratings pagination manually since we have an array
         $displayRatings = $this->showAllRatings 
             ? $this->ratings 
             : array_slice($this->ratings, 0, $this->limitRatings);
