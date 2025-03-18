@@ -5,23 +5,23 @@ namespace App\Observers;
 use App\Models\Peminjaman;
 use App\Models\Buku;
 use Carbon\Carbon;
+use App\Events\LoanFineUpdated;
 
 class PeminjamanObserver
 {
     public function updated(Peminjaman $peminjaman)
     {
-        // Jika status berubah menjadi 'diproses', kurangi stok
+        // Jika status berubah menjadi 'diproses', kurangi stok 1
         if ($peminjaman->status === 'diproses' && $peminjaman->getOriginal('status') === 'pending') {
             $buku = Buku::find($peminjaman->id_buku);
             $buku->decrement('stok');
         }
         
-        // Jika status berubah menjadi 'dikembalikan', tambah stok
+        // Jika status berubah menjadi 'dikembalikan', tambah stok 1
         if ($peminjaman->status === 'dikembalikan' && 
             in_array($peminjaman->getOriginal('status'), ['dipinjam', 'terlambat'])) {
-            // Get the book instance here before using it
             $buku = Buku::find($peminjaman->id_buku);
-            $buku->increment('stok');
+            $buku->increment('stok'); // Hanya menambah 1
             
             // Set tanggal kembali aktual
             $peminjaman->update([
@@ -33,7 +33,6 @@ class PeminjamanObserver
 
     public function retrieved(Peminjaman $peminjaman)
     {
-        // Hanya cek keterlambatan untuk status dipinjam/terlambat
         if (!in_array($peminjaman->status, ['dipinjam', 'terlambat'])) {
             return;
         }
@@ -42,16 +41,17 @@ class PeminjamanObserver
         $dueDate = Carbon::parse($peminjaman->tgl_kembali_rencana)->endOfDay();
 
         if ($today->greaterThan($dueDate)) {
-            if ($peminjaman->status !== 'terlambat') {
-                $peminjaman->status = 'terlambat';
-            }
-
+            $oldFine = $peminjaman->total_denda;
+            
             $daysLate = $today->diffInDays($dueDate->startOfDay());
             $totalDenda = $daysLate * $peminjaman->buku->denda_harian;
             
             if ($peminjaman->total_denda !== $totalDenda) {
+                $peminjaman->status = 'terlambat';
                 $peminjaman->total_denda = $totalDenda;
                 $peminjaman->save();
+
+                event(new LoanFineUpdated($peminjaman, $oldFine, $totalDenda));
             }
         }
     }

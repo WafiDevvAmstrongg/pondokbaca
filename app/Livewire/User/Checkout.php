@@ -91,6 +91,22 @@ class Checkout extends Component
 
     public function checkout()
     {
+        // Cek apakah user memiliki peminjaman terlambat/denda
+        $hasPendingFines = Peminjaman::where('id_user', auth()->id())
+            ->where(function($query) {
+                $query->where('status', 'terlambat')
+                    ->orWhere('total_denda', '>', 0);
+            })->exists();
+
+        if ($hasPendingFines) {
+            $this->dispatch('swal', [
+                'title' => 'Tidak dapat meminjam!',
+                'text' => 'Anda memiliki denda yang belum dibayar.',
+                'icon' => 'error'
+            ]);
+            return;
+        }
+
         $this->validate();
 
         try {
