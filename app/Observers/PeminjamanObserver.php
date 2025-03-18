@@ -14,14 +14,18 @@ class PeminjamanObserver
         // Jika status berubah menjadi 'diproses', kurangi stok 1
         if ($peminjaman->status === 'diproses' && $peminjaman->getOriginal('status') === 'pending') {
             $buku = Buku::find($peminjaman->id_buku);
-            $buku->decrement('stok');
+            $buku->update([
+                'stok' => $buku->stok - 1
+            ]);
         }
         
         // Jika status berubah menjadi 'dikembalikan', tambah stok 1
         if ($peminjaman->status === 'dikembalikan' && 
             in_array($peminjaman->getOriginal('status'), ['dipinjam', 'terlambat'])) {
             $buku = Buku::find($peminjaman->id_buku);
-            $buku->increment('stok'); // Hanya menambah 1
+            $buku->update([
+                'stok' => $buku->stok + 1
+            ]);
             
             // Set tanggal kembali aktual
             $peminjaman->update([
