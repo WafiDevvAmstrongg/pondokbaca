@@ -159,7 +159,7 @@
 @if(count($books) > 0)
 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
     @foreach ($books as $book)
-        <div class="group relative">
+        <div class="group relative" wire:key="book-card-{{ $book->id }}">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                  wire:click="showDetail({{ $book->id }})">
                 <div class="aspect-[3/4] overflow-hidden relative">
@@ -186,6 +186,8 @@
                         </div>
                         <div class="flex items-center gap-1.5">
                             <button wire:click.stop="toggleSuka({{ $book->id }})" 
+                                    wire:loading.class="opacity-50"
+                                    wire:loading.attr="disabled"
                                     class="text-base hover:scale-110 transition-transform {{ auth()->check() && $book->isSukaBy(auth()->id()) ? 'text-red-500' : 'text-gray-300' }}">
                                 ♥
                             </button>

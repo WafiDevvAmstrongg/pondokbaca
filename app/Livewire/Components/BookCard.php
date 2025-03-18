@@ -99,23 +99,27 @@ class BookCard extends Component
             $this->isSukaByUser = true;
         }
 
-        // Refresh book data
+        // Refresh book data dengan eager loading yang lengkap
+        $updatedBook = Buku::withCount('suka')
+            ->withAvg('ratings', 'rating')
+            ->with(['suka', 'ratings'])
+            ->find($bookId);
+
+        // Update selected book jika sedang ditampilkan di modal
         if ($this->selectedBook && $this->selectedBook->id === $bookId) {
-            $this->selectedBook = Buku::with(['ratings', 'suka'])->find($bookId);
+            $this->selectedBook = $updatedBook;
         }
 
-        // Refresh books collection
+        // Update books collection dengan cara yang lebih aman
         if ($this->books) {
-            $updatedBook = Buku::withCount('suka')
-                ->withAvg('ratings', 'rating')
-                ->find($bookId);
-            
-            $this->books = $this->books->map(function($book) use ($updatedBook) {
+            $this->books = collect($this->books)->map(function($book) use ($updatedBook) {
                 if ($book->id === $updatedBook->id) {
+                    // Pastikan properti penting tetap ada
+                    $updatedBook->isSukaByUser = auth()->check() ? $updatedBook->isSukaBy(auth()->id()) : false;
                     return $updatedBook;
                 }
                 return $book;
-            });
+            })->toArray();
         }
 
         $this->dispatch('swal', [
@@ -124,7 +128,7 @@ class BookCard extends Component
             'icon' => 'success'
         ]);
 
-        // Emit event untuk update tampilan di semua komponen
+        // Dispatch event untuk refresh komponen lain
         $this->dispatch('refresh-books');
     }
 
