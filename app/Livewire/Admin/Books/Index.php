@@ -1,54 +1,66 @@
 <?php
 
+// Namespace untuk menentukan lokasi class dalam aplikasi
 namespace App\Livewire\Admin\Books;
 
+// Mengimpor model Buku untuk berinteraksi dengan database
 use App\Models\Buku;
+// Mengimpor fitur Livewire untuk pembuatan komponen interaktif
 use Livewire\Component;
+// Mengimpor fitur paginasi agar data buku bisa ditampilkan dalam beberapa halaman
 use Livewire\WithPagination;
+// Mengimpor fitur untuk mengunggah file (gambar cover buku)
 use Livewire\WithFileUploads;
+// Mengimpor Storage untuk mengelola file yang diunggah
 use Illuminate\Support\Facades\Storage;
 
 class Index extends Component
 {
+    // Menggunakan trait Livewire untuk fitur paginasi dan unggah file
     use WithPagination, WithFileUploads;
 
-    public $search = '';
-    public $showModal = false;
-    public $bukuId = null;
-    public $judul = '';
-    public $penulis = '';
-    public $isbn = '';
-    public $kategori = '';
-    public $deskripsi = '';
-    public $cover_img = null;
-    public $temp_cover_img = null;
-    public $stok = 0;
-    public $denda_harian = 0;
-    public $penerbit = '';
-    public $tahun_terbit = '';
-    
+    // Variabel untuk menyimpan data input dari form pengguna
+    public $search = ''; // Input untuk pencarian buku
+    public $showModal = false; // Menentukan apakah modal tambah/edit buku ditampilkan
+    public $bukuId = null; // Menyimpan ID buku yang sedang diedit
+    public $judul = ''; // Judul buku
+    public $penulis = ''; // Nama penulis buku
+    public $isbn = ''; // ISBN (nomor unik buku)
+    public $kategori = ''; // Kategori buku
+    public $deskripsi = ''; // Deskripsi buku
+    public $cover_img = null; // Menyimpan gambar cover baru yang diunggah
+    public $temp_cover_img = null; // Menyimpan gambar cover lama sebelum diganti
+    public $stok = 0; // Jumlah stok buku
+    public $denda_harian = 0; // Biaya denda per hari jika buku telat dikembalikan
+    public $penerbit = ''; // Nama penerbit buku
+    public $tahun_terbit = ''; // Tahun terbit buku
+
+    // Variabel untuk menampilkan notifikasi sukses setelah operasi berhasil
     public $showSuccessNotification = false;
     public $notificationMessage = '';
 
-    // Protect properties from unintended Livewire resets
+    // Listener untuk menangani event pembaruan data buku
     protected $listeners = ['refreshBooks' => '$refresh'];
 
+    /**
+     * Aturan validasi untuk input form
+     */
     protected function rules()
     {
         $rules = [
-            'judul' => 'required|string',
-            'penulis' => 'required|string',
-            'isbn' => 'nullable|string',
+            'judul' => 'required|string', // Judul harus diisi dan berupa string
+            'penulis' => 'required|string', // Nama penulis wajib diisi
+            'isbn' => 'nullable|string', // ISBN bersifat opsional
             'kategori' => 'required|in:al-quran,hadis,fikih,akidah,sirah,tafsir,tarbiyah,sejarah,buku-anak,novel,lainnya',
-            'deskripsi' => 'nullable|string',
-            'cover_img' => 'nullable|image|max:1024',
-            'stok' => 'required|integer|min:0',
-            'denda_harian' => 'required|integer|min:0',
-            'penerbit' => 'nullable|string',
-            'tahun_terbit' => 'nullable|integer'
+            'deskripsi' => 'nullable|string', // Deskripsi bersifat opsional
+            'cover_img' => 'nullable|image|max:1024', // Gambar opsional, maksimal 1MB
+            'stok' => 'required|integer|min:0', // Stok wajib angka dan minimal 0
+            'denda_harian' => 'required|integer|min:0', // Denda wajib angka dan minimal 0
+            'penerbit' => 'nullable|string', // Nama penerbit opsional
+            'tahun_terbit' => 'nullable|integer' // Tahun terbit bersifat opsional
         ];
 
-        // Only add the unique validation for ISBN when creating a new book or changing the ISBN
+        // Validasi ISBN harus unik jika menambah buku baru atau mengubah ISBN
         if (!$this->bukuId) {
             $rules['isbn'] = 'nullable|string|unique:bukus,isbn';
         } else {
@@ -61,27 +73,38 @@ class Index extends Component
         return $rules;
     }
 
+    /**
+     * Reset halaman paginasi saat pencarian berubah
+     */
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
+    /**
+     * Menampilkan modal untuk menambahkan buku baru
+     */
     public function create()
     {
-        // Reset semua field saat membuat buku baru
-        $this->reset(['bukuId', 'judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
-                     'cover_img', 'temp_cover_img', 'stok', 'denda_harian', 'penerbit', 'tahun_terbit']);
+        // Reset semua field sebelum menambah buku baru
+        $this->reset([
+            'bukuId', 'judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
+            'cover_img', 'temp_cover_img', 'stok', 'denda_harian', 'penerbit', 'tahun_terbit'
+        ]);
         $this->showModal = true;
     }
 
+    /**
+     * Mengisi form dengan data buku yang akan diedit
+     */
     public function edit($bukuId)
     {
         $this->resetValidation();
-        $this->reset(['cover_img']); // Reset cover_img agar tidak terjadi validasi error
-        
+        $this->reset(['cover_img']); // Reset cover_img untuk menghindari validasi error
+
         $buku = Buku::findOrFail($bukuId);
         
-        // Set property values directly
+        // Mengisi variabel dengan data buku yang dipilih
         $this->bukuId = $bukuId;
         $this->judul = $buku->judul;
         $this->penulis = $buku->penulis;
@@ -93,17 +116,18 @@ class Index extends Component
         $this->denda_harian = $buku->denda_harian;
         $this->penerbit = $buku->penerbit;
         $this->tahun_terbit = $buku->tahun_terbit;
-        
-        // Force Livewire to recognize the data update
-        $this->dispatch('propertyUpdated');
-        
+
         $this->showModal = true;
     }
 
+    /**
+     * Menyimpan data buku baru atau memperbarui buku yang ada
+     */
     public function save()
     {
-        $this->validate();
+        $this->validate(); // Validasi input sebelum menyimpan
 
+        // Menyiapkan data untuk disimpan
         $data = [
             'judul' => $this->judul,
             'penulis' => $this->penulis,
@@ -116,57 +140,67 @@ class Index extends Component
             'tahun_terbit' => $this->tahun_terbit,
         ];
 
-        if ($this->cover_img) {
-            $path = $this->cover_img->store('covers', 'public');
-            $data['cover_img'] = $path;
-        }
-
-        if ($this->bukuId) {
-            $buku = Buku::find($this->bukuId);
-            if ($this->cover_img && $buku->cover_img) {
-                Storage::disk('public')->delete($buku->cover_img);
-            }
-            $buku->update($data);
-            $this->notificationMessage = 'Buku berhasil diperbarui!';
-        } else {
-            Buku::create($data);
-            $this->notificationMessage = 'Buku berhasil ditambahkan!';
-        }
-
-        // Show the notification
-        $this->showSuccessNotification = true;
-        
-        // Dispatch event to auto-hide notification after 3 seconds
-        $this->dispatch('hideSuccessNotification');
-
-        $this->showModal = false;
-        $this->reset(['judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
-                     'cover_img', 'temp_cover_img', 'stok', 'denda_harian', 'penerbit', 'tahun_terbit', 'bukuId']);
+       // Jika ada cover baru, simpan ke penyimpanan
+       if ($this->cover_img) {
+        $path = $this->cover_img->store('covers', 'public');
+        $data['cover_img'] = $path;
     }
 
-    public function delete($bukuId)
-    {
-        $buku = Buku::find($bukuId);
-        if ($buku->cover_img) {
+    if ($this->bukuId) {
+        // Update buku jika sedang dalam mode edit
+        $buku = Buku::find($this->bukuId);
+        if ($this->cover_img && $buku->cover_img) {
             Storage::disk('public')->delete($buku->cover_img);
         }
-        $buku->delete();
-        
-        // Show deletion notification
-        $this->notificationMessage = 'Buku berhasil dihapus!';
-        $this->showSuccessNotification = true;
-        
-        // Dispatch event to auto-hide notification after 3 seconds
-        $this->dispatch('hideSuccessNotification');
+        $buku->update($data);
+        $this->notificationMessage = 'Buku berhasil diperbarui!';
+    } else {
+        // Tambah buku baru
+        Buku::create($data);
+        $this->notificationMessage = 'Buku berhasil ditambahkan!';
     }
 
-    public function render()
-    {
-        $books = Buku::where('judul', 'like', '%'.$this->search.'%')
-                    ->orWhere('penulis', 'like', '%'.$this->search.'%')
-                    ->orWhere('isbn', 'like', '%'.$this->search.'%')
-                    ->paginate(10);
+    // Tampilkan notifikasi sukses
+    $this->showSuccessNotification = true;
+    $this->dispatch('hideSuccessNotification'); // Auto-hide notifikasi setelah 3 detik
 
-        return view('livewire.admin.books.index', compact('books'))->layout('layouts.admin');
+    // Tutup modal dan reset form
+    $this->showModal = false;
+    $this->reset([
+        'judul', 'penulis', 'isbn', 'kategori', 'deskripsi', 
+        'cover_img', 'temp_cover_img', 'stok', 'denda_harian', 'penerbit', 'tahun_terbit', 'bukuId'
+    ]);
+}
+
+/**
+ * Menghapus buku dari database
+ */
+public function delete($bukuId)
+{
+    $buku = Buku::find($bukuId);
+    if ($buku->cover_img) {
+        Storage::disk('public')->delete($buku->cover_img); // Hapus cover jika ada
     }
+    $buku->delete(); // Hapus buku dari database
+
+    // Tampilkan notifikasi sukses
+    $this->notificationMessage = 'Buku berhasil dihapus!';
+    $this->showSuccessNotification = true;
+    $this->dispatch('hideSuccessNotification');
+}
+
+/**
+ * Menampilkan daftar buku dengan paginasi
+ */
+public function render()
+{
+    // Query buku berdasarkan pencarian judul, penulis, atau ISBN
+    $books = Buku::where('judul', 'like', '%'.$this->search.'%')
+                ->orWhere('penulis', 'like', '%'.$this->search.'%')
+                ->orWhere('isbn', 'like', '%'.$this->search.'%')
+                ->paginate(10);
+
+    // Mengembalikan tampilan Livewire dengan daftar buku
+    return view('livewire.admin.books.index', compact('books'))->layout('layouts.admin');
+}
 }

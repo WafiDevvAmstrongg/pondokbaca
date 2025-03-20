@@ -1,28 +1,39 @@
 <?php
 
+// 📌 Namespace untuk menentukan lokasi class ini dalam struktur Livewire Auth
 namespace App\Livewire\Auth;
 
+// 📌 Mengimpor model User untuk autentikasi dan registrasi pengguna
 use App\Models\User;
+
+// 📌 Mengimpor Auth untuk menangani login/logout
 use Illuminate\Support\Facades\Auth;
+
+// 📌 Mengimpor Hash untuk mengenkripsi password
 use Illuminate\Support\Facades\Hash;
+
+// 📌 Mengimpor Livewire Component untuk membuat komponen modal login & registrasi
 use Livewire\Component;
 
 class AuthModals extends Component
 {
-    public $showLoginModal = false;
-    public $showRegisterModal = false;
+    // 📌 Variabel untuk mengontrol tampilan modal
+    public $showLoginModal = false; // Modal login
+    public $showRegisterModal = false; // Modal registrasi
 
-    // Form properties
-    public $name = '';
-    public $email = '';
-    public $password = '';
-    public $password_confirmation = '';
-    public $remember = false;
-    
-    // Custom error message
+    // 📌 Variabel untuk input form login & registrasi
+    public $name = ''; // Nama pengguna (hanya untuk registrasi)
+    public $email = ''; // Email pengguna
+    public $password = ''; // Password pengguna
+    public $password_confirmation = ''; // Konfirmasi password (hanya untuk registrasi)
+    public $remember = false; // Status "ingat saya" saat login
+
+    // 📌 Variabel untuk menampilkan pesan error login
     public $loginError = '';
 
-    // Validation rules
+    /**
+     * 📌 ATURAN VALIDASI FORM REGISTRASI & LOGIN
+     */
     protected function rules()
     {
         return [
@@ -32,7 +43,6 @@ class AuthModals extends Component
         ];
     }
 
-    // Specific validation rules for registration
     protected function registerRules()
     {
         return [
@@ -42,7 +52,6 @@ class AuthModals extends Component
         ];
     }
 
-    // Login form validation rules
     protected function loginRules()
     {
         return [
@@ -51,7 +60,9 @@ class AuthModals extends Component
         ];
     }
 
-    // Custom validation messages
+    /**
+     * 📌 CUSTOM PESAN VALIDASI
+     */
     protected function messages()
     {
         return [
@@ -62,7 +73,9 @@ class AuthModals extends Component
         ];
     }
 
-    // Livewire v3 listeners
+    /**
+     * 📌 LISTENER UNTUK MEMBUKA DAN MENUTUP MODAL
+     */
     protected function getListeners()
     {
         return [
@@ -74,6 +87,9 @@ class AuthModals extends Component
 
     protected $listeners = ['open-login-modal' => 'openLoginModal'];
 
+    /**
+     * 📌 FUNGSI UNTUK MEMBUKA MODAL LOGIN
+     */
     public function openLoginModal()
     {
         $this->resetValidation();
@@ -82,6 +98,9 @@ class AuthModals extends Component
         $this->showRegisterModal = false;
     }
 
+    /**
+     * 📌 FUNGSI UNTUK MEMBUKA MODAL REGISTRASI
+     */
     public function showRegister()
     {
         $this->resetValidation();
@@ -90,6 +109,9 @@ class AuthModals extends Component
         $this->showLoginModal = false;
     }
 
+    /**
+     * 📌 FUNGSI UNTUK MENUTUP SEMUA MODAL
+     */
     public function closeAllModals()
     {
         $this->showLoginModal = false;
@@ -98,6 +120,9 @@ class AuthModals extends Component
         $this->reset(['loginError']);
     }
 
+    /**
+     * 📌 FUNGSI UNTUK BERPINDAH DARI LOGIN KE REGISTRASI
+     */
     public function switchToRegister()
     {
         $this->resetValidation();
@@ -106,6 +131,9 @@ class AuthModals extends Component
         $this->showRegisterModal = true;
     }
 
+    /**
+     * 📌 FUNGSI UNTUK BERPINDAH DARI REGISTRASI KE LOGIN
+     */
     public function switchToLogin()
     {
         $this->resetValidation();
@@ -114,52 +142,60 @@ class AuthModals extends Component
         $this->showLoginModal = true;
     }
 
-    // Login method
+    /**
+     * 📌 FUNGSI LOGIN
+     * - Memeriksa apakah email & password valid
+     * - Jika sukses, arahkan pengguna ke dashboard / home
+     * - Jika gagal, tampilkan pesan error
+     */
     public function login()
     {
-        // Reset any previous login error
         $this->loginError = '';
-        
-        // Validate using the loginRules method
+
+        // Validasi input login
         $this->validate($this->loginRules(), $this->messages());
 
-        // Check if the user exists first
+        // Cek apakah email terdaftar
         $user = User::where('email', $this->email)->first();
-        
         if (!$user) {
             $this->loginError = 'Email tidak terdaftar';
             return;
         }
 
-        // Check if the credentials are valid
+        // Cek apakah password benar
         if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
             $this->closeAllModals();
 
+            // Tampilkan notifikasi sukses
             $this->dispatch('swal', [
                 'title' => 'Berhasil!',
                 'text' => 'Selamat datang kembali, ' . Auth::user()->name,
                 'icon' => 'success'
             ]);
 
+            // Jika ada sesi checkout buku, tampilkan detail buku
             if (session()->has('checkout_book_id')) {
                 $this->dispatch('showDetailModal', ['bookId' => session('checkout_book_id')]);
             }
 
+            // Redirect berdasarkan peran pengguna
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             }
             return redirect()->route('home');
         } else {
-            // Password is incorrect
             $this->loginError = 'Password yang Anda masukkan salah';
-            
-            // Clear the password field for security
-            $this->password = '';
+            $this->password = ''; // Hapus password untuk keamanan
         }
     }
 
-    // Register method
+    /**
+     * 📌 FUNGSI REGISTRASI
+     * - Mendaftarkan pengguna baru ke database
+     * - Menggunakan hashing password
+     * - Langsung login setelah berhasil mendaftar
+     */
     public function register()
     {
         $this->validate($this->registerRules(), $this->messages());
@@ -173,9 +209,11 @@ class AuthModals extends Component
                 'is_active' => true
             ]);
 
+            // Login otomatis setelah registrasi
             Auth::login($user);
             $this->closeAllModals();
 
+            // Notifikasi sukses
             $this->dispatch('swal', [
                 'title' => 'Berhasil!',
                 'text' => 'Selamat datang di PondokBaca, ' . $user->name,
@@ -192,6 +230,9 @@ class AuthModals extends Component
         }
     }
 
+    /**
+     * 📌 MENAMPILKAN VIEW AUTH MODALS
+     */
     public function render()
     {
         return view('livewire.auth.auth-modals');
