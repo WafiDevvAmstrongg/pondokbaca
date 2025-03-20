@@ -71,7 +71,7 @@ class Index extends Component
     }
 
     /**
-     * 📌 MENAMPILKAN MODAL KONFIRMASI PENGEMBALIAN
+     *  MENAMPILKAN MODAL KONFIRMASI PENGEMBALIAN
      */
     public function returnBook($loanId)
     {
@@ -80,7 +80,7 @@ class Index extends Component
     }
 
     /**
-     * 📌 MENGONFIRMASI PENGEMBALIAN BUKU
+     *  MENGONFIRMASI PENGEMBALIAN BUKU
      * - Mengubah status peminjaman menjadi "dikembalikan".
      * - Menghapus denda jika ada.
      * - Menampilkan notifikasi sukses.
@@ -92,17 +92,17 @@ class Index extends Component
             'tgl_kembali_aktual' => now()
         ]);
 
-        // 🔹 Menutup modal konfirmasi dan menampilkan modal sukses
+        //  Menutup modal konfirmasi dan menampilkan modal sukses
         $this->showingConfirmation = false;
         $this->successMessage = 'Buku berhasil dikembalikan!';
         $this->showingSuccess = true;
 
-        // 🔹 Memuat ulang komponen untuk memperbarui data
+        //  Memuat ulang komponen untuk memperbarui data
         $this->render();
     }
 
     /**
-     * 📌 MENYEGARKAN DAFTAR PEMINJAMAN
+     *  MENYEGARKAN DAFTAR PEMINJAMAN
      */
     public function refreshPeminjaman()
     {
@@ -110,7 +110,7 @@ class Index extends Component
     }
 
     /**
-     * 📌 MENAMPILKAN FORM RATING
+     *  MENAMPILKAN FORM RATING
      * - Cek apakah pengguna sudah memberikan rating untuk buku yang dipinjam.
      * - Jika belum, tampilkan form rating.
      */
@@ -118,7 +118,7 @@ class Index extends Component
     {
         $this->selectedLoan = Peminjaman::find($loanId);
 
-        // 🔹 Cek apakah pengguna sudah memberikan rating
+        //  Cek apakah pengguna sudah memberikan rating
         $existingRating = Rating::where('id_user', auth()->id())
             ->where('id_buku', $this->selectedLoan->id_buku)
             ->first();
@@ -133,7 +133,7 @@ class Index extends Component
     }
 
     /**
-     * 📌 MENYIMPAN NILAI RATING YANG DIPILIH
+     *  MENYIMPAN NILAI RATING YANG DIPILIH
      */
     public function setRating($value)
     {
@@ -141,7 +141,7 @@ class Index extends Component
     }
 
     /**
-     * 📌 MENGIRIMKAN RATING DAN REVIEW
+     *  MENGIRIMKAN RATING DAN REVIEW
      * - Memastikan pengguna belum memberikan rating sebelumnya.
      * - Menyimpan rating, komentar, dan foto review jika ada.
      * - Menampilkan pesan sukses setelah rating dikirim.
@@ -161,23 +161,23 @@ class Index extends Component
             'komentar' => $this->komentar,
         ];
 
-        // 🔹 Menyimpan foto review jika ada
+        //  Menyimpan foto review jika ada
         if ($this->fotoReview) {
             $path = $this->fotoReview->store('rating-photos', 'public');
             $data['foto_review'] = $path;
         }
 
-        // 🔹 Membuat rating baru
+        //  Membuat rating baru
         Rating::create($data);
 
-        // 🔹 Menutup form rating dan menampilkan notifikasi sukses
+        //  Menutup form rating dan menampilkan notifikasi sukses
         $this->showingRatingForm = false;
         $this->successMessage = 'Terima kasih atas feedback Anda!';
         $this->showingSuccess = true;
     }
 
     /**
-     * 📌 MENUTUP SEMUA MODAL
+     *  MENUTUP SEMUA MODAL
      */
     public function closeModal()
     {
@@ -190,7 +190,7 @@ class Index extends Component
     }
 
     /**
-     * 📌 MENAMPILKAN DAFTAR PEMINJAMAN
+     *  MENAMPILKAN DAFTAR PEMINJAMAN
      */
     public function render()
     {
@@ -207,7 +207,7 @@ class Index extends Component
             ->latest()
             ->paginate(10);
 
-        // 🔹 Cek apakah buku sudah diberikan rating
+        //  Cek apakah buku sudah diberikan rating
         foreach ($loans as $loan) {
             $loan->hasRating = Rating::where('id_user', auth()->id())
                 ->where('id_buku', $loan->id_buku)
